@@ -10,7 +10,7 @@ const float r = 3;
 const float moveStep = 0.2;
 float eye[] = {0, 1, 2}, du[] = {120, 180};
 
-Belt obj0, obj1;
+Belt obj;
 
 void renderScene(void)
 {
@@ -36,19 +36,8 @@ void renderScene(void)
 
 	glEnable(GL_LIGHT0);
 
-	obj1.draw(1);
-
-	glPushMatrix();
-	glTranslatef(-1, 0, 0);
-	//glRotatef(90, 0, 1, 0);
-	obj0.draw(0);
-	glPopMatrix();
-
-	// glPushMatrix();
-	// glTranslatef(-2, 0, 1);
-	// glRotatef(90, 0, 1, 0);
-	// obj0.draw(0);
-	// glPopMatrix();
+	obj.draw();
+	Belt::update();
 
 	glutSwapBuffers();
 }
@@ -121,6 +110,18 @@ void reshape(int w, int h)
 
 void init() {
 	Belt::init();
+	obj.pushPoint(-1, 0);
+	obj.pushPoint(0, 0);
+	obj.pushPoint(1, 0);
+	obj.pushPoint(1, 1);
+	obj.pushPoint(2, 1);
+	obj.pushPoint(2, 2);
+	obj.pushPoint(1, 2);
+	obj.pushPoint(1, 3);
+	obj.pushPoint(1, 4);
+	obj.pushPoint(0, 4);
+	obj.pushPoint(0, 3);
+	obj.pushPoint(0, 2);
 }
 
 int main(int argc, char* argv[])
