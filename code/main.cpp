@@ -39,16 +39,16 @@ void renderScene(void)
 	obj1.draw(1);
 
 	glPushMatrix();
-	glTranslatef(-1, 0, 1);
-	glRotatef(90, 0, 1, 0);
+	glTranslatef(-1, 0, 0);
+	//glRotatef(90, 0, 1, 0);
 	obj0.draw(0);
 	glPopMatrix();
 
-	glPushMatrix();
-	glTranslatef(-2, 0, 1);
-	glRotatef(90, 0, 1, 0);
-	obj0.draw(0);
-	glPopMatrix();
+	// glPushMatrix();
+	// glTranslatef(-2, 0, 1);
+	// glRotatef(90, 0, 1, 0);
+	// obj0.draw(0);
+	// glPopMatrix();
 
 	glutSwapBuffers();
 }
