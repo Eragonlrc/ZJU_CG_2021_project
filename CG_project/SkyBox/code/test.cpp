@@ -6,7 +6,7 @@
 #include "SkyBox.h"
 
 Camera m_Camera;
-CSkyBox m_SkyBox;
+SkyBox m_SkyBox;
 
 
 void init(void)

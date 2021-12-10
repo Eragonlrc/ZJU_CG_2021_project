@@ -5,11 +5,11 @@
 #include <string.h>
 
 // 天空盒类 
-class CSkyBox{
+class SkyBox{
 public:
     // 构造函数 
-    CSkyBox();
-    ~CSkyBox();
+    SkyBox();
+    ~SkyBox();
 
     // 初始化 
     bool Init();

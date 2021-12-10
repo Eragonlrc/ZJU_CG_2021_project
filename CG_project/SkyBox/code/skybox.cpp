@@ -1,15 +1,15 @@
 #include "SkyBox.h"
 
-TexLoader CSkyBox::texture(6);
+TexLoader SkyBox::texture(6);
 
-CSkyBox::CSkyBox(){
+SkyBox::SkyBox(){
 }
 
-CSkyBox::~CSkyBox(){
+SkyBox::~SkyBox(){
 }
 
 // 天空盒初始化 
-bool CSkyBox::Init(){
+bool SkyBox::Init(){
     char filename[128];                                         // 用来保存文件名 
     char bmpName[6][128] = { "back","front","bottom","top","left","right" };
     texture.genTex();
@@ -38,7 +38,7 @@ bool CSkyBox::Init(){
 }
 
 // 构造天空盒 
-void  CSkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box_height, float box_length){
+void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box_height, float box_length){
     const unsigned int MAP_WIDTH = 1024;
     const unsigned int CELL_WIDTH = 16;
     const unsigned int MAP = MAP_WIDTH * CELL_WIDTH / 2;
