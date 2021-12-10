@@ -10,7 +10,7 @@
 
   - 效果差强人意，4条y轴方向的边能看到不协调(如下图灰线指出的地方)，但是感觉很难再改进了
 
-    <img src="C:\Users\Eragon\AppData\Roaming\Typora\typora-user-images\1639142340496.png" alt="1639142340496" style="zoom:50%;" />
+    <img src="./badbox.png" alt="1639142340496" style="zoom:50%;" />
 
   - 还没和HHZ的传送带拼到一起，下次开会前争取拼好
 
