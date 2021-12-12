@@ -9,6 +9,7 @@ const float Belt::radius[] = { 0.1, 0.2, 0.8, 0.9 };
 const float Belt::radius0 = 2 / acos(-1);
 const float Belt::height[] = { 0.2, 0.3, 0.4 };
 float Belt::beltMove = 0;
+const float Belt::deltaAngle = 0.1;
 
 Belt::Belt() = default;
 
@@ -49,18 +50,32 @@ void Belt::draw() {
             else to = 3;
         }
         glTranslatef(points[i].second, 0, points[i].first);
+        glPushMatrix();
         switch ((to - from + 4) % 4) {
             case 3: case 1: {
                 glRotatef(-90 * from, 0, 1, 0);
                 if((to - from + 4) % 4 == 3) drawCornerCCW(0);
-                else drawCornerCW(0);
+                else drawCornerCW();
                 break;
             }
             case 2: {
                 glRotatef(-90 * from, 0, 1, 0);
-                drawStraight(0);
+                drawStraight();
                 break;
             }
+        }
+        glPopMatrix();
+        if (i == 1) {
+            glPushMatrix();
+            glRotatef(-90 * from, 0, 1, 0);
+            drawEnd();
+            glPopMatrix();
+        }
+        else if (i == points.size() - 2) {
+            glPushMatrix();
+            glRotatef(-90 * to, 0, 1, 0);
+            drawEnd();
+            glPopMatrix();
         }
         glPopMatrix();
     }
@@ -120,7 +135,6 @@ void Belt::drawStraight(bool rev) {
 }
 
 void Belt::drawCornerCW(bool rev) {
-    static const float deltaAngle = 0.1;
     float _beltMove = rev ? (1 - beltMove) / radius0 / C : beltMove / radius0 / C;
 
     glEnable(GL_TEXTURE_2D);
@@ -210,7 +224,6 @@ void Belt::drawCornerCW(bool rev) {
 }
 
 void Belt::drawCornerCCW(bool rev) {
-    static const float deltaAngle = 0.1;
     float _beltMove = rev ? (1 - beltMove) / radius0 / C : beltMove / radius0 / C;
 
     glEnable(GL_TEXTURE_2D);
@@ -294,6 +307,36 @@ void Belt::drawCornerCCW(bool rev) {
             glVertex3f(seg[j][1], height[1] + beltHeight, 1 - seg[j][0]);
         }
     }
+    glEnd();
+    glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+}
+
+void Belt::drawEnd() {
+    float _beltMove = beltMove;
+
+    glEnable(GL_TEXTURE_2D);
+    glPushMatrix();
+    glTranslatef(-0.5, 0, -0.5);
+    // frame
+    texture.bindTex(0);
+    glBegin(GL_QUADS);
+
+    glTexCoord2f(height[0], radius[0]); glVertex3f(0, height[0], radius[0]);
+    glTexCoord2f(height[0], radius[1]); glVertex3f(0, height[0], radius[1]);
+    glTexCoord2f(height[2], radius[1]); glVertex3f(0, height[2], radius[1]);
+    glTexCoord2f(height[2], radius[0]); glVertex3f(0, height[2], radius[0]);
+
+    glTexCoord2f(height[0], radius[1]); glVertex3f(0, height[0], radius[1]);
+    glTexCoord2f(height[0], radius[2]); glVertex3f(0, height[0], radius[2]);
+    glTexCoord2f(height[1] + beltHeight, radius[2]); glVertex3f(0, height[1] + beltHeight, radius[2]);
+    glTexCoord2f(height[1] + beltHeight, radius[1]); glVertex3f(0, height[1] + beltHeight, radius[1]);
+
+    glTexCoord2f(height[0], radius[2]); glVertex3f(0, height[0], radius[2]);
+    glTexCoord2f(height[0], radius[3]); glVertex3f(0, height[0], radius[3]);
+    glTexCoord2f(height[2], radius[3]); glVertex3f(0, height[2], radius[3]);
+    glTexCoord2f(height[2], radius[2]); glVertex3f(0, height[2], radius[2]);
+
     glEnd();
     glPopMatrix();
     glDisable(GL_TEXTURE_2D);
