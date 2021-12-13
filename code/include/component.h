@@ -1,26 +1,23 @@
 class robot
 {
 private:
-	double head_r, head_x, head_y, head_z;
-	int head_t, body_t;
-	double body_x, body_y, body_z, body_l, body_w, body_h, body_mul;
-	double arm_x, arm_y, arm_z, arm_mul;
-	double leg_x, leg_y, leg_z, leg_mul;
+	double head_r, tran_x, tran_y, tran_z;
+	int type;
+	double  body_l, body_w, body_h;
+	double  arm_mul, leg_mul;
 	;
 public:
 	robot();
-	void drawhead();
-	void drawbody();
+	void draw();
 	void drawhead1();
 	void drawhead2();
 	void drawbody1();
 	void drawbody2();
-	void drawarm();
-	void drawleg();
-	void headtranslate(double x, double y, double z);
-	void bodytranslate(double x, double y, double z);
-	void armtranslate(double x, double y, double z);
-	void legtranslate(double x, double y, double z);
-	;
+	void drawarm1();
+	void drawarm2();
+	void drawleg1();
+	void drawleg2();
+	void settranslate(double x,double y,double z);
+	void settype(int t);
+	int gettype();
 };
-
