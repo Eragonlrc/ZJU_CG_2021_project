@@ -42,25 +42,26 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     const unsigned int MAP_WIDTH = 1024;
     const unsigned int CELL_WIDTH = 16;
     const unsigned int MAP = MAP_WIDTH * CELL_WIDTH / 2;
+
     // 获得场景中光照状态 
-    GLboolean lp;
-    glGetBooleanv(GL_LIGHTING, &lp);
+    //GLboolean lp;
+    //glGetBooleanv(GL_LIGHT0, &lp);
 
     // 计算天空盒长 宽 高 
     float width = MAP * box_width / 8;
     float height = MAP * box_height / 8;
     float length = MAP * box_length / 8;
 
-    // 计算天空盒中心位置 
-    x = x + MAP / 8 - width / 2;
-    y = y + MAP / 24 - height / 2;
-    z = z + MAP / 8 - length / 2;
+    // 半长 半宽 半高
+    float w = width / 2;
+    float h = height / 2;
+    float l = length / 2;
 
-    glDisable(GL_LIGHTING);            // 关闭光照 
+    //glDisable(GL_LIGHT0);            // 关闭光照 
 
     // 开始绘制 
+    glEnable(GL_TEXTURE_2D);
     glPushMatrix();
-    glTranslatef(-x, -y, -z);
 
     // 绘制背面 
     texture.bindTex(0);
@@ -68,10 +69,10 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     glBegin(GL_QUADS);
 
     // 指定纹理坐标和顶点坐标 
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x + width, y, z);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x + width, y + height, z);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x, y + height, z);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x, y, z);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(x + w, y - h, z - l);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(x + w, y + h, z - l);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(x - w, y + h, z - l);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(x - w, y - h, z - l);
 
     glEnd();
 
@@ -81,10 +82,10 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     glBegin(GL_QUADS);
 
     // 指定纹理坐标和顶点坐标 
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y, z + length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y + height, z + length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y + height, z + length);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y, z + length);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(x - w, y - h, z + l);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(x - w, y + h, z + l);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + w, y + h, z + l);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + w, y - h, z + l);
 
     glEnd();
 
@@ -94,10 +95,10 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     glBegin(GL_QUADS);
 
     // 指定纹理坐标和顶点坐标 
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y, z);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y, z + length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y, z + length);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y, z);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(x - w, y - h, z - l);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(x - w, y - h, z + l);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + w, y - h, z + l);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + w, y - h, z - l);
 
     glEnd();
 
@@ -107,10 +108,10 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     glBegin(GL_QUADS);
 
     // 指定纹理坐标和顶点坐标 
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y + height, z);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y + height, z + length);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y + height, z + length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y + height, z);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + w, y + h, z - l);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + w, y + h, z + l);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(x - w, y + h, z + l);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(x - w, y + h, z - l);
 
     glEnd();
 
@@ -120,10 +121,10 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     glBegin(GL_QUADS);
 
     // 指定纹理坐标和顶点坐标 
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x, y + height, z);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x, y + height, z + length);
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x, y, z + length);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x, y, z);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(x - w, y + h, z - l);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(x - w, y + h, z + l);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(x - w, y - h, z + l);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(x - w, y - h, z - l);
 
     glEnd();
 
@@ -133,15 +134,14 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
     glBegin(GL_QUADS);
 
     // 指定纹理坐标和顶点坐标 
-    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + width, y, z);
-    glTexCoord2f(1.0f, 0.0f); glVertex3f(x + width, y, z + length);
-    glTexCoord2f(1.0f, 1.0f); glVertex3f(x + width, y + height, z + length);
-    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + width, y + height, z);
+    glTexCoord2f(0.0f, 0.0f); glVertex3f(x + w, y - h, z - l);
+    glTexCoord2f(1.0f, 0.0f); glVertex3f(x + w, y - h, z + l);
+    glTexCoord2f(1.0f, 1.0f); glVertex3f(x + w, y + h, z + l);
+    glTexCoord2f(0.0f, 1.0f); glVertex3f(x + w, y + h, z - l);
     glEnd();
 
     glPopMatrix();                 // 绘制结束 
-
-    if (lp)                         // 恢复光照状态 
-        glEnable(GL_LIGHTING);
-
+    glDisable(GL_TEXTURE_2D);
+    //if (lp)                         // 恢复光照状态 
+    //    glEnable(GL_LIGHT0);
 }

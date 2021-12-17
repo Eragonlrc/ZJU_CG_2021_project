@@ -15,9 +15,9 @@ private:
     static TexLoader texture;
     static float beltMove;
     std::vector<std::pair<int, int> > points;
-    void drawStraight(bool rev = 0);
-    void drawCornerCW(bool rev = 0);
-    void drawCornerCCW(bool rev = 0);
+    void drawStraight();
+    void drawCornerCW();
+    void drawCornerCCW();
     void drawEnd();
 public:
     Belt();

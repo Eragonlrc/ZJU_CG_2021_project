@@ -1,4 +1,5 @@
 #include "belt.h"
+#include "texture.h"
 #include <math.h>
 static const float C = acos(-1) / 180;
 
@@ -15,8 +16,8 @@ Belt::Belt() = default;
 
 void Belt::init() {
     texture.genTex();
-    texture.texLoad(0, "texture/iron.bmp");
-    texture.texLoad(1, "texture/belt.bmp");
+    texture.loadTex(0, "textures/iron.bmp");
+    texture.loadTex(1, "textures/belt.bmp");
 }
 
 void Belt::update() {
@@ -54,7 +55,7 @@ void Belt::draw() {
         switch ((to - from + 4) % 4) {
             case 3: case 1: {
                 glRotatef(-90 * from, 0, 1, 0);
-                if((to - from + 4) % 4 == 3) drawCornerCCW(0);
+                if((to - from + 4) % 4 == 3) drawCornerCCW();
                 else drawCornerCW();
                 break;
             }
@@ -81,8 +82,8 @@ void Belt::draw() {
     }
 }
 
-void Belt::drawStraight(bool rev) {
-    float _beltMove = rev ? 1 - beltMove : beltMove;
+void Belt::drawStraight() {
+    float _beltMove = beltMove;
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
     glTranslatef(-0.5, 0, -0.5);
@@ -134,8 +135,8 @@ void Belt::drawStraight(bool rev) {
     glDisable(GL_TEXTURE_2D);
 }
 
-void Belt::drawCornerCW(bool rev) {
-    float _beltMove = rev ? (1 - beltMove) / radius0 / C : beltMove / radius0 / C;
+void Belt::drawCornerCW() {
+    float _beltMove = beltMove / radius0 / C;
 
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();
@@ -223,8 +224,8 @@ void Belt::drawCornerCW(bool rev) {
     glDisable(GL_TEXTURE_2D);
 }
 
-void Belt::drawCornerCCW(bool rev) {
-    float _beltMove = rev ? (1 - beltMove) / radius0 / C : beltMove / radius0 / C;
+void Belt::drawCornerCCW() {
+    float _beltMove = beltMove / radius0 / C;
 
     glEnable(GL_TEXTURE_2D);
     glPushMatrix();

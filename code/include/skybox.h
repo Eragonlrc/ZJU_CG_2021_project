@@ -1,7 +1,6 @@
 #pragma once
 #include "texture.h"
 #include "vector.h"
-#include "camera.h"
 #include <string.h>
 
 // Ìì¿ÕºÐÀà 

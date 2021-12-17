@@ -1,3 +1,4 @@
+#include <math.h>
 #include"component.h" 
 #include"gl/glut.h"
 robot::robot()

@@ -73,7 +73,7 @@ void Camera::setViewByMouse(){
 
     // 得到当前鼠标位置
     GetCursorPos(&mousePos);
-    ShowCursor(TRUE);
+    ShowCursor(FALSE);
 
     // 如果鼠标没有移动,则不用更新
     if ((mousePos.x == middleX) && (mousePos.y == middleY))
@@ -86,7 +86,7 @@ void Camera::setViewByMouse(){
     angleY = (float)((middleX - mousePos.x)) / 1000.0f;
     angleZ = (float)((middleY - mousePos.y)) / 1000.0f;
 
-    static float lastRotX = 0.0f;      //< 用于保存旋转角度 
+    static float lastRotX = 0.0f;      // 用于保存旋转角度 
     lastRotX = currentRotX;
 
     // 跟踪摄像机上下旋转角度 
@@ -165,12 +165,12 @@ void Camera::moveCamera(float speed)
 {
     // 计算方向向量 
     Vector3 vector = m_Center - m_Position;
-    vector = vector.normalize();         //< 单位化 
+    vector = vector.normalize();         // 单位化 
 
     // 更新摄像机 
-    m_Position.x += vector.x * speed;    //< 根据速度更新位置 
+    m_Position.x += vector.x * speed;    // 根据速度更新位置 
     m_Position.z += vector.z * speed;
-    m_Center.x += vector.x * speed;        //< 根据速度更新方向 
+    m_Center.x += vector.x * speed;        // 根据速度更新方向 
     m_Center.z += vector.z * speed;
 }
 

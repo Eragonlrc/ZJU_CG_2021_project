@@ -5,6 +5,8 @@
 #include <gl/glut.h>
 
 #define BITMAP_ID 0x4D42
+#define MAXN 10		// 每个Loader最多同时载入10张图片
+#define GL_CLAMP_TO_EDGE    0x812F
 
 class TexLoader {
 private:
@@ -14,6 +16,6 @@ private:
 public:
 	TexLoader(int n);
 	void genTex();
-	void texLoad(int i, const char* filename);
+	void loadTex(int i, const char* filename);
 	void bindTex(int i);
 };

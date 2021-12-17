@@ -30,7 +30,7 @@ void init(void)
     }
 
     /** 设置摄像机 */
-    m_Camera.setCamera(500, 300, 401, 500, 300, 400, 0, 1, 0);
+    m_Camera.setCamera(0, 0, 1, 0, 0, 0, 0, 1, 0);
 }
 
 void display(void)
@@ -43,9 +43,9 @@ void display(void)
     m_Camera.setLook();
 
     /** 绘制天空 */
-    m_SkyBox.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
+    m_SkyBox.CreateSkyBox(0, 0, 1, 1.0, 0.5, 1.0);
 
-    glFlush();                   /**< 强制执行所有的OpenGL命令 */
+    glutSwapBuffers();                   /**< 强制执行所有的OpenGL命令 */
 }
 
 void ChangeSize(int width, int height)
@@ -99,7 +99,7 @@ void keyboard(unsigned char key, int x, int y)
 int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_RGB);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(800, 600);
     glutInitWindowPosition((GetSystemMetrics(SM_CXSCREEN) >> 1) - 400, (GetSystemMetrics(SM_CYSCREEN) >> 1) - 300);
     glutCreateWindow("天空盒");
@@ -107,6 +107,7 @@ int main(int argc, char** argv)
     glutReshapeFunc(ChangeSize);
     glutDisplayFunc(display);
     glutMotionFunc(motion);
+    glutIdleFunc(display);
     glutKeyboardFunc(keyboard);
     glutMainLoop();
     return 0;
