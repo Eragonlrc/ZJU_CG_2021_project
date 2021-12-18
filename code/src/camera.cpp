@@ -181,6 +181,19 @@ void Camera::liftCamera(float speed)
     m_Position.y += speed * flag;
     m_Center.y += speed * flag;
 }
+
+// x轴移动摄像机
+void Camera::xCamera(float speed) {
+    m_Position.x += speed;
+    m_Center.x += speed;
+}
+
+// z轴移动摄像机
+void Camera::zCamera(float speed) {
+    m_Position.z += speed;
+    m_Center.z += speed;
+}
+
 // 设置视点 
 void Camera::setLook()
 {

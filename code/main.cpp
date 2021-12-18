@@ -17,7 +17,7 @@ using namespace std;
 int OriX = -1, OriY = -1;
 bool rightDown = 0;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
-float wWidth, wHeight;
+int wWidth, wHeight;
 
 Map map;
 Belt belt;
@@ -57,7 +57,7 @@ void renderScene(void)
 
 	glPushMatrix();
 	glScalef(0.1, 0.1, 0.1);
-	component.draw();
+	robot.draw();
 	glPopMatrix();
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
@@ -68,15 +68,19 @@ void renderScene(void)
 		}
 	}
 
-	if(!bEdit)	Belt::update();	// 非编辑状态下，传送带移动
-
-	glPushMatrix();
-	glTranslatef(0, 0, 1);
-	robot.draw();
-	glPopMatrix();
-
-	arm[0].Draw();
-
+	Belt::update();
+	if(bEdit) {	// 编辑状态下，摄像机可能移动
+		POINT mousePos;
+		GetCursorPos(&mousePos);
+		if (mousePos.x <= 5)	// 左移
+			camera.xCamera(-camera.getSpeed());
+		if (mousePos.y <= 5)	// 上移
+			camera.zCamera(-camera.getSpeed());
+		if (mousePos.x >= (wWidth - 5))	// 右移
+			camera.xCamera(camera.getSpeed());
+		if (mousePos.y >= (wHeight - 5))	// 下移
+			camera.zCamera(camera.getSpeed());
+	}
 	glutSwapBuffers();
 }
 
@@ -96,8 +100,8 @@ void updateView(float w, float h) {
 		position = camera.getPosition();
 		view = camera.getView();
 		upVector = camera.getUpVector();
-		camera.setCamera(0, 10, 0, 0, 1, 0, 0, 0, -1);
-		glOrtho(-5 * ratio, 5 * ratio, -5, 5, -1, 10);
+		camera.setCamera(position.x, 10, position.z, view.x, 1, view.z, 0, 0, -1);
+		glOrtho(position.x - 5 * ratio, position.x + 5 * ratio, position.z - 5 , position.z + 5, -1, 100);
 	}
 	glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
@@ -172,6 +176,7 @@ void key(unsigned char k, int x, int y) {
 void init() {
 	wWidth = glutGet(GLUT_SCREEN_WIDTH);
 	wHeight = glutGet(GLUT_SCREEN_HEIGHT);
+	//printf("%d %d\n", wWidth, wHeight);
 
 	Belt::init();
 
@@ -198,7 +203,7 @@ void init() {
 	//obj1->print();
 	obj->merge(obj1);
 	//obj->print();
-	obj->addComponent(new robot());
+	obj->addComponent(new Robot());
 
 	Belt* obj2 = new Belt();
 	obj2->pushPoint(5, 5);
@@ -211,7 +216,7 @@ void init() {
 	obj2->pushPoint(5, 6);
 	obj2->pushPoint(5, 5);
 	obj2->updateMap();
-	obj2->addComponent(new robot());
+	obj2->addComponent(new Robot());
 
 	Belt* obj3 = new Belt();
 	obj3->pushPoint(0, 6);
@@ -234,7 +239,7 @@ void init() {
 	obj3->pushPoint(1, 6);
 	obj3->pushPoint(0, 6);
 	obj3->updateMap();
-	obj3->addComponent(new robot());
+	obj3->addComponent(new Robot());
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);

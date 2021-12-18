@@ -1,6 +1,5 @@
-#include <math.h>
 #include"component.h"
-#include"gl/glut.h" 
+
 Robot::Robot()
 {
 	head_r = 1.7; body_l = 5; body_w = 5.4; body_h = 3; type = 1;
@@ -21,7 +20,7 @@ void Robot::settype(int t)
 void Robot::draw()
 {
 	glPushMatrix();
-	glTranslatef(0, 0.5, 0);
+	glTranslatef(0, 0.05, 0);
 	glScalef(0.04, 0.04, 0.04);	// change the size to fit the belt
 	
 	if (type == 1) drawhead1();

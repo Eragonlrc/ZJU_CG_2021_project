@@ -33,9 +33,9 @@ private:
     PointSet points;
 
     struct OnBeltComponent {
-        robot* component;
+        Robot* component;
         float move;
-        OnBeltComponent(robot* _component, float _move) : component(_component), move(_move) {}
+        OnBeltComponent(Robot* _component, float _move) : component(_component), move(_move) {}
     };
     std::vector<OnBeltComponent> components;
 private:
@@ -67,7 +67,7 @@ public:
     void print();
 public:
     void updateComponents();
-    void addComponent(robot* component, int index = 0);
+    void addComponent(Robot* component, int index = 0);
     void drawComponents();
 };
 

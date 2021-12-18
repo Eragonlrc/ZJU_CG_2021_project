@@ -642,7 +642,7 @@ void Belt::updateComponents() {
     }
 }
 
-void Belt::addComponent(robot* component, int index) {
+void Belt::addComponent(Robot* component, int index) {
     std::vector<OnBeltComponent>::iterator it;
     float move = index == 0 ? endCut : index;
     for (it = components.begin(); it != components.end(); it++) {
@@ -665,7 +665,6 @@ void Belt::drawComponents() {
                 glRotatef(-90 * from, 0, 1, 0);
                 glTranslatef(-0.5 + 0.5 * sin(move * C), 0, -0.5 + 0.5 * cos(move * C));
                 glRotatef(move, 0, 1, 0);
-                glScalef(0.1, 0.1, 0.1);
                 it->component->draw();
                 break;
             }
@@ -674,14 +673,12 @@ void Belt::drawComponents() {
                 glRotatef(-90 * from, 0, 1, 0);
                 glTranslatef(-0.5 + 0.5 * sin(move * C), 0, 0.5 - 0.5 * cos(move * C));
                 glRotatef(-move, 0, 1, 0);
-                glScalef(0.1, 0.1, 0.1);
                 it->component->draw();
                 break;
             }
             case 2: { // straight
                 glRotatef(-90 * from, 0, 1, 0);
                 glTranslatef(move - 0.5, 0, 0);
-                glScalef(0.1, 0.1, 0.1);
                 it->component->draw();
                 break;
             }

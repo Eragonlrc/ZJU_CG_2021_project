@@ -41,6 +41,12 @@ public:
     // 上下移动摄像机
     void liftCamera(float speed);
 
+    // x轴移动摄像机
+    void xCamera(float speed);
+
+    // z轴移动摄像机
+    void zCamera(float speed);
+
     // 放置摄像机
     void setLook();
 
