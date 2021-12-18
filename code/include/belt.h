@@ -3,8 +3,12 @@
 #include <vector>
 #include "texture.h"
 #include "map.h"
+#include "component.h"
 
 class Belt{
+public:
+    typedef std::vector<Point> PointSet;
+    typedef std::vector<Point>::iterator PointInterator;
 private:
     static const float beltSpeed;
     static const float beltHeight;
@@ -16,9 +20,18 @@ private:
 private:
     static TexLoader texture;
     static float beltMove;
-    typedef std::vector<Point> PointSet;
-    typedef std::vector<Point>::iterator PointInterator;
+
     PointSet points;
+
+    struct OnBeltComponent {
+        robot* component;
+        float move;
+        OnBeltComponent(robot* _component, float _move) : component(_component), move(_move) {}
+    };
+    std::vector<OnBeltComponent> components;
+private:
+    void getDirection(int i, int& from, int& to);
+
     void drawStraight(bool start = 0, bool end = 0);
     void drawCornerCW();
     void drawCornerCCW();
@@ -39,5 +52,9 @@ public:
 
     void draw();
     void print();
+public:
+    void updateComponents();
+    void addComponent(robot* component, int index = 0);
+    void drawComponents();
 };
 

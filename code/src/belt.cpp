@@ -8,7 +8,7 @@ extern Map map;
 
 TexLoader Belt::texture(2);
 const float Belt::beltHeight = 0.05;
-const float Belt::beltSpeed = 0.002;
+const float Belt::beltSpeed = 0.005;
 const float Belt::radius[] = { 0.1, 0.2, 0.8, 0.9 };
 const float Belt::radius0 = 2 / acos(-1);
 const float Belt::height[] = { 0.2, 0.3, 0.4 };
@@ -46,53 +46,55 @@ void Belt::pushPoint(int z, int x) {
     points.push_back(Point(z, x));
 }
 
+void Belt::getDirection(int i, int& from, int& to) {
+    bool loop = points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second;
+    if (loop && i == points.size() - 1) i = 0; // if loop exists, the last point is the same as the first
+    if (i != 0) {
+        if (points[i].first == points[i - 1].first) {
+            if (points[i].second > points[i - 1].second) from = 0;
+            else from = 2;
+        }
+        else {
+            if (points[i].first > points[i - 1].first) from = 1;
+            else from = 3;
+        }
+    }
+    if (i != points.size() - 1) {
+        if (points[i].first == points[i + 1].first) {
+            if (points[i].second > points[i + 1].second) to = 0;
+            else to = 2;
+        }
+        else {
+            if (points[i].first > points[i + 1].first) to = 1;
+            else to = 3;
+        }
+    }
+    if (i == 0) {
+        if (loop) { // loop, from depends on the second last belt
+            if (points[i].first == points[points.size() - 2].first) {
+                if (points[i].second > points[points.size() - 2].second) from = 0;
+                else from = 2;
+            }
+            else {
+                if (points[i].first > points[points.size() - 2].first) from = 1;
+                else from = 3;
+            }
+        }
+        else from = (to + 2) % 4; // no loop, straight belt
+    }
+    else if (i == points.size() - 1) to = (from + 2) % 4; // no loop, straight belt
+}
+
 void Belt::updateMap(int begin, int end) {
     if (end == -1) end = points.size();
-    printf("%d\n", points.size());
     if (points.size() == 1) { // single belt
         map.write(points[0].first, points[0].second, MAP_BELT_SINGLE, this, 0);
         return;
     }
     for (int i = begin; i < end; i++) {
         int from, to;
-        // check belt type
-        if (i != 0) {
-            if (points[i].first == points[i - 1].first) {
-                if (points[i].second > points[i - 1].second) from = 0;
-                else from = 2;
-            }
-            else {
-                if (points[i].first > points[i - 1].first) from = 1;
-                else from = 3;
-            }
-        }
-        if (i != points.size() - 1) {
-            if (points[i].first == points[i + 1].first) {
-                if (points[i].second > points[i + 1].second) to = 0;
-                else to = 2;
-            }
-            else {
-                if (points[i].first > points[i + 1].first) to = 1;
-                else to = 3;
-            }
-        }
-        if (i == 0) {
-            if (points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second) { // loop, from depend on the second last belt
-                if (points[i].first == points[points.size() - 2].first) {
-                    if (points[i].second > points[points.size() - 2].second) from = 0;
-                    else from = 2;
-                }
-                else {
-                    if (points[i].first > points[points.size() - 2].first) from = 1;
-                    else from = 3;
-                }
-            }
-            else from = (to + 2) % 4; // no loop, straight belt
-        }
-        else if (i == points.size() - 1) {
-            if (points[0].first == points[i].first && points[0].second == points[i].second) break; // loop, skip the last belt
-            else to = (from + 2) % 4; // no loop, straight belt
-        }
+        if (points[0].first == points[i].first && points[0].second == points[i].second && i == points.size() - 1) break; // loop, skip the last point
+        getDirection(i, from, to); // check belt type
         // update map
         switch ((to - from + 4) % 4) {
             case 1: {   // corner CW
@@ -114,6 +116,7 @@ void Belt::updateMap(int begin, int end) {
 
 void Belt::draw() {
     bool loop = points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second;
+    drawComponents();
     if (points.size() == 1) { // single belt
         glPushMatrix();
         glTranslatef(points[0].second, 0, points[0].first);
@@ -123,44 +126,8 @@ void Belt::draw() {
     }
     for (int i = 0; i < points.size(); i++) {
         int from, to;
-        // check belt type
-        if (i != 0) {
-            if (points[i].first == points[i - 1].first) {
-                if (points[i].second > points[i - 1].second) from = 0;
-                else from = 2;
-            }
-            else {
-                if (points[i].first > points[i - 1].first) from = 1;
-                else from = 3;
-            }
-        }
-        if (i != points.size() - 1) {
-            if (points[i].first == points[i + 1].first) {
-                if (points[i].second > points[i + 1].second) to = 0;
-                else to = 2;
-            }
-            else {
-                if (points[i].first > points[i + 1].first) to = 1;
-                else to = 3;
-            }
-        }
-        if (i == 0) {
-            if (loop) { // loop, from depends on the second last belt
-                if (points[i].first == points[points.size() - 2].first) {
-                    if (points[i].second > points[points.size() - 2].second) from = 0;
-                    else from = 2;
-                }
-                else {
-                    if (points[i].first > points[points.size() - 2].first) from = 1;
-                    else from = 3;
-                }
-            }
-            else from = (to + 2) % 4; // no loop, straight belt
-        }
-        else if (i == points.size() - 1) {
-            if (loop) break; // loop, skip the last belt
-            else to = (from + 2) % 4; // no loop, straight belt
-        }
+        if (loop && i == points.size() - 1) break; // loop, skip the last point
+        getDirection(i, from, to); // check belt type
         // draw belt
         glPushMatrix();
         glTranslatef(points[i].second, 0, points[i].first);
@@ -601,6 +568,69 @@ Belt* Belt::delPoint(int index) {
 void Belt::merge(Belt* belt) {
     int oriSize = points.size();
     points.insert(points.end(), belt->points.begin(), belt->points.end());
-    belt->~Belt(); // destroy belt
+    delete belt; // destroy belt
     updateMap(oriSize); // update merged part in map
+}
+
+void Belt::updateComponents() {
+    for (std::vector<OnBeltComponent>::iterator it = components.begin(); it != components.end(); it++) {
+        if(points.size() > 1) it->move += beltSpeed;
+        if (points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second && it->move >= points.size() - 1)
+            it->move -= points.size() - 1; // loop
+        else if (it->move >= points.size() - endCut) { // exceeds belt length, drop the component
+            delete it->component;
+            components.erase(it, components.end());
+            break;
+        }
+        int index = it->move;
+        // call arm
+    }
+}
+
+void Belt::addComponent(robot* component, int index) {
+    std::vector<OnBeltComponent>::iterator it;
+    float move = index == 0 ? endCut : index;
+    for (it = components.begin(); it != components.end(); it++) {
+        if (it->move > move) break;
+    }
+    components.insert(it, OnBeltComponent(component, move));
+}
+
+void Belt::drawComponents() {
+    for (std::vector<OnBeltComponent>::iterator it = components.begin(); it != components.end(); it++) {
+        int index = it->move;
+        float move = it->move - index;
+        glPushMatrix();
+        glTranslatef(points[index].second, height[1] + beltHeight, points[index].first);
+        int from, to;
+        getDirection(index, from, to); // check belt type
+        switch ((to - from + 4) % 4) {
+            case 1: { // corner CW
+                move /= radius0 * C;
+                glRotatef(-90 * from, 0, 1, 0);
+                glTranslatef(-0.5 + 0.5 * sin(move * C), 0, -0.5 + 0.5 * cos(move * C));
+                glRotatef(move, 0, 1, 0);
+                glScalef(0.1, 0.1, 0.1);
+                it->component->draw();
+                break;
+            }
+            case 3: { // corner CCW
+                move /= radius0 * C;
+                glRotatef(-90 * from, 0, 1, 0);
+                glTranslatef(-0.5 + 0.5 * sin(move * C), 0, 0.5 - 0.5 * cos(move * C));
+                glRotatef(-move, 0, 1, 0);
+                glScalef(0.1, 0.1, 0.1);
+                it->component->draw();
+                break;
+            }
+            case 2: { // straight
+                glRotatef(-90 * from, 0, 1, 0);
+                glTranslatef(move - 0.5, 0, 0);
+                glScalef(0.1, 0.1, 0.1);
+                it->component->draw();
+                break;
+            }
+        }
+        glPopMatrix();
+    }
 }
