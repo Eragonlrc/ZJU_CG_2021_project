@@ -146,6 +146,7 @@
     <ClCompile Include="src\belt.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\component.cpp" />
+    <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\skybox.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\vector.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="include\belt.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\component.h" />
+    <ClInclude Include="include\map.h" />
     <ClInclude Include="include\skybox.h" />
     <ClInclude Include="include\texture.h" />
     <ClInclude Include="include\vector.h" />

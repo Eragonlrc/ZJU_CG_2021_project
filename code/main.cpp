@@ -14,7 +14,6 @@ bool rightDown = 0;
 bool bEdit = false;	// 编辑模式，从y = 100俯视
 
 Map map;
-Belt obj;
 Camera camera;
 SkyBox sky;
 
@@ -41,9 +40,14 @@ void renderScene(void)
 
 	sky.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
 
-	obj.draw();
-	Belt::update();
+	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
+		Map::MapUnit mu = map.getMap(i);
+		if (mu.type >= MAP_BELT_CORNER0 && mu.type <= MAP_BELT_SINGLE) {
+			((Belt*)(mu.obj))->draw();
+		}
+	}
 
+	Belt::update();
 	glutSwapBuffers();
 }
 
@@ -110,21 +114,31 @@ void reshape(int w, int h)
 
 void init() {
 	Belt::init();
-	obj.pushPoint(-1, 0);
-	obj.pushPoint(0, 0);
-	obj.pushPoint(1, 0);
-	obj.pushPoint(1, 1);
-	obj.pushPoint(2, 1);
-	obj.pushPoint(2, 2);
-	obj.pushPoint(1, 2);
-	obj.pushPoint(1, 3);
-	obj.pushPoint(1, 4);
-	obj.pushPoint(0, 4);
-	obj.pushPoint(0, 3);
-	obj.pushPoint(0, 2);
-	obj.pushPoint(0, 1);
-	obj.pushPoint(-1, 1);
-	obj.pushPoint(-1, 0);
+
+	Belt* obj = new Belt();
+	obj->pushPoint(0, 0);
+	obj->pushPoint(1, 0);
+	obj->pushPoint(1, 1);
+	obj->pushPoint(2, 1);
+	obj->pushPoint(2, 2);
+	obj->pushPoint(1, 2);
+	obj->pushPoint(1, 3);
+	obj->pushPoint(1, 4);
+	obj->pushPoint(0, 4);
+	obj->pushPoint(0, 3);
+	obj->pushPoint(0, 2);
+	obj->pushPoint(0, 1);
+	obj->pushPoint(0, 0);
+	obj->updateMap();
+
+	obj->delPoint(0);
+	Belt* obj1 = obj->delPoint(3);
+	obj->delPoint(2);
+	//obj->print();
+	//obj1->print();
+	obj->merge(obj1);
+	obj->print();
+	obj->delPoint(1);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);
