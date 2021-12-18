@@ -1,25 +1,29 @@
 #include <math.h>
 #include"component.h"
 #include"gl/glut.h" 
-robot::robot()
+Robot::Robot()
 {
 	head_r = 1.7; body_l = 5; body_w = 5.4; body_h = 3; type = 1;
 	tran_x = 0; tran_y = 0; tran_z = 0;
 	arm_mul = 1; leg_mul = 1;
 }
 
-int robot::gettype()
+int Robot::gettype()
 {
 	return type;
 };
 
-void robot::settype(int t)
+void Robot::settype(int t)
 {
 	type = t;
 }
 
-void robot::draw()
+void Robot::draw()
 {
+	glPushMatrix();
+	glTranslatef(0, 0.5, 0);
+	glScalef(0.04, 0.04, 0.04);	// change the size to fit the belt
+	
 	if (type == 1) drawhead1();
 	if (type == 2) drawhead2();
 	
@@ -31,14 +35,15 @@ void robot::draw()
 	
 	if (type == 7) drawleg1();
 	if (type == 8) drawleg2();
+	glPopMatrix();
 }
 
-void robot::settranslate(double x,double y,double z)
+void Robot::settranslate(double x,double y,double z)
 {
 	tran_x = x; tran_y = y; tran_z = z;
 }
 
-void robot::drawhead1()
+void Robot::drawhead1()
 {
 	GLUquadric* pObj;
 	pObj = gluNewQuadric();
@@ -82,7 +87,7 @@ void robot::drawhead1()
 	
 };
 
-void robot::drawhead2()
+void Robot::drawhead2()
 {
 	glPushMatrix();
 	glTranslated(tran_x, tran_y, tran_z);
@@ -112,7 +117,7 @@ void robot::drawhead2()
 	glPopMatrix();
 };
 
-void robot::drawbody1()
+void Robot::drawbody1()
 {
 	glPushMatrix();
 	glTranslated(tran_x, tran_y, tran_z);
@@ -121,7 +126,7 @@ void robot::drawbody1()
 	glPopMatrix();
 }
 
-void robot::drawbody2()
+void Robot::drawbody2()
 {
 	glPushMatrix();
 	glTranslated(tran_x, tran_y, tran_z);
@@ -140,7 +145,7 @@ void robot::drawbody2()
 	glPopMatrix();
 }
 
-void robot::drawarm1()
+void Robot::drawarm1()
 {
 	glPushMatrix();
 	glTranslated(tran_x,tran_y,tran_z);
@@ -163,7 +168,7 @@ void robot::drawarm1()
 	glPopMatrix();
 };
 
-void robot::drawarm2()
+void Robot::drawarm2()
 {
 	glPushMatrix();
 	glTranslated(tran_x, tran_y, tran_z);
@@ -239,7 +244,7 @@ void robot::drawarm2()
 
 };
 
-void robot::drawleg1()
+void Robot::drawleg1()
 {
 	glPushMatrix();
 	glTranslated(tran_x, tran_y, tran_z);
@@ -254,7 +259,7 @@ void robot::drawleg1()
 	glPopMatrix();
 };
 
-void robot::drawleg2()
+void Robot::drawleg2()
 {
 	glPushMatrix();
 	glTranslated(tran_x,tran_y,tran_z);

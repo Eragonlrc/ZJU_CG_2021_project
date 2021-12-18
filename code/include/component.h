@@ -1,4 +1,4 @@
-class robot
+class Robot
 {
 private:
 	double head_r, tran_x, tran_y, tran_z;
@@ -7,7 +7,7 @@ private:
 	double  arm_mul, leg_mul;
 	;
 public:
-	robot();
+	Robot();
 	void draw();
 	void drawhead1();
 	void drawhead2();

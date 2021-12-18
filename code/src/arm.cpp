@@ -97,6 +97,7 @@ void Arm::DrawClaw() {
 
 void Arm::Draw() {
 	glPushMatrix();
+		glScalef(0.4, 0.4, 0.4);
 		DrawFoundation();
 		glPushMatrix();
 			glRotatef(arm1[0], 0, 1, 0);
