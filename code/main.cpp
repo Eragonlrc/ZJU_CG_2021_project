@@ -3,14 +3,17 @@
 #include <stdio.h>
 #include <math.h>
 #include <gl/glut.h>
+#include "map.h"
 #include "belt.h"
 #include "skybox.h"
 #include "camera.h"
+using namespace std;
 
 int OriX = -1, OriY = -1;
 bool rightDown = 0;
 bool bEdit = false;	// 编辑模式，从y = 100俯视
 
+Map map;
 Belt obj;
 Camera camera;
 SkyBox sky;
@@ -119,6 +122,9 @@ void init() {
 	obj.pushPoint(0, 4);
 	obj.pushPoint(0, 3);
 	obj.pushPoint(0, 2);
+	obj.pushPoint(0, 1);
+	obj.pushPoint(-1, 1);
+	obj.pushPoint(-1, 0);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);
