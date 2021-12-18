@@ -38,6 +38,9 @@ public:
     // 前后移动摄像机
     void moveCamera(float speed);
 
+    // 上下移动摄像机
+    void liftCamera(float speed);
+
     // 放置摄像机
     void setLook();
 

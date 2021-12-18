@@ -73,7 +73,7 @@ void Camera::setViewByMouse(){
 
     // 得到当前鼠标位置
     GetCursorPos(&mousePos);
-    ShowCursor(FALSE);
+    //ShowCursor(FALSE);
 
     // 如果鼠标没有移动,则不用更新
     if ((mousePos.x == middleX) && (mousePos.y == middleY))
@@ -174,7 +174,13 @@ void Camera::moveCamera(float speed)
     m_Center.z += vector.z * speed;
 }
 
-
+// 上下移动摄像机
+void Camera::liftCamera(float speed)
+{
+    int flag = (m_Position.y > m_Center.y) ? -1 : 1;// 判断向上还是向下
+    m_Position.y += speed * flag;
+    m_Center.y += speed * flag;
+}
 // 设置视点 
 void Camera::setLook()
 {
