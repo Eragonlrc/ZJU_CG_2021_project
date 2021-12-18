@@ -48,10 +48,23 @@ void renderScene(void)
 
 	sky.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
 
+	glBegin(GL_LINES);
+	glVertex3f(-100, 0, 0);
+	glVertex3f(100, 0, 0);
+	glVertex3f(0, 0, -100);
+	glVertex3f(0, 0, 100);
+	glEnd();
+
+	glPushMatrix();
+	glScalef(0.1, 0.1, 0.1);
+	component.draw();
+	glPopMatrix();
+
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
 		if (mu.type >= MAP_BELT_CORNER0 && mu.type <= MAP_BELT_SINGLE) {
 			((Belt*)(mu.obj))->draw();
+			((Belt*)(mu.obj))->updateComponents();
 		}
 	}
 
@@ -184,8 +197,44 @@ void init() {
 	//obj->print();
 	//obj1->print();
 	obj->merge(obj1);
-	obj->print();
-	obj->delPoint(1);
+	//obj->print();
+	obj->addComponent(new robot());
+
+	Belt* obj2 = new Belt();
+	obj2->pushPoint(5, 5);
+	obj2->pushPoint(6, 5);
+	obj2->pushPoint(7, 5);
+	obj2->pushPoint(7, 6);
+	obj2->pushPoint(7, 7);
+	obj2->pushPoint(6, 7);
+	obj2->pushPoint(5, 7);
+	obj2->pushPoint(5, 6);
+	obj2->pushPoint(5, 5);
+	obj2->updateMap();
+	obj2->addComponent(new robot());
+
+	Belt* obj3 = new Belt();
+	obj3->pushPoint(0, 6);
+	obj3->pushPoint(0, 7);
+	obj3->pushPoint(0, 8);
+	obj3->pushPoint(0, 9);
+	obj3->pushPoint(1, 9);
+	obj3->pushPoint(1, 8);
+	obj3->pushPoint(2, 8);
+	obj3->pushPoint(3, 8);
+	obj3->pushPoint(3, 9);
+	obj3->pushPoint(4, 9);
+	obj3->pushPoint(4, 8);
+	obj3->pushPoint(4, 7);
+	obj3->pushPoint(4, 6);
+	obj3->pushPoint(3, 6);
+	obj3->pushPoint(3, 7);
+	obj3->pushPoint(2, 7);
+	obj3->pushPoint(2, 6);
+	obj3->pushPoint(1, 6);
+	obj3->pushPoint(0, 6);
+	obj3->updateMap();
+	obj3->addComponent(new robot());
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);

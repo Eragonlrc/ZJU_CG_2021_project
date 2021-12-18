@@ -3,8 +3,20 @@
 #include <vector>
 #include "texture.h"
 #include "map.h"
+#include "component.h"
+
+#define BELT_LIST_STRAIGHT listid
+#define BELT_LIST_STRAIGHT_START (listid + 1)
+#define BELT_LIST_STRAIGHT_END (listid + 2)
+#define BELT_LIST_CORNERCW (listid + 3)
+#define BELT_LIST_CORNERCCW (listid + 4)
+#define BELT_LIST_END (listid + 5)
+#define BELT_LIST_SINGLE (listid + 6)
 
 class Belt{
+public:
+    typedef std::vector<Point> PointSet;
+    typedef std::vector<Point>::iterator PointInterator;
 private:
     static const float beltSpeed;
     static const float beltHeight;
@@ -16,14 +28,28 @@ private:
 private:
     static TexLoader texture;
     static float beltMove;
-    typedef std::vector<Point> PointSet;
-    typedef std::vector<Point>::iterator PointInterator;
+    static GLuint listid;
+
     PointSet points;
+
+    struct OnBeltComponent {
+        robot* component;
+        float move;
+        OnBeltComponent(robot* _component, float _move) : component(_component), move(_move) {}
+    };
+    std::vector<OnBeltComponent> components;
+private:
+    static void drawStraightFrame(bool start = 0, bool end = 0);
+    static void drawCornerCWFrame();
+    static void drawCornerCCWFrame();
+    static void drawEnd();
+    static void drawSingle();
+private:
+    void getDirection(int i, int& from, int& to);
+
     void drawStraight(bool start = 0, bool end = 0);
     void drawCornerCW();
     void drawCornerCCW();
-    void drawEnd();
-    void drawSingle();
 public:
     Belt();
     Belt(PointInterator begin, PointInterator end);
@@ -39,5 +65,9 @@ public:
 
     void draw();
     void print();
+public:
+    void updateComponents();
+    void addComponent(robot* component, int index = 0);
+    void drawComponents();
 };
 
