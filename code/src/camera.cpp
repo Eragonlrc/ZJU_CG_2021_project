@@ -10,7 +10,7 @@ Camera::Camera(){
     m_Position = zero;
     m_Center = view;
     m_UpVector = up;
-    m_Speed = 2.0f;
+    m_Speed = 0.1f;
 
 }
 
