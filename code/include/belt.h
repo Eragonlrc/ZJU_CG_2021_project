@@ -5,6 +5,14 @@
 #include "map.h"
 #include "component.h"
 
+#define BELT_LIST_STRAIGHT listid
+#define BELT_LIST_STRAIGHT_START (listid + 1)
+#define BELT_LIST_STRAIGHT_END (listid + 2)
+#define BELT_LIST_CORNERCW (listid + 3)
+#define BELT_LIST_CORNERCCW (listid + 4)
+#define BELT_LIST_END (listid + 5)
+#define BELT_LIST_SINGLE (listid + 6)
+
 class Belt{
 public:
     typedef std::vector<Point> PointSet;
@@ -20,6 +28,7 @@ private:
 private:
     static TexLoader texture;
     static float beltMove;
+    static GLuint listid;
 
     PointSet points;
 
@@ -30,13 +39,17 @@ private:
     };
     std::vector<OnBeltComponent> components;
 private:
+    static void drawStraightFrame(bool start = 0, bool end = 0);
+    static void drawCornerCWFrame();
+    static void drawCornerCCWFrame();
+    static void drawEnd();
+    static void drawSingle();
+private:
     void getDirection(int i, int& from, int& to);
 
     void drawStraight(bool start = 0, bool end = 0);
     void drawCornerCW();
     void drawCornerCCW();
-    void drawEnd();
-    void drawSingle();
 public:
     Belt();
     Belt(PointInterator begin, PointInterator end);
