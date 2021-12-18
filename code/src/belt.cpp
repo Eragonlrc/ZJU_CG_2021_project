@@ -30,26 +30,49 @@ void Belt::pushPoint(int z, int x) {
 }
 
 void Belt::draw() {
-    for (int i = 1; i < points.size() - 1; i++) {
+    for (int i = 0; i < points.size(); i++) {
         bool rev = 0;
         int from, to;
+        // check belt type
+        if (i != 0) {
+            if (points[i].first == points[i - 1].first) {
+                if (points[i].second > points[i - 1].second) from = 0;
+                else from = 2;
+            }
+            else {
+                if (points[i].first > points[i - 1].first) from = 1;
+                else from = 3;
+            }
+        }
+        if (i != points.size() - 1) {
+            if (points[i].first == points[i + 1].first) {
+                if (points[i].second > points[i + 1].second) to = 0;
+                else to = 2;
+            }
+            else {
+                if (points[i].first > points[i + 1].first) to = 1;
+                else to = 3;
+            }
+        }
+        if (i == 0) {
+            if (points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second) { // cycle, from depend on the second last belt
+                if (points[i].first == points[points.size() - 2].first) {
+                    if (points[i].second > points[points.size() - 2].second) from = 0;
+                    else from = 2;
+                }
+                else {
+                    if (points[i].first > points[points.size() - 2].first) from = 1;
+                    else from = 3;
+                }
+            }
+            else from = (to + 2) % 4; // no cycle, straight belt
+        }
+        else if (i == points.size() - 1) {
+            if (points[0].first == points[i].first && points[0].second == points[i].second) break; // cycle, skip the last belt
+            else to = (from + 2) % 4; // no cycle, straight belt
+        }
+        // draw belt
         glPushMatrix();
-        if (points[i].first == points[i - 1].first) {
-            if (points[i].second > points[i - 1].second) from = 0;
-            else from = 2;
-        }
-        else {
-            if (points[i].first > points[i - 1].first) from = 1;
-            else from = 3;
-        }
-        if (points[i].first == points[i + 1].first) {
-            if (points[i].second > points[i + 1].second) to = 0;
-            else to = 2;
-        }
-        else {
-            if (points[i].first > points[i + 1].first) to = 1;
-            else to = 3;
-        }
         glTranslatef(points[i].second, 0, points[i].first);
         glPushMatrix();
         switch ((to - from + 4) % 4) {
@@ -66,13 +89,14 @@ void Belt::draw() {
             }
         }
         glPopMatrix();
-        if (i == 1) {
+        // draw ending for first and last belt
+        if (i == 0) {
             glPushMatrix();
             glRotatef(-90 * from, 0, 1, 0);
             drawEnd();
             glPopMatrix();
         }
-        else if (i == points.size() - 2) {
+        else if (i == points.size() - 1) {
             glPushMatrix();
             glRotatef(-90 * to, 0, 1, 0);
             drawEnd();
