@@ -7,15 +7,24 @@
 #include "belt.h"
 #include "skybox.h"
 #include "camera.h"
+#include "arm.h"
+#include "component.h"
+
+#define MAX_ARM 10
+
 using namespace std;
 
 int OriX = -1, OriY = -1;
 bool rightDown = 0;
-bool bEdit = false;	// 编辑模式，从y = 100俯视
+bool bEdit = false;	// 编辑模式，从y = 10俯视
+float wWidth, wHeight;
 
 Map map;
+Belt belt;
 Camera camera;
 SkyBox sky;
+Arm arm[MAX_ARM];
+Robot robot;
 
 void renderScene(void)
 {
@@ -30,8 +39,7 @@ void renderScene(void)
 	GLfloat light_pos[] = { 5,5,5,1 };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, white);
+	glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, ambient_color);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
 
 	glEnable(GL_LIGHT0);
@@ -47,14 +55,51 @@ void renderScene(void)
 		}
 	}
 
-	Belt::update();
+	if(!bEdit)	Belt::update();	// 非编辑状态下，传送带移动
+
+	glPushMatrix();
+	glTranslatef(0, 0, 1);
+	robot.draw();
+	glPopMatrix();
+
+	arm[0].Draw();
+
 	glutSwapBuffers();
+}
+
+void updateView(float w, float h) {
+	static Vector3 position = Vector3(0, 1, 1);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
+	static Vector3 view = Vector3(0, 1, 0);
+	static Vector3 upVector = Vector3(0, 1, 0);
+	float ratio = w / h;
+	glViewport(0, 0, w, h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if (!bEdit) {	// 非编辑模式
+		camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
+		gluPerspective(45.0, ratio, 0.1, 4000.0);
+	}
+	else {	// 编辑模式
+		position = camera.getPosition();
+		view = camera.getView();
+		upVector = camera.getUpVector();
+		camera.setCamera(0, 10, 0, 0, 1, 0, 0, 0, -1);
+		glOrtho(-5 * ratio, 5 * ratio, -5, 5, -1, 10);
+	}
+	glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
+}
+
+void reshape(int w, int h)
+{
+	if (h == 0)	h = 1;
+	updateView(wWidth, wHeight);
 }
 
 void Mouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_RIGHT_BUTTON){
-		if(state == GLUT_DOWN){
+	if (button == GLUT_RIGHT_BUTTON) {
+		if (state == GLUT_DOWN) {
 			rightDown = 1;
 			OriX = x, OriY = y;
 		}
@@ -62,38 +107,48 @@ void Mouse(int button, int state, int x, int y)
 	}
 }
 
-void onMouseMove(int x, int y){
-	if(!bEdit)	// 非编辑模式下，视线随鼠标变化
+void onMouseMove(int x, int y) {
+	if (!bEdit) {	// 非编辑模式下，视线随鼠标变化
+		while (ShowCursor(FALSE) >= 0)	// 清除计数器，避免延迟隐藏鼠标
+			ShowCursor(FALSE);
 		camera.setViewByMouse();
+	}
+	else {
+		while (ShowCursor(TRUE) < 0)	// 清除计数器，避免延迟显示鼠标
+			ShowCursor(TRUE);
+	}
 
 	glutPostRedisplay();
 }
 
-void key(unsigned char k, int x, int y){
+void key(unsigned char k, int x, int y) {
 	switch (k) {
 	case 27:
 		exit(0);
 		break;
-	case '1':
-		camera.setSpeed(0.2f);
-		break;
-	case '2':
-		camera.setSpeed(1.0f);
-		break;
 	case 'w':
+		if (bEdit)	break;
 		camera.moveCamera(camera.getSpeed());
 		break;
 	case 's':
+		if (bEdit)	break;
 		camera.moveCamera(-camera.getSpeed());
 		break;
 	case 'a':
+		if (bEdit)	break;
 		camera.yawCamera(-camera.getSpeed());
 		break;
 	case 'd':
+		if (bEdit)	break;
 		camera.yawCamera(camera.getSpeed());
+		break;
+	case ' ':
+		if (bEdit)	break;
+		camera.liftCamera(camera.getSpeed());
 		break;
 	case 'e':
 		bEdit = !bEdit;
+		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
 		break;
 	}
 
@@ -101,18 +156,10 @@ void key(unsigned char k, int x, int y){
 	//printf("key::%d", key);
 }
 
-void reshape(int w, int h)
-{
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0, (float)w / h, 0.1, 4000.0);
-	// glOrtho(-3, 3, -3, 3, -1, 1000);
-	glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
-}
-
 void init() {
+	wWidth = glutGet(GLUT_SCREEN_WIDTH);
+	wHeight = glutGet(GLUT_SCREEN_HEIGHT);
+
 	Belt::init();
 
 	Belt* obj = new Belt();
@@ -154,6 +201,8 @@ void init() {
 	}
 
 	camera.setCamera(0, 1, 1, 0, 1, 0, 0, 1, 0);
+
+	Arm::init();
 }
 
 int main(int argc, char* argv[])
