@@ -11,7 +11,7 @@ private:
 	double  arm_mul, leg_mul;
 	;
 public:
-	Robot();
+	Robot(int type);
 	void draw();
 	void drawhead1();
 	void drawhead2();

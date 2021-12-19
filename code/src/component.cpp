@@ -1,8 +1,8 @@
 #include"component.h"
 
-Robot::Robot()
+Robot::Robot(int _type)
 {
-	head_r = 1.7; body_l = 5; body_w = 5.4; body_h = 3; type = 4;
+	head_r = 1.7; body_l = 5; body_w = 5.4; body_h = 3; type = _type;
 	tran_x = 0; tran_y = 0; tran_z = 0;
 	arm_mul = 1; leg_mul = 1;
 }
