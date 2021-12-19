@@ -2,7 +2,7 @@
 
 Robot::Robot()
 {
-	head_r = 1.7; body_l = 5; body_w = 5.4; body_h = 3; type = 1;
+	head_r = 1.7; body_l = 5; body_w = 5.4; body_h = 3; type = 4;
 	tran_x = 0; tran_y = 0; tran_z = 0;
 	arm_mul = 1; leg_mul = 1;
 }

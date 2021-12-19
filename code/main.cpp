@@ -49,15 +49,18 @@ void renderScene(void)
 	sky.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
 
 	glBegin(GL_LINES);
-	glVertex3f(-100, 0, 0);
-	glVertex3f(100, 0, 0);
-	glVertex3f(0, 0, -100);
-	glVertex3f(0, 0, 100);
+	for (int i = 0; i < 1000; i++) {
+		glVertex3f(100, 0, i);
+		glVertex3f(-100, 0, i);
+	}
+	for (int i = 0; i < 1000; i++) {
+		glVertex3f(i, 0, 100);
+		glVertex3f(i, 0, -100);
+	}
 	glEnd();
 
 	glPushMatrix();
-	glScalef(0.1, 0.1, 0.1);
-	robot.draw();
+	arm[0].Draw();
 	glPopMatrix();
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
