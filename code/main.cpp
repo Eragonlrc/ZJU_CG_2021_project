@@ -24,27 +24,29 @@ Belt belt;
 Camera camera;
 SkyBox sky;
 Arm arm[MAX_ARM];
-Robot robot;
+Robot robot(1);
 
 void renderScene(void)
 {
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
+
+	camera.setLook();
 
 	glEnable(GL_LIGHTING);
 
 	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat white[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_pos[] = { 5,5,5,1 };
+	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
+	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
+	GLfloat light_pos[] = { 0, 10, 0, 1 };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, ambient_color);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, white);
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_color);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
 
 	glEnable(GL_LIGHT0);
-
-	camera.setLook();
 
 	sky.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
 
@@ -58,6 +60,11 @@ void renderScene(void)
 		glVertex3f(i, 0, -100);
 	}
 	glEnd();
+
+	glEnable(GL_COLOR_MATERIAL);
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
+	glMaterialf(GL_FRONT, GL_SHININESS, 0.3);
+	//glColor3f(1, 0, 0);
 
 	glPushMatrix();
 	arm[0].Draw();
@@ -206,7 +213,7 @@ void init() {
 	//obj1->print();
 	obj->merge(obj1);
 	//obj->print();
-	obj->addComponent(new Robot());
+	obj->addComponent(new Robot(1));
 
 	Belt* obj2 = new Belt();
 	obj2->pushPoint(5, 5);
@@ -219,7 +226,7 @@ void init() {
 	obj2->pushPoint(5, 6);
 	obj2->pushPoint(5, 5);
 	obj2->updateMap();
-	obj2->addComponent(new Robot());
+	obj2->addComponent(new Robot(1));
 
 	Belt* obj3 = new Belt();
 	obj3->pushPoint(0, 6);
@@ -242,7 +249,7 @@ void init() {
 	obj3->pushPoint(1, 6);
 	obj3->pushPoint(0, 6);
 	obj3->updateMap();
-	obj3->addComponent(new Robot());
+	obj3->addComponent(new Robot(1));
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);
