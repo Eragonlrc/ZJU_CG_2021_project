@@ -205,11 +205,13 @@ void Belt::drawStraightFrame(bool start, bool end) {
     texture.bindTex(0);
     glBegin(GL_QUADS);
     // down
+    glNormal3f(0, -1, 0);
     glTexCoord2f(radius[0], startLen); glVertex3f(startLen, height[0], radius[0]);
     glTexCoord2f(radius[3], startLen); glVertex3f(startLen, height[0], radius[3]);
     glTexCoord2f(radius[3], endLen); glVertex3f(endLen, height[0], radius[3]);
     glTexCoord2f(radius[0], endLen); glVertex3f(endLen, height[0], radius[0]);
     // up
+    glNormal3f(0, 1, 0);
     for (int i = 0; i < 3; i++) {
         glTexCoord2f(radius[i], startLen); glVertex3f(startLen, height[i == 1 ? 1 : 2], radius[i]);
         glTexCoord2f(radius[i + 1], startLen); glVertex3f(startLen, height[i == 1 ? 1 : 2], radius[i + 1]);
@@ -218,6 +220,8 @@ void Belt::drawStraightFrame(bool start, bool end) {
     }
     // side
     for (int i = 0; i < 4; i++) {
+        if (i == 0 || i == 2) glNormal3f(0, 0, -1);
+        else glNormal3f(0, 0, 1);
         glTexCoord2f(height[2], startLen); glVertex3f(startLen, height[2], radius[i]);
         glTexCoord2f(height[2], endLen); glVertex3f(endLen, height[2], radius[i]);
         if (i == 0 || i == 3) {
@@ -238,6 +242,7 @@ void Belt::drawCornerCWFrame() {
     texture.bindTex(0);
     glBegin(GL_QUADS);
     // down
+    glNormal3f(0, -1, 0);
     for (float i = 0; i < 90; i += deltaAngle) {
         float rad[] = { i * C, (i + deltaAngle) * C };
         float seg[][2] = { {radius[0] * cos(rad[0]), radius[0] * sin(rad[0])},
@@ -254,6 +259,7 @@ void Belt::drawCornerCWFrame() {
         }
     }
     // up
+    glNormal3f(0, 1, 0);
     for (int k = 0; k < 3; k++) {
         for (float i = 0; i < 90; i += deltaAngle) {
             float rad[] = { i * C, (i + deltaAngle) * C };
@@ -277,6 +283,8 @@ void Belt::drawCornerCWFrame() {
             float rad[] = { i * C, (i + deltaAngle) * C };
             float seg[][2] = { {radius[k] * cos(rad[0]), radius[k] * sin(rad[0])},
                                {radius[k] * cos(rad[1]), radius[k] * sin(rad[1])} };
+            if (k == 0 || k == 2) glNormal3f(-sin((rad[0] + rad[1]) / 2), 0, -cos((rad[0] + rad[1]) / 2));
+            else glNormal3f(sin((rad[0] + rad[1]) / 2), 0, cos((rad[0] + rad[1]) / 2));
             glTexCoord2f(height[2], radius[k] * rad[0] - int(radius[k] * rad[0])); glVertex3f(seg[0][1], height[2], seg[0][0]);
             glTexCoord2f(height[2], radius[k] * rad[1] - int(radius[k] * rad[1])); glVertex3f(seg[1][1], height[2], seg[1][0]);
             if (k == 0 || k == 3) {
@@ -298,6 +306,7 @@ void Belt::drawCornerCCWFrame() {
     texture.bindTex(0);
     glBegin(GL_QUADS);
     // down
+    glNormal3f(0, -1, 0);
     for (float i = 0; i < 90; i += deltaAngle) {
         float rad[] = { i * C, (i + deltaAngle) * C };
         float seg[][2] = { {radius[0] * cos(rad[0]), radius[0] * sin(rad[0])},
@@ -314,6 +323,7 @@ void Belt::drawCornerCCWFrame() {
         }
     }
     // up
+    glNormal3f(0, 1, 0);
     for (int k = 0; k < 3; k++) {
         for (float i = 0; i < 90; i += deltaAngle) {
             float rad[] = { i * C, (i + deltaAngle) * C };
@@ -337,6 +347,8 @@ void Belt::drawCornerCCWFrame() {
             float rad[] = { i * C, (i + deltaAngle) * C };
             float seg[][2] = { {radius[k] * cos(rad[0]), radius[k] * sin(rad[0])},
                                {radius[k] * cos(rad[1]), radius[k] * sin(rad[1])} };
+            if (k == 0 || k == 2) glNormal3f(-sin((rad[0] + rad[1]) / 2), 0, cos((rad[0] + rad[1]) / 2));
+            else glNormal3f(sin((rad[0] + rad[1]) / 2), 0, -cos((rad[0] + rad[1]) / 2));
             glTexCoord2f(height[2], radius[k] * rad[0] - int(radius[k] * rad[0])); glVertex3f(seg[0][1], height[2], 1 - seg[0][0]);
             glTexCoord2f(height[2], radius[k] * rad[1] - int(radius[k] * rad[1])); glVertex3f(seg[1][1], height[2], 1 - seg[1][0]);
             if (k == 0 || k == 3) {
@@ -369,6 +381,7 @@ void Belt::drawStraight(bool start, bool end) {
     glEnable(GL_TEXTURE_2D);
     texture.bindTex(1);
     glBegin(GL_QUADS);
+    glNormal3f(0, 1, 0);
     if(_beltMove < startLen){
         glTexCoord2f(radius[2], endLen - _beltMove); glVertex3f(endLen, height[1] + beltHeight, radius[2]);
         glTexCoord2f(radius[1], endLen - _beltMove); glVertex3f(endLen, height[1] + beltHeight, radius[1]);
@@ -410,6 +423,7 @@ void Belt::drawCornerCW() {
     glEnable(GL_TEXTURE_2D);
     texture.bindTex(1);
     glBegin(GL_QUADS);
+    glNormal3f(0, 1, 0);
     for (float i = 0; i < 90; i += deltaAngle) {
         float rad[] = { i * C, (i + deltaAngle) * C };
         float texrad[2];
@@ -445,6 +459,7 @@ void Belt::drawCornerCCW() {
     glEnable(GL_TEXTURE_2D);
     texture.bindTex(1);
     glBegin(GL_QUADS);
+    glNormal3f(0, 1, 0);
     for (float i = 0; i < 90; i += deltaAngle) {
         float rad[] = { i * C, (i + deltaAngle) * C };
         float texrad[2];
@@ -477,6 +492,7 @@ void Belt::drawEnd() {
     // frame
     texture.bindTex(0);
     glBegin(GL_QUADS);
+    glNormal3f(-1, 0, 0);
 
     glTexCoord2f(height[0], radius[0]); glVertex3f(endCut, height[0], radius[0]);
     glTexCoord2f(height[0], radius[1]); glVertex3f(endCut, height[0], radius[1]);
@@ -508,11 +524,13 @@ void Belt::drawSingle() {
     texture.bindTex(0);
     glBegin(GL_QUADS);
     // down
+    glNormal3f(0, -1, 0);
     glTexCoord2f(0.5 - edge[1], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[0], 0.5 - edge[1]);
     glTexCoord2f(0.5 + edge[1], 0.5 - edge[1]); glVertex3f(0.5 + edge[1], height[0], 0.5 - edge[1]);
     glTexCoord2f(0.5 + edge[1], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[0], 0.5 + edge[1]);
     glTexCoord2f(0.5 - edge[1], 0.5 + edge[1]); glVertex3f(0.5 - edge[1], height[0], 0.5 + edge[1]);
     // up
+    glNormal3f(0, 1, 0);
     glTexCoord2f(0.5 - edge[1], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[2], 0.5 - edge[1]);
     glTexCoord2f(0.5 + edge[0], 0.5 - edge[1]); glVertex3f(0.5 + edge[0], height[2], 0.5 - edge[1]);
     glTexCoord2f(0.5 + edge[0], 0.5 - edge[0]); glVertex3f(0.5 + edge[0], height[2], 0.5 - edge[0]);
@@ -533,46 +551,55 @@ void Belt::drawSingle() {
     glTexCoord2f(0.5 - edge[0], 0.5 + edge[1]); glVertex3f(0.5 - edge[0], height[2], 0.5 + edge[1]);
     glTexCoord2f(0.5 - edge[1], 0.5 + edge[1]); glVertex3f(0.5 - edge[1], height[2], 0.5 + edge[1]);
     // middle
+    glNormal3f(0, 1, 0);
     glTexCoord2f(0.5 - edge[0], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[1], 0.5 - edge[0]);
     glTexCoord2f(0.5 + edge[0], 0.5 - edge[0]); glVertex3f(0.5 + edge[0], height[1], 0.5 - edge[0]);
     glTexCoord2f(0.5 + edge[0], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[1], 0.5 + edge[0]);
     glTexCoord2f(0.5 - edge[0], 0.5 + edge[0]); glVertex3f(0.5 - edge[0], height[1], 0.5 + edge[0]);
     // outside
+    glNormal3f(-1, 0, 0);
     glTexCoord2f(height[0], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[0], 0.5 - edge[1]);
     glTexCoord2f(height[0], 0.5 + edge[1]); glVertex3f(0.5 - edge[1], height[0], 0.5 + edge[1]);
     glTexCoord2f(height[2], 0.5 + edge[1]); glVertex3f(0.5 - edge[1], height[2], 0.5 + edge[1]);
     glTexCoord2f(height[2], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[2], 0.5 - edge[1]);
 
+    glNormal3f(0, 0, 1);
     glTexCoord2f(height[0], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[0], 0.5 + edge[1]);
     glTexCoord2f(height[0], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[0], 0.5 + edge[1]);
     glTexCoord2f(height[2], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[2], 0.5 + edge[1]);
     glTexCoord2f(height[2], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[2], 0.5 + edge[1]);
 
+    glNormal3f(1, 0, 0);
     glTexCoord2f(height[0], 0.5 - edge[1]); glVertex3f(0.5 + edge[1], height[0], 0.5 - edge[1]);
     glTexCoord2f(height[0], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[0], 0.5 + edge[1]);
     glTexCoord2f(height[2], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[2], 0.5 + edge[1]);
     glTexCoord2f(height[2], 0.5 - edge[1]); glVertex3f(0.5 + edge[1], height[2], 0.5 - edge[1]);
 
+    glNormal3f(0, 0, 1);
     glTexCoord2f(height[0], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[0], 0.5 - edge[1]);
     glTexCoord2f(height[0], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[0], 0.5 - edge[1]);
     glTexCoord2f(height[2], 0.5 + edge[1]); glVertex3f(0.5 + edge[1], height[2], 0.5 - edge[1]);
     glTexCoord2f(height[2], 0.5 - edge[1]); glVertex3f(0.5 - edge[1], height[2], 0.5 - edge[1]);
     // inside
+    glNormal3f(1, 0, 0);
     glTexCoord2f(height[0], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[1], 0.5 - edge[0]);
     glTexCoord2f(height[0], 0.5 + edge[0]); glVertex3f(0.5 - edge[0], height[1], 0.5 + edge[0]);
     glTexCoord2f(height[2], 0.5 + edge[0]); glVertex3f(0.5 - edge[0], height[2], 0.5 + edge[0]);
     glTexCoord2f(height[2], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[2], 0.5 - edge[0]);
 
+    glNormal3f(0, 0, -1);
     glTexCoord2f(height[0], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[1], 0.5 + edge[0]);
     glTexCoord2f(height[0], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[1], 0.5 + edge[0]);
     glTexCoord2f(height[2], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[2], 0.5 + edge[0]);
     glTexCoord2f(height[2], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[2], 0.5 + edge[0]);
 
+    glNormal3f(-1, 0, 0);
     glTexCoord2f(height[0], 0.5 - edge[0]); glVertex3f(0.5 + edge[0], height[1], 0.5 - edge[0]);
     glTexCoord2f(height[0], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[1], 0.5 + edge[0]);
     glTexCoord2f(height[2], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[2], 0.5 + edge[0]);
     glTexCoord2f(height[2], 0.5 - edge[0]); glVertex3f(0.5 + edge[0], height[2], 0.5 - edge[0]);
 
+    glNormal3f(0, 0, 1);
     glTexCoord2f(height[0], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[1], 0.5 - edge[0]);
     glTexCoord2f(height[0], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[1], 0.5 - edge[0]);
     glTexCoord2f(height[2], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[2], 0.5 - edge[0]);
@@ -582,6 +609,7 @@ void Belt::drawSingle() {
     // belt
     texture.bindTex(1);
     glBegin(GL_QUADS);
+    glNormal3f(0, 1, 0);
     glTexCoord2f(0.5 - edge[0], 0.5 - edge[0]); glVertex3f(0.5 - edge[0], height[1] + beltHeight, 0.5 - edge[0]);
     glTexCoord2f(0.5 + edge[0], 0.5 - edge[0]); glVertex3f(0.5 + edge[0], height[1] + beltHeight, 0.5 - edge[0]);
     glTexCoord2f(0.5 + edge[0], 0.5 + edge[0]); glVertex3f(0.5 + edge[0], height[1] + beltHeight, 0.5 + edge[0]);

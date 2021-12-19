@@ -44,11 +44,13 @@ void renderScene(void)
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_color);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
+	//glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
 
 	glEnable(GL_LIGHT0);
 
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	sky.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glBegin(GL_LINES);
 	for (int i = 0; i < 1000; i++) {
@@ -62,8 +64,8 @@ void renderScene(void)
 	glEnd();
 
 	glEnable(GL_COLOR_MATERIAL);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
-	glMaterialf(GL_FRONT, GL_SHININESS, 0.3);
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
+	//glMaterialf(GL_FRONT, GL_SHININESS, 0.3);
 	//glColor3f(1, 0, 0);
 
 	glPushMatrix();
@@ -91,6 +93,7 @@ void renderScene(void)
 		if (mousePos.y >= (wHeight - 5))	// обрф
 			camera.zCamera(camera.getSpeed());
 	}
+	glDisable(GL_COLOR_MATERIAL);
 	glutSwapBuffers();
 }
 
