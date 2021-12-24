@@ -6,46 +6,91 @@
 float Arm::arm1[] = { 0.0, -20.0 };
 float Arm::arm2[] = { 0.0, -35.0 };
 float Arm::arm3[] = { 0.0, -15.0 };
-float Arm::clawAngle = 45.0;
-const float Arm::c = PI / 180;
+float Arm::clawAngle = 55.0;
+int Arm::state = 0;
+int Arm::from = 0;
+int Arm::to = 0;
+int Arm::phase = 0;
+int Arm::x = 0;
+int Arm::y = 0;
+int Arm::tx = 0;
+int Arm::ty = 0;
+bool Arm::showAttachment = false;
+int Arm::clockWise = 1;
+Robot* robot = NULL;
 
 Arm::Arm() = default;
 
-void Arm::init() {
-
+void Arm::init(int dx, int dy, int f, int t) {
+	x = dx;
+	y = dy;
+	switch (t)
+	{
+	case 0: {tx = x + 1; ty = y; break; }
+	case 1: {tx = x; ty = y + 1; break; }
+	case 2: {tx = x - 1; ty = y; break; }
+	case 3: {tx = x; ty = y - 1; break; }
+	default: break;
+	}
+	from = f;
+	to = t;
+	arm1[0] = f * 90.0;
+	state = 0;
+	phase = 0;
+	if (t - f == 1 || (t == 0 && f == 4)) clockWise = -1;
 }
 
-void Arm::update(int comp, int type, float deg) {
-	if (comp == 1) {
-		arm1[type] += deg;
-		if (arm1[0] > 180) arm1[0] = 179.9;
-		if (arm1[0] < -180) arm1[0] = -179.9;
-		if (arm1[1] > 15.0) arm1[1] = 14.9;
-		if (arm1[1] < -30.0) arm1[1] = -29.9;
-		//printf("update(%d, %d, %.1f); %.1f\n", comp, type, deg, arm1[type]);
+void Arm::update() {
+	/*
+		state	operation
+		0		ready
+		1		bend
+		2		fetch
+		3		lift
+		4		rotate
+		5		release
+	*/
+	if (state == 1) {
+		if (abs(arm1[1] - 3.0) > 0.05)	arm1[1] += 0.2;
+		else if (abs(arm3[1] - (-28.0)) > 0.05) arm3[1] -= 0.2;
+		else if (abs(arm2[1] - (-3.0)) > 0.05) arm2[1] += 0.2;
+		else if (phase == 0) {
+			state = 2;
+			phase = 1;
+		}
+		else {
+			state = 5;
+			phase = 0;
+		}
 	}
-	if (comp == 2) {
-		arm2[type] += deg;
-		if (arm2[0] > 60.0) arm2[0] = 59.9;
-		if (arm2[0] < -60.0) arm2[0] = -59.9;
-		if (arm2[1] > 0.0) arm2[1] = -0.1;
-		if (arm2[1] < -50.0) arm2[1] = -49.9;
-		//printf("update(%d, %d, %.1f); %.1f\n", comp, type, deg, arm2[type]);
+	if (state == 2) {
+		if (clawAngle > 30.0) clawAngle -= 1.0;
+		else {
+			state = 3;
+			showAttachment = true;
+		}
 	}
-	if (comp == 3) {
-		arm3[type] += deg;
-		if (arm3[0] > 60.0) arm3[0] = 59.9;
-		if (arm3[0] < -60.0) arm3[0] = -59.9;
-		if (arm3[1] > 10.0) arm3[1] = 9.9;
-		if (arm3[1] < -45.0) arm3[1] = -44.9;
-		//printf("update(%d, %d, %.1f); %.1f\n", comp, type, deg, arm3[type]);
+	if (state == 3) {
+		if (abs(arm1[1] - (-20.0)) > 0.05)	arm1[1] -= 0.2;
+		else if (abs(arm2[1] - (-35.0)) > 0.05) arm2[1] -= 0.2;
+		else if (abs(arm3[1] - (-15.0)) > 0.05) arm3[1] += 0.2;
+		else state = 4;
 	}
-	if (comp == 4) {
-		clawAngle += deg;
-		if (clawAngle > 70.0) clawAngle = 69.9;
-		if (clawAngle < 30.0) clawAngle = 30.1;
-		//printf("update(%d, %d, %.1f); %.1f\n", comp, type, deg, clawAngle);
+	if (state == 4) {
+		if (abs(arm1[0] - to * 90) > 0.5 || (to == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] -= clockWise * 0.5;
+		else state = 1;
 	}
+	if (state == 5) {
+		if (clawAngle < 60.0) clawAngle += 1.0;
+		else {
+			state = 0;
+			showAttachment = false;
+		}
+	}
+	if (arm1[0] > 360.0)	arm1[0] -= 360.0;
+	if (arm1[0] < 0)	arm1[0] += 360.0;
+	if (arm2[0] > 360.0)	arm2[0] -= 360.0;
+	if (arm3[0] > 360.0)	arm3[0] -= 360.0;
 }
 
 void Arm::DrawFoundation() {
@@ -96,8 +141,10 @@ void Arm::DrawClaw() {
 }
 
 void Arm::Draw() {
+	update();
 	glPushMatrix();
-		glScalef(0.4, 0.4, 0.4);
+		glTranslatef(0.0, 0.2, 0.0);
+		glScalef(0.6, 0.6, 0.6);
 		DrawFoundation();
 		glPushMatrix();
 			glRotatef(arm1[0], 0, 1, 0);
@@ -118,9 +165,32 @@ void Arm::Draw() {
 						DrawArm3();
 						glTranslatef(0.0, 0.0, 0.7);
 						DrawClaw();
+						if (robot != NULL && showAttachment == true) {
+							glTranslatef(0.0, -0.05, 0.4);
+							(*robot).draw();
+							glTranslatef(0.0, 0.05, -0.4);
+						}
 					glPopMatrix();
 				glPopMatrix();
 			glPopMatrix();
 		glPopMatrix();
+		glTranslatef(0.0, -0.2, 0.0);
 	glPopMatrix();
+}
+
+void Arm::activate() {
+	state = 1;
+}
+
+void Arm::Attach(Robot* rbt){
+	robot = rbt;
+}
+
+int Arm::getState() {
+	return state;
+}
+
+Robot* Arm::getAttached()
+{
+	return robot;
 }
