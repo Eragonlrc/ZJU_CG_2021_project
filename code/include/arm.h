@@ -6,24 +6,23 @@
 
 class Arm {
 private:
-	static float arm1[];
-	static float arm2[];
-	static float arm3[];
-	static float clawAngle;
-	static int state;
-	static int phase;
-	static int from;
-	static int to;
-	static int x;
-	static int y;
-	static int tx;
-	static int ty;
-	static bool showAttachment;
-	static int clockWise;
+	float arm1[2];
+	float arm2[2];
+	float arm3[2];
+	float clawAngle;
+	int state;
+	int phase;
+	int from;
+	int to;
+	int x;
+	int y;
+	int tx;
+	int ty;
+	bool showAttachment;
+	int clockWise;
 	Robot* robot;
 public:
-	Arm();
-	static void init(int dx, int dy, int f, int t);
+	Arm(int dx, int dy, int f, int t);
 	void update();
 	void DrawFoundation();
 	void DrawJoint1();
@@ -34,6 +33,7 @@ public:
 	void Draw();
 	void Attach(Robot* rbt);
 	void activate();
+	int getDirection();
 	Robot* getAttached();
 	int getState();
 };

@@ -1,29 +1,23 @@
 #include "arm.h"
 #include <math.h>
-#define PI 3.1415926
-#define L 2.0
 
-float Arm::arm1[] = { 0.0, -20.0 };
-float Arm::arm2[] = { 0.0, -35.0 };
-float Arm::arm3[] = { 0.0, -15.0 };
-float Arm::clawAngle = 55.0;
-int Arm::state = 0;
-int Arm::from = 0;
-int Arm::to = 0;
-int Arm::phase = 0;
-int Arm::x = 0;
-int Arm::y = 0;
-int Arm::tx = 0;
-int Arm::ty = 0;
-bool Arm::showAttachment = false;
-int Arm::clockWise = 1;
-Robot* robot = NULL;
-
-Arm::Arm() = default;
-
-void Arm::init(int dx, int dy, int f, int t) {
+Arm::Arm(int dx, int dy, int f, int t) {
 	x = dx;
 	y = dy;
+	state = 0;
+	from = f;
+	to = t;
+	phase = 0;
+	arm1[0] = f * 90.0;
+	arm1[1] = -20.0;
+	arm2[0] = 0.0;
+	arm2[1] = -35.0;
+	arm3[0] = 0.0;
+	arm3[1] = -15.0;
+	clawAngle = 55.0;
+	showAttachment = false;
+	clockWise = 1;
+	robot = NULL;
 	switch (t)
 	{
 	case 0: {tx = x + 1; ty = y; break; }
@@ -32,11 +26,6 @@ void Arm::init(int dx, int dy, int f, int t) {
 	case 3: {tx = x; ty = y - 1; break; }
 	default: break;
 	}
-	from = f;
-	to = t;
-	arm1[0] = f * 90.0;
-	state = 0;
-	phase = 0;
 	if (t - f == 1 || (t == 0 && f == 4)) clockWise = -1;
 }
 
@@ -50,12 +39,6 @@ void Arm::update() {
 		4		rotate
 		5		release
 	*/
-	if (state == 0) {
-		if (abs(arm1[1] - (-20.0)) > 0.05)	arm1[1] -= 0.2;
-		else if (abs(arm2[1] - (-35.0)) > 0.05) arm2[1] -= 0.2;
-		else if (abs(arm3[1] - (-15.0)) > 0.05) arm3[1] += 0.2;
-		if (abs(arm1[0] - from * 90) > 0.5 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] += clockWise * 0.5;
-	}
 	if (state == 1) {
 		if (abs(arm3[1] - (-28.0)) > 0.05) arm3[1] -= 0.2;
 		else if (abs(arm1[1] - 3.0) > 0.05)	arm1[1] += 0.2;
@@ -89,9 +72,16 @@ void Arm::update() {
 	if (state == 5) {
 		if (clawAngle < 60.0) clawAngle += 1.0;
 		else {
-			state = 0;
+			state = 6;
 			showAttachment = false;
 		}
+	}
+	if (state == 6) {
+		if (abs(arm1[1] - (-20.0)) > 0.05)	arm1[1] -= 0.2;
+		else if (abs(arm2[1] - (-35.0)) > 0.05) arm2[1] -= 0.2;
+		else if (abs(arm3[1] - (-15.0)) > 0.05) arm3[1] += 0.2;
+		if (abs(arm1[0] - from * 90) > 1.0 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] += clockWise * 0.5;
+		if (!(abs(arm1[0] - from * 90) > 1.0 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))&&(!(abs(arm3[1] - (-15.0)) > 0.05))) state = 0;
 	}
 	if (arm1[0] > 360.0)	arm1[0] -= 360.0;
 	if (arm1[0] < 0)	arm1[0] += 360.0;
@@ -194,6 +184,10 @@ void Arm::Attach(Robot* rbt){
 
 int Arm::getState() {
 	return state;
+}
+
+int Arm::getDirection() {
+	return from;
 }
 
 Robot* Arm::getAttached()
