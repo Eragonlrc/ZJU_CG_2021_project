@@ -143,8 +143,10 @@
   <ItemGroup>
     <ClInclude Include="include\arm.h" />
     <ClInclude Include="include\belt.h" />
+    <ClInclude Include="include\box.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\component.h" />
+    <ClInclude Include="include\edit.h" />
     <ClInclude Include="include\map.h" />
     <ClInclude Include="include\skybox.h" />
     <ClInclude Include="include\texture.h" />
@@ -154,8 +156,10 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\arm.cpp" />
     <ClCompile Include="src\belt.cpp" />
+    <ClCompile Include="src\box.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\component.cpp" />
+    <ClCompile Include="src\edit.cpp" />
     <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\skybox.cpp" />
     <ClCompile Include="src\texture.cpp" />
