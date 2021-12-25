@@ -628,21 +628,70 @@ Belt* Belt::delPoint(int index) {
     if (points.size() == 1) return NULL;
     else if (points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second) { // loop
         if (index == 0 || index == points.size() - 1) { // delete ending points
+            // delete components on the ending point
+            std::vector<OnBeltComponent>::iterator it = components.begin();
+            while (it != components.end() && it->move < 1) ++it;
+            components.erase(components.begin(), it);
+            // delete ending point
             points.pop_back();
             points.erase(points.begin());
         }
         else { // split in the middle, rearrange points
+            // delete components on the index point
+            std::vector<OnBeltComponent>::iterator it1 = components.begin(), it2;
+            while (it1 != components.end() && it1->move < index) ++it1;
+            it2 = it1;
+            while (it2 != components.end() && it2->move < index + 1) ++it2;
+            it1 = components.erase(it1, it2);
+            // change offsets of remaining components
+            std::vector<OnBeltComponent> tmpvec(components.begin(), it1);
+            components.erase(components.begin(), it1);
+            for (int i = 0; i < tmpvec.size(); i++) {
+                tmpvec[i].move += components.size();
+            }
+            for (int i = 0; i < components.size(); i++) {
+                components[i].move -= index + 1;
+            }
+            components.insert(components.end(), tmpvec.begin(), tmpvec.end());
+            // delete the index point and rearrange
             points.pop_back();
             PointSet tmp(points.begin() + index + 1, points.end());
             points.erase(points.begin() + index, points.end());
             points.insert(points.begin(), tmp.begin(), tmp.end());
         }
     }
-    else if (index == 0) points.erase(points.begin()); // delete first point
-    else if (index == points.size() - 1) points.pop_back(); // delete last point
+    else if (index == 0) { // delete first point
+        // delete components on the first point
+        std::vector<OnBeltComponent>::iterator it = components.begin();
+        while (it != components.end() && it->move < 1) ++it;
+        components.erase(components.begin(), it);
+        // delete first point
+        points.erase(points.begin());
+    }
+    else if (index == points.size() - 1) { // delete last point
+        // delete components on the last point
+        std::vector<OnBeltComponent>::iterator it = components.begin();
+        while (it != components.end() && it->move < index) ++it;
+        components.erase(it, components.end());
+        // delete last point
+        points.pop_back();
+    }
     else { // split into two belts
+        // split belt
         newBelt = new Belt(points.begin() + index + 1, points.end());
         points.erase(points.begin() + index, points.end());
+        // delete components on the index point
+        std::vector<OnBeltComponent>::iterator it1 = components.begin(), it2;
+        while (it1 != components.end() && it1->move < index) ++it1;
+        it2 = it1;
+        while (it2 != components.end() && it2->move < index + 1) ++it2;
+        it1 = components.erase(it1, it2);
+        // change offsets of remaining components
+        newBelt->components = std::vector<OnBeltComponent>(it1, components.end());
+        for (int i = 0; i < newBelt->components.size(); i++) {
+            newBelt->components[i].move -= index + 1;
+        }
+        components.erase(it1, components.end());
     }
     updateMap();
     if (newBelt) newBelt->updateMap();
@@ -651,14 +700,18 @@ Belt* Belt::delPoint(int index) {
 
 void Belt::merge(Belt* belt) {
     int oriSize = points.size();
+    for (int i = 0; i < belt->components.size(); i++) {
+        belt->components[i].move += points.size();
+    }
+    components.insert(components.end(), belt->components.begin(), belt->components.end());
     points.insert(points.end(), belt->points.begin(), belt->points.end());
-    delete belt; // destroy belt
+    delete belt; // delete belt
     updateMap(oriSize); // update merged part in map
 }
 
 void Belt::updateComponents() {
     static const int mapOffset[][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
-    for (std::vector<OnBeltComponent>::iterator it = components.begin(); it != components.end(); it++) {
+    for (std::vector<OnBeltComponent>::iterator it = components.begin(); it != components.end();) {
         // update position
         if(points.size() > 1) it->move += beltSpeed;
         // check border
@@ -671,6 +724,7 @@ void Belt::updateComponents() {
         }
         int index = it->move;
         float _move = it->move - index;
+        bool erased = 0;
         // call arm
         if (_move >= 0.5 - beltSpeed && _move <= 0.5 + beltSpeed) {
             for (int i = 0; i < 4; i++) {
@@ -679,18 +733,20 @@ void Belt::updateComponents() {
                     Arm* arm = (Arm*)(neighbor.obj);
                     if (arm->getState() == 0 && arm->getDirection() == i) {
                         arm->Attach(it->component);
+                        arm->activate();
                         it = components.erase(it);
-                        --it;
+                        erased = 1;
                     }
                 }
             }
         }
+        if (!erased) ++it;
     }
 }
 
 void Belt::addComponent(Robot* component, int index) {
     std::vector<OnBeltComponent>::iterator it;
-    float move = index == 0 ? endCut : index;
+    float move = index + 0.5;
     for (it = components.begin(); it != components.end(); it++) {
         if (it->move > move) break;
     }

@@ -23,7 +23,6 @@ Map map;
 Belt belt;
 Camera camera;
 SkyBox sky;
-Arm arm[MAX_ARM];
 Robot robot(1);
 
 void renderScene(void)
@@ -69,7 +68,6 @@ void renderScene(void)
 	//glColor3f(1, 0, 0);
 
 	glPushMatrix();
-	arm[0].Draw();
 	glPopMatrix();
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
@@ -77,6 +75,9 @@ void renderScene(void)
 		if (mu.type >= MAP_BELT_CORNER0 && mu.type <= MAP_BELT_SINGLE) {
 			((Belt*)(mu.obj))->draw();
 			((Belt*)(mu.obj))->updateComponents();
+		}
+		else if (mu.type == MAP_ARM) {
+			((Arm*)(mu.obj))->Draw();
 		}
 	}
 
@@ -269,7 +270,8 @@ void init() {
 
 	camera.setCamera(0, 1, 1, 0, 1, 0, 0, 1, 0);
 
-	Arm::init();
+	Arm* arm = new Arm(0, 0, 1, 2);
+	map.write(0, 0, MAP_ARM, arm);
 }
 
 int main(int argc, char* argv[])

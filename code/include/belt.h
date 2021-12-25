@@ -61,7 +61,7 @@ public:
     void pushPoint(int z, int x);
     void updateMap(int begin = 0, int end = -1); // update points of index [begin, end) in map
     Belt* delPoint(int index);      // delete a point, return a new Belt object if one forms
-    void merge(Belt *belt);         // merge belt after current object, destroy belt
+    void merge(Belt *belt);         // merge belt after current object, delete belt
 
     void draw();
     void print();
