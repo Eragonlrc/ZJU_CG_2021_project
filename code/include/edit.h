@@ -1,7 +1,6 @@
 #pragma once
 #include "map.h"
 #include "belt.h"
-#include <vector>
 
 #define EDITOR_MODE_BELT 0
 #define EDITOR_MODE_ARM 1
@@ -10,13 +9,23 @@
 class Editor {
 private:
 	int mode;
+	void* current;
+private: // belt
+	Belt* prevBelt, * nextBelt;
+	int firstIllegalBelt;
 public:
-	int getMode();
-	void startDrawing();
-	void endDrawing();
+	Editor();
+	void draw();
 
-	void beltStartDrawing();
+	int getMode();
+	void changeMode(int _mode);
+
+	bool startDrawing(int z, int x);
+	bool endDrawing(bool cancel);
+
+	bool beltStartDrawing(int z, int x);
 	void beltAddPoint(int z, int x);
-	void beltEndDrawing();
+	void beltUndoPoint();
+	bool beltEndDrawing(bool cancel);
 
 };

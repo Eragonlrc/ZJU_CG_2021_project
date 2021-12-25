@@ -9,6 +9,7 @@
 #include "camera.h"
 #include "arm.h"
 #include "component.h"
+#include "edit.h"
 
 #define MAX_ARM 10
 
@@ -20,10 +21,9 @@ bool bEdit = false;	// 编辑模式，从y = 10俯视
 int wWidth, wHeight;
 
 Map map;
-Belt belt;
 Camera camera;
 SkyBox sky;
-Robot robot(1);
+Editor editor;
 
 void renderScene(void)
 {
@@ -72,7 +72,7 @@ void renderScene(void)
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
-		if (mu.type >= MAP_BELT_CORNER0 && mu.type <= MAP_BELT_SINGLE) {
+		if (MAP_ISBELT(mu.type)) {
 			((Belt*)(mu.obj))->draw();
 			((Belt*)(mu.obj))->updateComponents();
 		}
@@ -231,6 +231,7 @@ void init() {
 	obj2->pushPoint(5, 5);
 	obj2->updateMap();
 	obj2->addComponent(new Robot(1));
+	obj2->setColor(BELT_COLOR_WARNING);
 
 	Belt* obj3 = new Belt();
 	obj3->pushPoint(0, 6);
@@ -254,6 +255,7 @@ void init() {
 	obj3->pushPoint(0, 6);
 	obj3->updateMap();
 	obj3->addComponent(new Robot(1));
+	obj3->setColor(BELT_COLOR_DRAWING);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);

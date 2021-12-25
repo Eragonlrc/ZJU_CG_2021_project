@@ -18,12 +18,29 @@ const float Belt::deltaAngle = 0.1;
 const float Belt::endCut = 0.05;
 GLuint Belt::listid;
 
-Belt::Belt() = default;
-Belt::Belt(PointInterator begin, PointInterator end) : points(begin, end) {}
+const float Belt::colorDefault[] = { 1, 1, 1 };
+const float Belt::colorDrawing[] = { 0, 1, 0 };
+const float Belt::colorWarning[] = { 1, 0, 0 };
+
+Belt::Belt() : color(BELT_COLOR_DEFAULT) {}
+Belt::Belt(PointInterator begin, PointInterator end) : points(begin, end), color(BELT_COLOR_DEFAULT) {}
 Belt::~Belt() {
     for (int i = 0; i < points.size(); i++) { // delete belt from map
         map.write(points[0].first, points[0].second, MAP_BLANK, NULL, i);
     }
+}
+
+int Belt::getLength() {
+    return points.size();
+}
+
+Point Belt::getPoint(int index) {
+    if (index >= points.size()) return POINTNULL;
+    return points[index];
+}
+
+void Belt::setColor(int _color) {
+    color = _color;
 }
 
 void Belt::print() {
@@ -77,6 +94,10 @@ void Belt::update() {
 
 void Belt::pushPoint(int z, int x) {
     points.push_back(Point(z, x));
+}
+
+void Belt::undoPoint() {
+    points.pop_back();
 }
 
 void Belt::getDirection(int i, int& from, int& to) {
@@ -150,6 +171,11 @@ void Belt::updateMap(int begin, int end) {
 void Belt::draw() {
     bool loop = points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second;
     drawComponents();
+    switch (color) {
+        case BELT_COLOR_DEFAULT: glColor3fv(colorDefault); break;
+        case BELT_COLOR_DRAWING: glColor3fv(colorDrawing); break;
+        case BELT_COLOR_WARNING: glColor3fv(colorWarning); break;
+    }
     if (points.size() == 1) { // single belt
         glPushMatrix();
         glTranslatef(points[0].second, 0, points[0].first);
@@ -196,6 +222,7 @@ void Belt::draw() {
         }
         glPopMatrix();
     }
+    glColor3fv(colorDefault);
 }
 
 void Belt::drawStraightFrame(bool start, bool end) {
