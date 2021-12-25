@@ -76,6 +76,7 @@ void Arm::update() {
 	if (state == 5) {
 		if (clawAngle < 60.0) clawAngle += 1.0;
 		else {
+			updateItem();
 			state = 6;
 			showAttachment = false;
 		}
@@ -147,6 +148,7 @@ void Arm::DrawClaw() {
 void Arm::Draw() {
 	update();
 	glPushMatrix();
+		glTranslatef(y, 0, x);
 		glTranslatef(0.0, 0.2, 0.0);
 		glScalef(0.6, 0.6, 0.6);
 		DrawFoundation();
@@ -204,6 +206,7 @@ Robot* Arm::getAttached()
 }
 
 void Arm::updateItem() {
-	if (map.getMap(x, y).type >= 0 && map.getMap(x, y).type <= 7)
-		belt.addComponent(robot, map.getMap(x,y).i);
+	Map::MapUnit mu = map.getMap(tx, ty);
+	if (MAP_ISBELT(mu.type))
+		((Belt*)(mu.obj))->addComponent(robot, mu.i);
 }

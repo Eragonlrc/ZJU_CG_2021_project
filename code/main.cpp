@@ -272,8 +272,8 @@ void init() {
 
 	camera.setCamera(0, 1, 1, 0, 1, 0, 0, 1, 0);
 
-	Arm* arm = new Arm(0, 0, 1, 2);
-	map.write(0, 0, MAP_ARM, arm);
+	Arm* arm = new Arm(0, 5, 3, 1);
+	map.write(0, 5, MAP_ARM, arm);
 }
 
 int main(int argc, char* argv[])
