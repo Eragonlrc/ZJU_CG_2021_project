@@ -1,6 +1,7 @@
 #include "belt.h"
 #include "texture.h"
 #include "map.h"
+#include "arm.h"
 #include <math.h>
 static const float C = acos(-1) / 180;
 
@@ -656,8 +657,11 @@ void Belt::merge(Belt* belt) {
 }
 
 void Belt::updateComponents() {
+    static const int mapOffset[][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
     for (std::vector<OnBeltComponent>::iterator it = components.begin(); it != components.end(); it++) {
+        // update position
         if(points.size() > 1) it->move += beltSpeed;
+        // check border
         if (points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second && it->move >= points.size() - 1)
             it->move -= points.size() - 1; // loop
         else if (it->move >= points.size() - endCut) { // exceeds belt length, drop the component
@@ -666,7 +670,21 @@ void Belt::updateComponents() {
             break;
         }
         int index = it->move;
+        float _move = it->move - index;
         // call arm
+        if (_move >= 0.5 - beltSpeed && _move <= 0.5 + beltSpeed) {
+            for (int i = 0; i < 4; i++) {
+                Map::MapUnit neighbor = map.getMap(points[index].first + mapOffset[i][0], points[index].second + mapOffset[i][1]);
+                if (neighbor.type == MAP_ARM) {
+                    Arm* arm = (Arm*)(neighbor.obj);
+                    if (arm->getState() == 0 && arm->getDirection() == i) {
+                        arm->Attach(it->component);
+                        it = components.erase(it);
+                        --it;
+                    }
+                }
+            }
+        }
     }
 }
 
