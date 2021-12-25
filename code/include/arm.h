@@ -1,5 +1,7 @@
 #pragma once
 #include "component.h"
+#include "belt.h"
+#include "map.h"
 #include <gl/glut.h>
 #include <vector>
 #include <math.h>
@@ -36,4 +38,5 @@ public:
 	int getDirection();
 	Robot* getAttached();
 	int getState();
+	void updateItem();
 };

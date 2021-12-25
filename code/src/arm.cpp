@@ -1,6 +1,9 @@
 #include "arm.h"
 #include <math.h>
 
+extern Map map;
+extern Belt belt;
+
 Arm::Arm(int dx, int dy, int f, int t) {
 	x = dx;
 	y = dy;
@@ -9,11 +12,11 @@ Arm::Arm(int dx, int dy, int f, int t) {
 	to = t;
 	phase = 0;
 	arm1[0] = f * 90.0;
-	arm1[1] = -20.0;
+	arm1[1] = 3.0;
 	arm2[0] = 0.0;
-	arm2[1] = -35.0;
+	arm2[1] = -3.0;
 	arm3[0] = 0.0;
-	arm3[1] = -15.0;
+	arm3[1] = -28.0;
 	clawAngle = 55.0;
 	showAttachment = false;
 	clockWise = 1;
@@ -32,12 +35,13 @@ Arm::Arm(int dx, int dy, int f, int t) {
 void Arm::update() {
 	/*
 		state	operation
-		0		ready(reset)
+		0		ready
 		1		bend
 		2		fetch
 		3		lift
 		4		rotate
 		5		release
+		6 and 7	reset
 	*/
 	if (state == 1) {
 		if (abs(arm3[1] - (-28.0)) > 0.05) arm3[1] -= 0.2;
@@ -77,10 +81,14 @@ void Arm::update() {
 		}
 	}
 	if (state == 6) {
-		if (abs(arm1[1] - (-20.0)) > 0.05)	arm1[1] -= 0.2;
-		else if (abs(arm2[1] - (-35.0)) > 0.05) arm2[1] -= 0.2;
-		else if (abs(arm3[1] - (-15.0)) > 0.05) arm3[1] += 0.2;
-		if (abs(arm1[0] - from * 90) > 1.0 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] += clockWise * 0.5;
+		if (abs(arm1[1] - (-20.0)) > 0.05) arm1[1] -= 0.2;
+		else if(abs(arm1[0] - from * 90) > 1.0 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] += clockWise * 0.5;
+		else state = 7;
+	}
+	if (state == 7) {
+		if (abs(arm1[1] - 3.0) > 0.05)	arm1[1] += 0.2;
+		else if (abs(arm2[1] - (-3.0)) > 0.05) arm2[1] += 0.2;
+		else if (abs(arm3[1] - (-28.0)) > 0.05) arm3[1] += 0.2;
 		if (!(abs(arm1[0] - from * 90) > 1.0 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))&&(!(abs(arm3[1] - (-15.0)) > 0.05))) state = 0;
 	}
 	if (arm1[0] > 360.0)	arm1[0] -= 360.0;
@@ -193,4 +201,9 @@ int Arm::getDirection() {
 Robot* Arm::getAttached()
 {
 	return robot;
+}
+
+void Arm::updateItem() {
+	if (map.getMap(x, y).type >= 0 && map.getMap(x, y).type <= 7)
+		belt.addComponent(robot, map.getMap(x,y).i);
 }
