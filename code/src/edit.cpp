@@ -90,7 +90,7 @@ void Editor::beltUndoPoint() {
 
 bool Editor::beltEndDrawing(bool cancel) {
 	Belt* belt = (Belt*)current;
-	if (cancel) {
+	if (cancel) { // cancel drawing
 		if (nextBelt) {
 			nextBelt->setColor(BELT_COLOR_DEFAULT);
 			nextBelt = NULL;
@@ -108,16 +108,16 @@ bool Editor::beltEndDrawing(bool cancel) {
 		firstIllegalBelt = -1;
 		return 1;
 	}
-	if (firstIllegalBelt != -1) return 0;
-	else {
-		belt->updateMap();
+	if (firstIllegalBelt != -1) return 0; // illegal points exist
+	else { // normally finish drawing
+		belt->updateMap(); // update map to actual belt
 		belt->setColor(BELT_COLOR_DEFAULT);
-		if (nextBelt) {
+		if (nextBelt) { // merge with next belt
 			nextBelt->setColor(BELT_COLOR_DEFAULT);
 			belt->merge(nextBelt);
 			nextBelt = NULL;
 		}
-		if (prevBelt) {
+		if (prevBelt) { // merge with previous belt
 			prevBelt->setColor(BELT_COLOR_DEFAULT);
 			prevBelt->merge(nextBelt);
 			prevBelt = NULL;
