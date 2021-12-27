@@ -763,6 +763,7 @@ void Belt::updateComponents() {
                         arm->activate();
                         it = components.erase(it);
                         erased = 1;
+                        break;
                     }
                 }
             }
