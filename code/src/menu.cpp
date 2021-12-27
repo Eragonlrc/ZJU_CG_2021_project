@@ -50,9 +50,9 @@ void Menu::draw() {
 }
 
 int Menu::click(float mouseX, float mouseY) {
-
+	return 0;
 }
 
 int Menu::getStatus() {
-
+	return 0;
 }

@@ -9,7 +9,7 @@ SkyBox::~SkyBox(){
 }
 
 // 天空盒初始化 
-bool SkyBox::Init(){
+bool SkyBox::init(){
     char filename[128];                                         // 用来保存文件名 
     char bmpName[6][128] = { "back","front","bottom","top","left","right" };
     texture.genTex();
@@ -38,26 +38,22 @@ bool SkyBox::Init(){
 }
 
 // 构造天空盒 
-void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box_height, float box_length){
-    const unsigned int MAP_WIDTH = 1024;
-    const unsigned int CELL_WIDTH = 16;
-    const unsigned int MAP = MAP_WIDTH * CELL_WIDTH / 2;
-
+void  SkyBox::createSkyBox(float x, float y, float z, float box_width, float box_height, float box_length){
     // 获得场景中光照状态 
-    //GLboolean lp;
-    //glGetBooleanv(GL_LIGHT0, &lp);
+    GLboolean lp;
+    glGetBooleanv(GL_LIGHT0, &lp);
 
     // 计算天空盒长 宽 高 
-    float width = MAP * box_width / 8;
-    float height = MAP * box_height / 8;
-    float length = MAP * box_length / 8;
+    float width = BOX_SIZE * box_width;
+    float height = BOX_SIZE * box_height;
+    float length = BOX_SIZE * box_length;
 
     // 半长 半宽 半高
     float w = width / 2;
     float h = height / 2;
     float l = length / 2;
 
-    //glDisable(GL_LIGHT0);            // 关闭光照 
+    glDisable(GL_LIGHT0);            // 关闭光照 
 
     // 开始绘制 
     glEnable(GL_TEXTURE_2D);
@@ -142,6 +138,6 @@ void  SkyBox::CreateSkyBox(float x, float y, float z, float box_width, float box
 
     glPopMatrix();                 // 绘制结束 
     glDisable(GL_TEXTURE_2D);
-    //if (lp)                         // 恢复光照状态 
-    //    glEnable(GL_LIGHT0);
+    if (lp)                         // 恢复光照状态 
+        glEnable(GL_LIGHT0);
 }

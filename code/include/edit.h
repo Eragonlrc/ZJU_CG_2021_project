@@ -1,6 +1,7 @@
 #pragma once
 #include "map.h"
 #include "belt.h"
+#include "skybox.h"
 
 #define EDITOR_MODE_BELT 0
 #define EDITOR_MODE_ARM 1
@@ -19,6 +20,7 @@ public:
 
 	int getMode();
 	void changeMode(int _mode);
+	void drawMesh();
 
 	bool startDrawing(int z, int x);
 	bool endDrawing(bool cancel);
