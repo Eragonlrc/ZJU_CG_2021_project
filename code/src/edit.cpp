@@ -14,12 +14,13 @@ void Editor::changeMode(int _mode) {
 }
 
 void Editor::drawMesh() {
+	float i;
 	glBegin(GL_LINES);
-	for (int i = 0; i < BOX_SIZE; i++) {
+	for (i = -0.5; i < BOX_SIZE; i += 1) {
 		glVertex3f(0, 0, i);
 		glVertex3f(BOX_SIZE, 0, i);
 	}
-	for (int i = 0; i < BOX_SIZE; i++) {
+	for (i = -0.5; i < BOX_SIZE; i++) {
 		glVertex3f(i, 0, 0);
 		glVertex3f(i, 0, BOX_SIZE);
 	}

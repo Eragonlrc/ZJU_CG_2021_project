@@ -1,9 +1,9 @@
 #include "map.h"
 
 Map::MapUnit::MapUnit() : type(MAP_BLANK), i(0), obj(0),
-						  prev(POINTNULL), next(POINTNULL){}
+prev(POINTNULL), next(POINTNULL) {}
 
-Map::Map() : firstObj(POINTNULL), lastObj(POINTNULL){}
+Map::Map() : firstObj(POINTNULL), lastObj(POINTNULL) {}
 
 Map::MapUnit Map::getMap(int z, int x) {
 	/*z += MAP_MAXZ, x += MAP_MAXX;*/
@@ -49,5 +49,5 @@ bool Map::write(int z, int x, int type, const void* obj, int index) {
 	return 1;
 }
 
-Point Map::getFirst() {return firstObj;}
-Point Map::getLast() {return lastObj;}
+Point Map::getFirst() { return firstObj; }
+Point Map::getLast() { return lastObj; }

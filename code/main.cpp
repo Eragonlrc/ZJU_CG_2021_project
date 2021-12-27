@@ -106,9 +106,7 @@ void updateView(float w, float h) {
 		view = camera.getView();
 		upVector = camera.getUpVector();
 		camera.setCamera(position.x, 10, position.z, position.x, 1, position.z, 0, 0, -1);
-		printf("%f %f %f\n", camera.getView().x, camera.getView().y, camera.getView().z);
-		//gluPerspective(45.0, ratio, 0.1, 400);	// 透视投影yyds
-		glOrtho(position.x - 5 * ratio, position.x + 5 * ratio, position.z - 5, position.z + 5, 0.1, 400);	// 正交投影为什么会对不准中心啊
+		glOrtho(-5 * ratio, 5 * ratio, -5, 5, 0.1, 400);
 	}
 	glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
