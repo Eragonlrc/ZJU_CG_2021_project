@@ -759,7 +759,7 @@ void Belt::updateComponents() {
                 if (neighbor.type == MAP_ARM) {
                     Arm* arm = (Arm*)(neighbor.obj);
                     if (arm->getState() == 0 && arm->getDirection() == i) {
-                        arm->Attach(it->component);
+                        arm->attach(it->component);
                         arm->activate();
                         it = components.erase(it);
                         erased = 1;

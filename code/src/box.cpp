@@ -1,4 +1,4 @@
-#include"../include/box.h"
+#include"box.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
@@ -12,28 +12,28 @@ void Box::init()
 	t.genTex();
 	t.loadTex(0, "textures/iron.bmp");
 	t.loadTex(1, "textures/belt.bmp");
-	add_robot();
-	settype(1);
+	addRobot();
+	setType(1);
 }
 
 Box::Box() = default;
 
-void Box::delete_robot()
+void Box::deleteRobot()
 {
 	has_r = 0;
 }
 
-void Box::setrtype(int r_typ)
+void Box::setRType(int r_typ)
 {
-	r.settype(r_typ);
+	r.setType(r_typ);
 }
 
-int Box::getrtype()
+int Box::getRType()
 {
-	return r.gettype();
+	return r.getType();
 }
 
-void Box::settype(int b_typ)
+void Box::setType(int b_typ)
 {
 	typ = b_typ;
 	if (typ == 1)
@@ -57,16 +57,16 @@ void Box::settype(int b_typ)
 	}
 }
 
-void Box::add_robot()
+void Box::addRobot()
 {
 	has_r = 1;
 }
 
-void Box::receive_robot()
+void Box::receiveRobot()
 {
 	for (int i = 0; i < 6; i++)
 	{
-		if (need[i] == r.gettype())
+		if (need[i] == r.getType())
 		{
 			cneedt--;
 			need[i] = 0;
@@ -78,7 +78,7 @@ void Box::receive_robot()
 
 void Box::draw()
 {
-	r.settranslate(tran_x, tran_y + y + tran_y2, tran_z);
+	r.setTranslate(tran_x, tran_y + y + tran_y2, tran_z);
 
 	glEnable(GL_TEXTURE_2D);
 	t.bindTex(0);
@@ -146,9 +146,9 @@ void Box::draw()
 		{
 			if (tran_y2 < -y * 1.4)
 			{
-				add_robot();
+				addRobot();
 				srand((unsigned)time(NULL));
-				setrtype(rand() % 8 + 1);
+				setRType(rand() % 8 + 1);
 			}
 			else tran_y2 -= 0.01;
 		}
@@ -156,14 +156,14 @@ void Box::draw()
 
 	if (typ == 2)
 	{
-		drawwholerobot();
+		drawWholeRobot();
 		if (has_r == 1)
 		{
 			r.draw();
 			if (tran_y2 < -y * 1.4)
 			{
-				delete_robot();
-				receive_robot();
+				deleteRobot();
+				receiveRobot();
 			}
 			else tran_y2 -= 0.01;
 		}
@@ -174,34 +174,34 @@ void Box::draw()
 	}
 }
 
-void Box::drawwholerobot()  //还需调整位置，发现部件的比例不对 
+void Box::drawWholeRobot()  //还需调整位置，发现部件的比例不对 
 {
 	Robot rr;
 
-	rr.settype(need[0]);
-	rr.settranslate(tran_x -0.8, tran_y+0.2, tran_z);
+	rr.setType(need[0]);
+	rr.setTranslate(tran_x -0.8, tran_y+0.2, tran_z);
 	rr.draw();
 
-	rr.settype(need[1]);
-	rr.settranslate(tran_x - 0.8, tran_y, tran_z);
+	rr.setType(need[1]);
+	rr.setTranslate(tran_x - 0.8, tran_y, tran_z);
 	rr.draw();
 
-	rr.settype(need[2]);
-	rr.settranslate(tran_x - 1.2, tran_y, tran_z);
+	rr.setType(need[2]);
+	rr.setTranslate(tran_x - 1.2, tran_y, tran_z);
 	rr.draw();
 
-	rr.settype(need[3]);
-	rr.settranslate(tran_x + 0.4, tran_y, tran_z);
+	rr.setType(need[3]);
+	rr.setTranslate(tran_x + 0.4, tran_y, tran_z);
 	rr.draw();
 
-	rr.settype(need[4]);
-	rr.settranslate(tran_x - 0.8, tran_y-0.2, tran_z);
+	rr.setType(need[4]);
+	rr.setTranslate(tran_x - 0.8, tran_y-0.2, tran_z);
 	rr.draw();
 
 	if (need[5] != 8)
 	{
-		rr.settype(need[5]);
-		rr.settranslate(tran_x - 0.8, tran_y-0.2, tran_z);
+		rr.setType(need[5]);
+		rr.setTranslate(tran_x - 0.8, tran_y-0.2, tran_z);
 		rr.draw();
 	}
 	

@@ -98,36 +98,36 @@ void Arm::update() {
 	if (arm3[0] > 360.0)	arm3[0] -= 360.0;
 }
 
-void Arm::DrawFoundation() {
+void Arm::drawFoundation() {
 	glScalef(1.0, 0.4, 1.0);
 	glutSolidCube(0.7);
 	glScalef(1.0, 2.5, 1.0);
 }
 
-void Arm::DrawJoint1() {
+void Arm::drawJoint1() {
 	glTranslatef(0.0, 0.15, 0.0);
 	glutSolidSphere(0.3, 20, 20);
 	glTranslatef(0.0, -0.15, 0.0);
 }
 
-void Arm::DrawArm1() {
+void Arm::drawArm1() {
 	GLUquadricObj* objCylinder = gluNewQuadric();
 	gluCylinder(objCylinder, 0.23, 0.18, 1.2, 100, 100);
 }
 
-void Arm::DrawArm2() {
+void Arm::drawArm2() {
 	glutSolidSphere(0.27, 20, 20);
 	GLUquadricObj* objCylinder = gluNewQuadric();
 	gluCylinder(objCylinder, 0.18, 0.15, 1.0, 100, 100);
 }
 
-void Arm::DrawArm3() {
+void Arm::drawArm3() {
 	glutSolidSphere(0.25, 20, 20);
 	GLUquadricObj* objCylinder = gluNewQuadric();
 	gluCylinder(objCylinder, 0.18, 0.12, 0.7, 100, 100);
 }
 
-void Arm::DrawClaw() {
+void Arm::drawClaw() {
 	glutSolidSphere(0.12, 20, 20);
 	for (int i = 0; i < 3; i++) {
 		glPushMatrix();
@@ -145,32 +145,32 @@ void Arm::DrawClaw() {
 	}
 }
 
-void Arm::Draw() {
+void Arm::draw() {
 	update();
 	glPushMatrix();
 		glTranslatef(y, 0, x);
 		glTranslatef(0.0, 0.2, 0.0);
 		glScalef(0.6, 0.6, 0.6);
-		DrawFoundation();
+		drawFoundation();
 		glPushMatrix();
 			glRotatef(arm1[0], 0, 1, 0);
-			DrawJoint1();
+			drawJoint1();
 			glPushMatrix();
 				glTranslatef(0.0, 0.1, 0.0);
 				glRotatef(arm1[1] - 90, 1, 0, 0);
-				DrawArm1();
+				drawArm1();
 				glPushMatrix();
 					glTranslatef(0.0, 0.0, 1.2);
 					glRotatef(arm2[0], 0, 0, 1);
 					glRotatef(arm2[1] + 90, 1, 0, 0);
-					DrawArm2();
+					drawArm2();
 					glPushMatrix();
 						glTranslatef(0.0, 0.0, 1.0);
 						glRotatef(arm3[0], 0, 0, 1);
 						glRotatef(arm3[1] + 90, 1, 0, 0);
-						DrawArm3();
+						drawArm3();
 						glTranslatef(0.0, 0.0, 0.7);
-						DrawClaw();
+						drawClaw();
 						if (robot != NULL && showAttachment == true) {
 							glTranslatef(0.0, -0.05, 0.4);
 							(*robot).draw();
@@ -188,7 +188,7 @@ void Arm::activate() {
 	state = 1;
 }
 
-void Arm::Attach(Robot* rbt){
+void Arm::attach(Robot* rbt){
 	robot = rbt;
 }
 

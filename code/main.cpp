@@ -67,7 +67,7 @@ void renderScene(void)
 			((Belt*)(mu.obj))->updateComponents();
 		}
 		else if (mu.type == MAP_ARM) {
-			((Arm*)(mu.obj))->Draw();
+			((Arm*)(mu.obj))->draw();
 		}
 	}
 
