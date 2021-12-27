@@ -20,7 +20,7 @@ public:
 
 	int getMode();
 	void changeMode(int _mode);
-	void drawMesh();
+	void drawMesh(int z, int x);
 
 	bool startDrawing(int z, int x);
 	bool endDrawing(bool cancel);

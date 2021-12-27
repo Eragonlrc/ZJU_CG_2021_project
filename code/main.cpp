@@ -10,14 +10,17 @@
 #include "arm.h"
 #include "component.h"
 #include "edit.h"
+#include "box.h"
 
 #define MAX_ARM 10
 
 using namespace std;
 
-int OriX = -1, OriY = -1;
+int clickX = 0, clickZ = 0;
+int moveX = 0, moveZ = 0;
 bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
+bool bBelt = false, bArm = false;	// 传送带、机械臂的绘制开关，必须在编辑模式下
 int wWidth, wHeight;
 
 Map map;
@@ -69,6 +72,9 @@ void renderScene(void)
 		else if (mu.type == MAP_ARM) {
 			((Arm*)(mu.obj))->draw();
 		}
+		else if (mu.type == MAP_BOX) {
+			((Box*)(mu.obj))->draw();
+		}
 	}
 
 	Belt::update();
@@ -83,7 +89,7 @@ void renderScene(void)
 			camera.xCamera(camera.getSpeed());
 		if (mousePos.y >= (wHeight - 5))	// 下移
 			camera.zCamera(camera.getSpeed());
-		editor.drawMesh();
+		editor.drawMesh(moveZ, moveX);
 	}
 	glDisable(GL_COLOR_MATERIAL);
 	glutSwapBuffers();
@@ -124,15 +130,19 @@ void Mouse(int button, int state, int x, int y)
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
 			leftDown = true;
-			OriX = x, OriY = y;
-			printf("%d %d\n", (int)(camera.getPosition().z + (y - wHeight / 2) / unit), (int)(camera.getPosition().x + (x - wWidth / 2)) / unit);
-			//editor.beltAddPoint((int)(camera.getPosition().z + (y - wHeight / 2) / unit), (int)(camera.getPosition().x + (x - wWidth / 2)) / unit);
+			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);	// 根据鼠标位置计算网格的算法有待优化
+			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
+			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 		}
 		else leftDown = false;
 	}
 }
 
 void onMouseMove(int x, int y) {
+	int unit = wHeight / 10;
+	moveX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
+	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
+
 	if (!bEdit) {	// 非编辑模式下，视线随鼠标变化
 		while (ShowCursor(FALSE) >= 0)	// 清除计数器，避免延迟隐藏鼠标
 			ShowCursor(FALSE);
@@ -174,6 +184,10 @@ void key(unsigned char k, int x, int y) {
 	case 'e':
 		bEdit = !bEdit;
 		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
+		break;
+	case 'b':
+		if (!bEdit) break;
+		bBelt = !bBelt;
 		break;
 	}
 
