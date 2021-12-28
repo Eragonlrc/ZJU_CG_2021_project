@@ -8,7 +8,6 @@
 #include "skybox.h"
 #include "camera.h"
 #include "arm.h"
-#include "component.h"
 #include "edit.h"
 #include "box.h"
 
@@ -20,7 +19,6 @@ int clickX = 0, clickZ = 0;
 int moveX = 0, moveZ = 0;
 bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
-bool bBelt = false, bArm = false;	// 传送带、机械臂的绘制开关，必须在编辑模式下
 int wWidth, wHeight;	// 屏幕宽高
 
 Map map;
@@ -190,11 +188,15 @@ void key(unsigned char k, int x, int y) {
 		break;
 	case '1':
 		if (!bEdit) break;
-		bBelt = !bBelt;
+		editor.changeMode(EDITOR_MODE_BELT);
 		break;
 	case '2':
 		if (!bEdit)	break;
-		bArm = !bArm;
+		editor.changeMode(EDITOR_MODE_ARM);
+		break;
+	case '3':
+		if (!bEdit)	break;
+		editor.changeMode(EDITOR_MODE_DELETE);
 		break;
 	}
 

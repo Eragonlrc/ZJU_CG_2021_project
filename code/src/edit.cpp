@@ -2,6 +2,17 @@
 
 extern Map map;
 
+void Editor::draw() {
+	switch (mode) {
+	case EDITOR_MODE_BELT:
+		((Belt*)current)->draw();
+		break;
+	case EDITOR_MODE_ARM:
+		((Arm*)current)->draw();
+		break;
+	}
+}
+
 Editor::Editor() : mode(EDITOR_MODE_BELT), current(NULL),
 				   prevBelt(NULL), nextBelt(NULL), firstIllegalBelt(-1) {}
 
@@ -146,14 +157,52 @@ bool Editor::beltEndDrawing(bool cancel) {
 	}
 }
 
-bool Editor::armPreDrawing(int z, int x) {
+bool beltDelete(int z, int x) {
 	return 0;
 }
 
-bool Editor::armDrawing(int z, int x) {
+bool Editor::armStartDrawing(int z, int x) {
+	current = new Arm(z, x, 0, 0);
+	Arm* arm = (Arm *)current;
+	Map::MapUnit mu = map.getMap(z, x);
+	arm->setColor(ARM_COLOR_DRAWING);
+	if (mu.type != MAP_BLANK) return 0;		// 如果当前网格非空，绘制失败
 	return 0;
 }
 
-void Editor::boxDrawing(int z, int x) {
+void Editor::armSetFrom(int z, int x) {
+	Arm* arm = (Arm*)current;
+	Point pos = arm->getPosition();
+	if (z == pos.first - 1 && x == pos.second)	arm->setFrom(2);	// 上
+	if (z == pos.first + 1 && x == pos.second)	arm->setFrom(0);	// 下
+	if (z == pos.first && x == pos.second - 1)	arm->setFrom(3);	// 左
+	if (z == pos.first && x == pos.second + 1)	arm->setFrom(1);	// 右
+}
 
+void Editor::armSetTo(int z, int x) {
+	Arm* arm = (Arm*)current;
+	Point pos = arm->getPosition();
+	if (z == pos.first - 1 && x == pos.second)	arm->setTo(2);	// 上
+	if (z == pos.first + 1 && x == pos.second)	arm->setTo(0);	// 下
+	if (z == pos.first && x == pos.second - 1)	arm->setTo(3);	// 左
+	if (z == pos.first && x == pos.second + 1)	arm->setTo(1);	// 右
+}
+
+bool Editor::armEndDrawing(bool cancel) {
+	Arm* arm = (Arm*)current;
+	if (cancel) {
+		delete arm;
+		current = NULL;
+		return 1;
+	}
+	else {
+		arm->setColor(ARM_COLOR_DEFAULT);
+		current = NULL;
+	}
+	return 1;
+}
+
+bool Editor::armDelete(int z, int x) {
+
+	return 0;
 }

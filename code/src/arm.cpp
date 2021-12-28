@@ -148,6 +148,11 @@ void Arm::drawClaw() {
 void Arm::draw() {
 	update();
 	glPushMatrix();
+		switch (color) {
+		case ARM_COLOR_DEFAULT: glColor3f(1.0, 1.0, 1.0); break;
+		case ARM_COLOR_DRAWING: glColor3f(0.0, 1.0, 0.0); break;
+		case ARM_COLOR_WARNING: glColor3f(1.0, 0.0, 0.0); break;
+		}
 		glTranslatef(y, 0, x);
 		glTranslatef(0.0, 0.2, 0.0);
 		glScalef(0.6, 0.6, 0.6);
@@ -181,6 +186,7 @@ void Arm::draw() {
 			glPopMatrix();
 		glPopMatrix();
 		glTranslatef(0.0, -0.2, 0.0);
+		glColor3f(1.0, 1.0, 1.0);	// »Ö¸´°×É«
 	glPopMatrix();
 }
 
@@ -196,6 +202,10 @@ int Arm::getState() {
 	return state;
 }
 
+Point Arm::getPosition() {
+	return Point(x, y);
+}
+
 int Arm::getDirection() {
 	return from;
 }
@@ -209,4 +219,16 @@ void Arm::updateItem() {
 	Map::MapUnit mu = map.getMap(tx, ty);
 	if (MAP_ISBELT(mu.type))
 		((Belt*)(mu.obj))->addComponent(robot, mu.i);
+}
+
+void Arm::setColor(int c) {
+	color = c;
+}
+
+void Arm::setFrom(int f) {
+	from = f;
+}
+
+void Arm::setTo(int t) {
+	to = t;
 }

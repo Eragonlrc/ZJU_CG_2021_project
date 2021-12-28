@@ -1,6 +1,7 @@
 #include "camera.h"
 
-Camera::Camera(){
+Camera::Camera()
+{
     // 初始化向量值
     Vector3 zero = Vector3(0.0, 0.0, 0.0);
     Vector3 view = Vector3(0.0, 1.0, 0.5);
@@ -33,7 +34,8 @@ void Camera::setCamera(float positionX, float positionY, float positionZ,
 }
 
 //  旋转摄像机方向
-void Camera::rotateView(float angle, float x, float y, float z){
+void Camera::rotateView(float angle, float x, float y, float z)
+{
     Vector3 newView;
 
     // 计算方向向量
@@ -93,13 +95,11 @@ void Camera::setViewByMouse(){
     currentRotX += angleZ;
 
     // 如果上下旋转弧度大于1.0,我们截取到1.0并旋转 
-    if (currentRotX > 1.0f)
-    {
+    if (currentRotX > 1.0f){
         currentRotX = 1.0f;
 
         // 根据保存的角度旋转方向 
-        if (lastRotX != 1.0f)
-        {
+        if (lastRotX != 1.0f){
             // 通过叉积找到与旋转方向垂直的向量 
             Vector3 vAxis = m_Center - m_Position;
             vAxis = vAxis.crossProduct(m_UpVector);
@@ -110,12 +110,10 @@ void Camera::setViewByMouse(){
         }
     }
     // 如果旋转弧度小于-1.0,则也截取到-1.0并旋转 
-    else if (currentRotX < -1.0f)
-    {
+    else if (currentRotX < -1.0f){
         currentRotX = -1.0f;
 
-        if (lastRotX != -1.0f)
-        {
+        if (lastRotX != -1.0f){
 
             // 通过叉积找到与旋转方向垂直的向量 
             Vector3 vAxis = m_Center - m_Position;
@@ -127,8 +125,7 @@ void Camera::setViewByMouse(){
         }
     }
     // 否则就旋转angleZ度 
-    else
-    {
+    else{
         // 找到与旋转方向垂直向量 
         Vector3 vAxis = m_Center - m_Position;
         vAxis = vAxis.crossProduct(m_UpVector);

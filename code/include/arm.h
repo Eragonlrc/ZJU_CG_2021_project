@@ -6,6 +6,10 @@
 #include <vector>
 #include <math.h>
 
+#define ARM_COLOR_DEFAULT 0
+#define ARM_COLOR_DRAWING 1
+#define ARM_COLOR_WARNING 2
+
 class Arm {
 private:
 	float arm1[2];
@@ -20,6 +24,7 @@ private:
 	int y;
 	int tx;
 	int ty;
+	int color;
 	bool showAttachment;
 	int clockWise;
 	Robot* robot;
@@ -35,8 +40,12 @@ public:
 	void draw();
 	void attach(Robot* rbt);
 	void activate();
-	int getDirection();
 	Robot* getAttached();
+	Point getPosition();
+	int getDirection();
 	int getState();
 	void updateItem();
+	void setColor(int c);
+	void setFrom(int f);
+	void setTo(int t);
 };
