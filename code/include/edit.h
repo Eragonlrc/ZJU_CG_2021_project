@@ -30,4 +30,8 @@ public:
 	void beltUndoPoint();
 	bool beltEndDrawing(bool cancel);
 
+	bool armPreDrawing(int z, int x);
+	bool armDrawing(int z, int x);
+
+	void boxDrawing(int z, int x);
 };

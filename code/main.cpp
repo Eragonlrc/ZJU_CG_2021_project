@@ -21,7 +21,7 @@ int moveX = 0, moveZ = 0;
 bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
 bool bBelt = false, bArm = false;	// 传送带、机械臂的绘制开关，必须在编辑模式下
-int wWidth, wHeight;
+int wWidth, wHeight;	// 屏幕宽高
 
 Map map;
 Camera camera;
@@ -61,7 +61,7 @@ void renderScene(void)
 	//glColor3f(1, 0, 0);
 
 	glPushMatrix();
-	glPopMatrix();
+	glTranslatef(512, 0, 512);
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
@@ -76,6 +76,7 @@ void renderScene(void)
 			((Box*)(mu.obj))->draw();
 		}
 	}
+	glPopMatrix();
 
 	Belt::update();
 	if(bEdit) {	// 编辑状态下，摄像机可能移动
@@ -126,7 +127,7 @@ void reshape(int w, int h)
 
 void Mouse(int button, int state, int x, int y)
 {
-	int unit = wHeight / 10;
+	float unit = wHeight / 10;
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
 			leftDown = true;
@@ -139,7 +140,7 @@ void Mouse(int button, int state, int x, int y)
 }
 
 void onMouseMove(int x, int y) {
-	int unit = wHeight / 10;
+	float unit = wHeight / 10;
 	moveX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
 	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 
@@ -152,6 +153,8 @@ void onMouseMove(int x, int y) {
 		while (ShowCursor(TRUE) < 0)	// 清除计数器，避免延迟显示鼠标
 			ShowCursor(TRUE);
 	}
+
+	
 
 	glutPostRedisplay();
 }
@@ -185,9 +188,13 @@ void key(unsigned char k, int x, int y) {
 		bEdit = !bEdit;
 		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
 		break;
-	case 'b':
+	case '1':
 		if (!bEdit) break;
 		bBelt = !bBelt;
+		break;
+	case '2':
+		if (!bEdit)	break;
+		bArm = !bArm;
 		break;
 	}
 

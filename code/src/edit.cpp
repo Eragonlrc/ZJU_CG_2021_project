@@ -145,3 +145,15 @@ bool Editor::beltEndDrawing(bool cancel) {
 		return 1;
 	}
 }
+
+bool Editor::armPreDrawing(int z, int x) {
+	return 0;
+}
+
+bool Editor::armDrawing(int z, int x) {
+	return 0;
+}
+
+void Editor::boxDrawing(int z, int x) {
+
+}
