@@ -45,9 +45,6 @@
     <ClInclude Include="include\edit.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\menu.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arm.cpp">
@@ -81,9 +78,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\edit.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\menu.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
