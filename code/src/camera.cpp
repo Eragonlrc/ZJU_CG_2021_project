@@ -4,7 +4,7 @@ Camera::Camera(){
     // 初始化向量值
     Vector3 zero = Vector3(0.0, 0.0, 0.0);
     Vector3 view = Vector3(0.0, 1.0, 0.5);
-    Vector3 up = Vector3(0.0, 0.0, 1.0);
+    Vector3 up = Vector3(0.0, 1.0, 0.0);
 
     // 初始化摄像机
     m_Position = zero;

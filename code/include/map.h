@@ -13,7 +13,7 @@
 #define MAP_BELT_STRAIGHTZ 6
 #define MAP_BELT_SINGLE 7
 #define MAP_ARM 8
-#define MAP_MACHINE 9
+#define MAP_BOX 9
 #define MAP_BELT_DRAWING 10
 #define MAP_ISBELT(type) ((type) >= MAP_BELT_CORNER0 && (type) <= MAP_BELT_SINGLE)
 

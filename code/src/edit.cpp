@@ -13,6 +13,25 @@ void Editor::changeMode(int _mode) {
 	mode = _mode;
 }
 
+void Editor::drawMesh(int z, int x) {
+	float i;
+	glBegin(GL_LINES);
+	for (i = -0.5; i < BOX_SIZE; i += 1) {	// 平行于x轴的网格
+		glVertex3f(0, 0, i);
+		glVertex3f(BOX_SIZE, 0, i);
+	}
+	for (i = -0.5; i < BOX_SIZE; i++) {	// 平行于z轴的网格
+		glVertex3f(i, 0, 0);
+		glVertex3f(i, 0, BOX_SIZE);
+	}
+	glColor3f(1.0, 0, 0);	// 当前鼠标所在网格用红色突出
+	glVertex3f(x - 0.5, 0, z - 0.5); glVertex3f(x + 0.5, 0, z - 0.5);	// 上
+	glVertex3f(x - 0.5, 0, z + 0.5); glVertex3f(x + 0.5, 0, z + 0.5);	// 下
+	glVertex3f(x - 0.5, 0, z + 0.5); glVertex3f(x - 0.5, 0, z - 0.5);	// 左
+	glVertex3f(x + 0.5, 0, z + 0.5); glVertex3f(x + 0.5, 0, z - 0.5);	// 右
+	glEnd();
+}
+
 bool Editor::startDrawing(int z, int x) {
 	switch (mode) {
 		case EDITOR_MODE_BELT: {

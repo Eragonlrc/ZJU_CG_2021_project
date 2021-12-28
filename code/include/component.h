@@ -13,15 +13,15 @@ private:
 public:
 	Robot(int type = 0);
 	void draw();
-	void drawhead1();
-	void drawhead2();
-	void drawbody1();
-	void drawbody2();
-	void drawarm1();
-	void drawarm2();
-	void drawleg1();
-	void drawleg2();
-	void settranslate(double x,double y,double z);
-	void settype(int t);
-	int gettype();
+	void drawHead1();
+	void drawHead2();
+	void drawBody1();
+	void drawBody2();
+	void drawArm1();
+	void drawArm2();
+	void drawLeg1();
+	void drawLeg2();
+	void setTranslate(double x,double y,double z);
+	void setType(int t);
+	int getType();
 };

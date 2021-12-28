@@ -26,14 +26,14 @@ private:
 public:
 	Arm(int dx, int dy, int f, int t);
 	void update();
-	void DrawFoundation();
-	void DrawJoint1();
-	void DrawArm1();
-	void DrawArm2();
-	void DrawArm3();
-	void DrawClaw();
-	void Draw();
-	void Attach(Robot* rbt);
+	void drawFoundation();
+	void drawJoint1();
+	void drawArm1();
+	void drawArm2();
+	void drawArm3();
+	void drawClaw();
+	void draw();
+	void attach(Robot* rbt);
 	void activate();
 	int getDirection();
 	Robot* getAttached();

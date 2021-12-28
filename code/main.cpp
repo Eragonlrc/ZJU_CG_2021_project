@@ -10,14 +10,17 @@
 #include "arm.h"
 #include "component.h"
 #include "edit.h"
+#include "box.h"
 
 #define MAX_ARM 10
 
 using namespace std;
 
-int OriX = -1, OriY = -1;
-bool rightDown = 0;
+int clickX = 0, clickZ = 0;
+int moveX = 0, moveZ = 0;
+bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
+bool bBelt = false, bArm = false;	// 传送带、机械臂的绘制开关，必须在编辑模式下
 int wWidth, wHeight;
 
 Map map;
@@ -32,13 +35,14 @@ void renderScene(void)
 	glLoadIdentity();
 
 	camera.setLook();
+	//printf("%f %f %f\n", camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
 	glEnable(GL_LIGHTING);
 
 	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
 	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
-	GLfloat light_pos[] = { 0, 10, 0, 1 };
+	GLfloat light_pos[] = { BOX_SIZE / 2, 10, BOX_SIZE / 2, 1 };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
@@ -48,19 +52,8 @@ void renderScene(void)
 	glEnable(GL_LIGHT0);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	sky.CreateSkyBox(0, 0, 0, 1.0, 0.5, 1.0);
+	sky.createSkyBox(BOX_SIZE / 2, 0, BOX_SIZE / 2, 1.0, 0.5, 1.0);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-	glBegin(GL_LINES);
-	for (int i = 0; i < 1000; i++) {
-		glVertex3f(100, 0, i);
-		glVertex3f(-100, 0, i);
-	}
-	for (int i = 0; i < 1000; i++) {
-		glVertex3f(i, 0, 100);
-		glVertex3f(i, 0, -100);
-	}
-	glEnd();
 
 	glEnable(GL_COLOR_MATERIAL);
 	//glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
@@ -77,7 +70,10 @@ void renderScene(void)
 			((Belt*)(mu.obj))->updateComponents();
 		}
 		else if (mu.type == MAP_ARM) {
-			((Arm*)(mu.obj))->Draw();
+			((Arm*)(mu.obj))->draw();
+		}
+		else if (mu.type == MAP_BOX) {
+			((Box*)(mu.obj))->draw();
 		}
 	}
 
@@ -93,14 +89,15 @@ void renderScene(void)
 			camera.xCamera(camera.getSpeed());
 		if (mousePos.y >= (wHeight - 5))	// 下移
 			camera.zCamera(camera.getSpeed());
+		editor.drawMesh(moveZ, moveX);
 	}
 	glDisable(GL_COLOR_MATERIAL);
 	glutSwapBuffers();
 }
 
 void updateView(float w, float h) {
-	static Vector3 position = Vector3(0, 1, 1);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
-	static Vector3 view = Vector3(0, 1, 0);
+	static Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
+	static Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
 	static Vector3 upVector = Vector3(0, 1, 0);
 	float ratio = w / h;
 	glViewport(0, 0, w, h);
@@ -114,8 +111,8 @@ void updateView(float w, float h) {
 		position = camera.getPosition();
 		view = camera.getView();
 		upVector = camera.getUpVector();
-		camera.setCamera(position.x, 10, position.z, view.x, 1, view.z, 0, 0, -1);
-		glOrtho(position.x - 5 * ratio, position.x + 5 * ratio, position.z - 5 , position.z + 5, -1, 100);
+		camera.setCamera(position.x, 10, position.z, position.x, 1, position.z, 0, 0, -1);
+		glOrtho(-5 * ratio, 5 * ratio, -5, 5, 0.1, 400);
 	}
 	glMatrixMode(GL_MODELVIEW);
 	//glLoadIdentity();
@@ -129,16 +126,23 @@ void reshape(int w, int h)
 
 void Mouse(int button, int state, int x, int y)
 {
-	if (button == GLUT_RIGHT_BUTTON) {
+	int unit = wHeight / 10;
+	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
-			rightDown = 1;
-			OriX = x, OriY = y;
+			leftDown = true;
+			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);	// 根据鼠标位置计算网格的算法有待优化
+			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
+			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 		}
-		else rightDown = 0;
+		else leftDown = false;
 	}
 }
 
 void onMouseMove(int x, int y) {
+	int unit = wHeight / 10;
+	moveX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
+	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
+
 	if (!bEdit) {	// 非编辑模式下，视线随鼠标变化
 		while (ShowCursor(FALSE) >= 0)	// 清除计数器，避免延迟隐藏鼠标
 			ShowCursor(FALSE);
@@ -180,6 +184,10 @@ void key(unsigned char k, int x, int y) {
 	case 'e':
 		bEdit = !bEdit;
 		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
+		break;
+	case 'b':
+		if (!bEdit) break;
+		bBelt = !bBelt;
 		break;
 	}
 
@@ -265,12 +273,12 @@ void init() {
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glEnable(GL_TEXTURE_2D);
 
-	if (!sky.Init()){
+	if (!sky.init()){
 		MessageBox(NULL, (LPCWSTR)"Fail to initialize skybox!", (LPCWSTR)"Error", MB_OK);
 		exit(0);
 	}
 
-	camera.setCamera(0, 1, 1, 0, 1, 0, 0, 1, 0);
+	//camera.setCamera(BOX_SIZE / 2, 1, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
 
 	Arm* arm = new Arm(0, 5, 3, 1);
 	map.write(0, 5, MAP_ARM, arm);
