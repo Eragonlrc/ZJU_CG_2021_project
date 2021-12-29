@@ -59,7 +59,6 @@ void renderScene(void)
 	//glColor3f(1, 0, 0);
 
 	glPushMatrix();
-	glTranslatef(512, 0, 512);
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
@@ -75,6 +74,8 @@ void renderScene(void)
 		}
 	}
 	glPopMatrix();
+
+	editor.draw();
 
 	Belt::update();
 	if(bEdit) {	// 编辑状态下，摄像机可能移动
@@ -131,14 +132,24 @@ void Mouse(int button, int state, int x, int y)
 			leftDown = true;
 			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);	// 根据鼠标位置计算网格的算法有待优化
 			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
-			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
+			printf("Mouse Click: x = %d, z = %d, state = %d\n", clickX, clickZ, editor.getState());
+			if (bEdit) {
+				if (editor.getState() == EDITOR_STATE_IDLE) editor.startDrawing(clickZ, clickX);
+				else if (editor.getMode() == EDITOR_MODE_ARM) editor.nextPoint(clickZ, clickX);
+				else editor.endDrawing();
+			}
+			printf("state = %d\n", editor.getState());
 		}
 		else leftDown = false;
+	}
+	else if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+		if (editor.getState() != EDITOR_STATE_IDLE) editor.endDrawing(1);
 	}
 }
 
 void onMouseMove(int x, int y) {
 	float unit = wHeight / 10;
+	int prevX = moveX, prevZ = moveZ;
 	moveX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
 	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 
@@ -152,7 +163,8 @@ void onMouseMove(int x, int y) {
 			ShowCursor(TRUE);
 	}
 
-	
+	if ((prevZ != moveZ || prevX != moveX) && 
+		editor.getMode() == EDITOR_MODE_BELT && editor.getState() != EDITOR_STATE_IDLE) editor.nextPoint(moveZ, moveX);
 
 	glutPostRedisplay();
 }
@@ -212,19 +224,19 @@ void init() {
 	Belt::init();
 
 	Belt* obj = new Belt();
-	obj->pushPoint(0, 0);
-	obj->pushPoint(1, 0);
-	obj->pushPoint(1, 1);
-	obj->pushPoint(2, 1);
-	obj->pushPoint(2, 2);
-	obj->pushPoint(1, 2);
-	obj->pushPoint(1, 3);
-	obj->pushPoint(1, 4);
-	obj->pushPoint(0, 4);
-	obj->pushPoint(0, 3);
-	obj->pushPoint(0, 2);
-	obj->pushPoint(0, 1);
-	obj->pushPoint(0, 0);
+	obj->pushPoint(0 + 512, 0 + 512);
+	obj->pushPoint(1 + 512, 0 + 512);
+	obj->pushPoint(1 + 512, 1 + 512);
+	obj->pushPoint(2 + 512, 1 + 512);
+	obj->pushPoint(2 + 512, 2 + 512);
+	obj->pushPoint(1 + 512, 2 + 512);
+	obj->pushPoint(1 + 512, 3 + 512);
+	obj->pushPoint(1 + 512, 4 + 512);
+	obj->pushPoint(0 + 512, 4 + 512);
+	obj->pushPoint(0 + 512, 3 + 512);
+	obj->pushPoint(0 + 512, 2 + 512);
+	obj->pushPoint(0 + 512, 1 + 512);
+	obj->pushPoint(0 + 512, 0 + 512);
 	obj->updateMap();
 
 	obj->delPoint(0);
@@ -237,39 +249,39 @@ void init() {
 	obj->addComponent(new Robot(1));
 
 	Belt* obj2 = new Belt();
-	obj2->pushPoint(5, 5);
-	obj2->pushPoint(6, 5);
-	obj2->pushPoint(7, 5);
-	obj2->pushPoint(7, 6);
-	obj2->pushPoint(7, 7);
-	obj2->pushPoint(6, 7);
-	obj2->pushPoint(5, 7);
-	obj2->pushPoint(5, 6);
-	obj2->pushPoint(5, 5);
+	obj2->pushPoint(5 + 512, 5 + 512);
+	obj2->pushPoint(6 + 512, 5 + 512);
+	obj2->pushPoint(7 + 512, 5 + 512);
+	obj2->pushPoint(7 + 512, 6 + 512);
+	obj2->pushPoint(7 + 512, 7 + 512);
+	obj2->pushPoint(6 + 512, 7 + 512);
+	obj2->pushPoint(5 + 512, 7 + 512);
+	obj2->pushPoint(5 + 512, 6 + 512);
+	obj2->pushPoint(5 + 512, 5 + 512);
 	obj2->updateMap();
 	obj2->addComponent(new Robot(1));
 	obj2->setColor(BELT_COLOR_WARNING);
 
 	Belt* obj3 = new Belt();
-	obj3->pushPoint(0, 6);
-	obj3->pushPoint(0, 7);
-	obj3->pushPoint(0, 8);
-	obj3->pushPoint(0, 9);
-	obj3->pushPoint(1, 9);
-	obj3->pushPoint(1, 8);
-	obj3->pushPoint(2, 8);
-	obj3->pushPoint(3, 8);
-	obj3->pushPoint(3, 9);
-	obj3->pushPoint(4, 9);
-	obj3->pushPoint(4, 8);
-	obj3->pushPoint(4, 7);
-	obj3->pushPoint(4, 6);
-	obj3->pushPoint(3, 6);
-	obj3->pushPoint(3, 7);
-	obj3->pushPoint(2, 7);
-	obj3->pushPoint(2, 6);
-	obj3->pushPoint(1, 6);
-	obj3->pushPoint(0, 6);
+	obj3->pushPoint(0 + 512, 6 + 512);
+	obj3->pushPoint(0 + 512, 7 + 512);
+	obj3->pushPoint(0 + 512, 8 + 512);
+	obj3->pushPoint(0 + 512, 9 + 512);
+	obj3->pushPoint(1 + 512, 9 + 512);
+	obj3->pushPoint(1 + 512, 8 + 512);
+	obj3->pushPoint(2 + 512, 8 + 512);
+	obj3->pushPoint(3 + 512, 8 + 512);
+	obj3->pushPoint(3 + 512, 9 + 512);
+	obj3->pushPoint(4 + 512, 9 + 512);
+	obj3->pushPoint(4 + 512, 8 + 512);
+	obj3->pushPoint(4 + 512, 7 + 512);
+	obj3->pushPoint(4 + 512, 6 + 512);
+	obj3->pushPoint(3 + 512, 6 + 512);
+	obj3->pushPoint(3 + 512, 7 + 512);
+	obj3->pushPoint(2 + 512, 7 + 512);
+	obj3->pushPoint(2 + 512, 6 + 512);
+	obj3->pushPoint(1 + 512, 6 + 512);
+	obj3->pushPoint(0 + 512, 6 + 512);
 	obj3->updateMap();
 	obj3->addComponent(new Robot(1));
 	obj3->setColor(BELT_COLOR_DRAWING);
@@ -289,8 +301,8 @@ void init() {
 
 	//camera.setCamera(BOX_SIZE / 2, 1, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
 
-	Arm* arm = new Arm(0, 5, 3, 1);
-	map.write(0, 5, MAP_ARM, arm);
+	//Arm* arm = new Arm(0 + 512, 5 + 512, 3, 1);
+	//map.write(0, 5, MAP_ARM, arm);
 }
 
 int main(int argc, char* argv[])

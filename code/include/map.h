@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 
-#define MAP_MAXZ 128
-#define MAP_MAXX 128
+#define MAP_MAXZ 1024
+#define MAP_MAXX 1024
 
 #define MAP_BLANK 0
 #define MAP_BELT_CORNER0 1

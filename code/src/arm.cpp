@@ -227,8 +227,18 @@ void Arm::setColor(int c) {
 
 void Arm::setFrom(int f) {
 	from = f;
+	arm1[0] = from * 90;
 }
 
 void Arm::setTo(int t) {
 	to = t;
+	switch (t)
+	{
+	case 0: {tx = x + 1; ty = y; break; }
+	case 1: {tx = x; ty = y + 1; break; }
+	case 2: {tx = x - 1; ty = y; break; }
+	case 3: {tx = x; ty = y - 1; break; }
+	default: break;
+	}
+	printf("from: %d, to: %d\n", from, to);
 }

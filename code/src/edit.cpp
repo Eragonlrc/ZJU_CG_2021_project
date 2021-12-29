@@ -3,6 +3,7 @@
 extern Map map;
 
 void Editor::draw() {
+	if (!current) return;
 	switch (mode) {
 	case EDITOR_MODE_BELT:
 		((Belt*)current)->draw();
@@ -13,7 +14,7 @@ void Editor::draw() {
 	}
 }
 
-Editor::Editor() : mode(EDITOR_MODE_BELT), current(NULL),
+Editor::Editor() : mode(EDITOR_MODE_BELT), state(EDITOR_STATE_IDLE), current(NULL),
 				   prevBelt(NULL), nextBelt(NULL), firstIllegalBelt(-1) {}
 
 int Editor::getMode() {
@@ -22,6 +23,10 @@ int Editor::getMode() {
 
 void Editor::changeMode(int _mode) {
 	mode = _mode;
+}
+
+int Editor::getState() {
+	return state;
 }
 
 void Editor::drawMesh(int z, int x) {
@@ -40,25 +45,64 @@ void Editor::drawMesh(int z, int x) {
 	glVertex3f(x - 0.5, 0, z + 0.5); glVertex3f(x + 0.5, 0, z + 0.5);	// 下
 	glVertex3f(x - 0.5, 0, z + 0.5); glVertex3f(x - 0.5, 0, z - 0.5);	// 左
 	glVertex3f(x + 0.5, 0, z + 0.5); glVertex3f(x + 0.5, 0, z - 0.5);	// 右
+	glColor3f(1.0, 1.0, 1.0);
 	glEnd();
 }
 
 bool Editor::startDrawing(int z, int x) {
+	bool ret = 0;
 	switch (mode) {
 		case EDITOR_MODE_BELT: {
-			return beltStartDrawing(z, x);
+			ret = beltStartDrawing(z, x);
+			break;
+		}
+		case EDITOR_MODE_ARM: {
+			ret = armStartDrawing(z, x);
+			break;
+		}
+	}
+	if (ret) state = EDITOR_STATE_DRAWING;
+	return ret;
+}
+
+void Editor::nextPoint(int z, int x) {
+	switch (mode) {
+		case EDITOR_MODE_BELT: {
+			Belt* belt = (Belt*)current;
+			if (belt->getLength() == 1 && prevBelt && prevBelt->getPoint(prevBelt->getLength() - 1) == Point(z, x) || // merge with previous belt, and undo the first new point
+				belt->getLength() > 1 && belt->getPoint(belt->getLength() - 2) == Point(z, x)) { // normal case, length >= 2 and undo the last point
+				beltUndoPoint();
+			}
+			else beltAddPoint(z, x); // add point
+			break;
+		}
+		case EDITOR_MODE_ARM: {
+			if (state == EDITOR_STATE_DRAWING) {
+				if(armSetFrom(z, x)) state = EDITOR_STATE_ENDING;
+			}
+			else {
+				if(armSetTo(z, x)) endDrawing();
+			}
 			break;
 		}
 	}
 }
 
 bool Editor::endDrawing(bool cancel) {
+	bool ret = 0;
 	switch (mode) {
 		case EDITOR_MODE_BELT: {
-			return beltEndDrawing(cancel);
+			ret = beltEndDrawing(cancel);
+			break;
+		}
+		case EDITOR_MODE_ARM: {
+			ret = armEndDrawing(cancel);
 			break;
 		}
 	}
+	printf("end: ret = %d\n", ret);
+	if(ret) state = EDITOR_STATE_IDLE;
+	return ret;
 }
 
 bool Editor::beltStartDrawing(int z, int x) {
@@ -70,8 +114,8 @@ bool Editor::beltStartDrawing(int z, int x) {
 		prevBelt = ((Belt*)(mu.obj));
 		prevBelt->setColor(BELT_COLOR_DRAWING);
 	}
-	else if (mu.type != MAP_BLANK) return 0;
-	else {
+	else if (mu.type != MAP_BLANK) return 0; // intersects, do not start drawing
+	else { // normal case, push first point
 		belt->pushPoint(z, x);
 		map.write(z, x, MAP_BELT_DRAWING, belt, 0);
 	}
@@ -167,29 +211,34 @@ bool Editor::armStartDrawing(int z, int x) {
 	Map::MapUnit mu = map.getMap(z, x);
 	arm->setColor(ARM_COLOR_DRAWING);
 	if (mu.type != MAP_BLANK) return 0;		// 如果当前网格非空，绘制失败
-	return 0;
+	return 1;
 }
 
-void Editor::armSetFrom(int z, int x) {
+bool Editor::armSetFrom(int z, int x) {
 	Arm* arm = (Arm*)current;
 	Point pos = arm->getPosition();
 	if (z == pos.first - 1 && x == pos.second)	arm->setFrom(2);	// 上
-	if (z == pos.first + 1 && x == pos.second)	arm->setFrom(0);	// 下
-	if (z == pos.first && x == pos.second - 1)	arm->setFrom(3);	// 左
-	if (z == pos.first && x == pos.second + 1)	arm->setFrom(1);	// 右
+	else if (z == pos.first + 1 && x == pos.second)	arm->setFrom(0);	// 下
+	else if (z == pos.first && x == pos.second - 1)	arm->setFrom(3);	// 左
+	else if (z == pos.first && x == pos.second + 1)	arm->setFrom(1);	// 右
+	else return 0;
+	return 1;
 }
 
-void Editor::armSetTo(int z, int x) {
+bool Editor::armSetTo(int z, int x) {
 	Arm* arm = (Arm*)current;
 	Point pos = arm->getPosition();
 	if (z == pos.first - 1 && x == pos.second)	arm->setTo(2);	// 上
-	if (z == pos.first + 1 && x == pos.second)	arm->setTo(0);	// 下
-	if (z == pos.first && x == pos.second - 1)	arm->setTo(3);	// 左
-	if (z == pos.first && x == pos.second + 1)	arm->setTo(1);	// 右
+	else if (z == pos.first + 1 && x == pos.second)	arm->setTo(0);	// 下
+	else if (z == pos.first && x == pos.second - 1)	arm->setTo(3);	// 左
+	else if (z == pos.first && x == pos.second + 1)	arm->setTo(1);	// 右
+	else return 0;
+	return 1;
 }
 
 bool Editor::armEndDrawing(bool cancel) {
 	Arm* arm = (Arm*)current;
+	Point pos = arm->getPosition();
 	if (cancel) {
 		delete arm;
 		current = NULL;
@@ -197,6 +246,7 @@ bool Editor::armEndDrawing(bool cancel) {
 	}
 	else {
 		arm->setColor(ARM_COLOR_DEFAULT);
+		map.write(pos.first, pos.second, MAP_ARM, current);
 		current = NULL;
 	}
 	return 1;
