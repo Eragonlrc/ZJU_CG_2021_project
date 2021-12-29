@@ -61,7 +61,10 @@ bool Editor::startDrawing(int z, int x) {
 			break;
 		}
 	}
-	if (ret) state = EDITOR_STATE_DRAWING;
+	if (ret) {
+		beltUpdateColor();
+		state = EDITOR_STATE_DRAWING;
+	}
 	return ret;
 }
 
@@ -74,6 +77,7 @@ void Editor::nextPoint(int z, int x) {
 				beltUndoPoint();
 			}
 			else beltAddPoint(z, x); // add point
+			beltUpdateColor();
 			break;
 		}
 		case EDITOR_MODE_ARM: {
@@ -100,25 +104,33 @@ bool Editor::endDrawing(bool cancel) {
 			break;
 		}
 	}
-	printf("end: ret = %d\n", ret);
 	if(ret) state = EDITOR_STATE_IDLE;
 	return ret;
 }
 
 bool Editor::beltStartDrawing(int z, int x) {
-	current = new Belt();
-	Belt* belt = (Belt*)current;
+	Belt* belt;
 	Map::MapUnit mu = map.getMap(z, x);
-	belt->setColor(BELT_COLOR_DRAWING);
-	if (MAP_ISBELT(mu.type) && mu.i == ((Belt*)(mu.obj))->getLength() - 1) { // merge after previous belt, do not push first point
+	/*if (MAP_ISBELT(mu.type) && mu.i == ((Belt*)(mu.obj))->getLength() - 1) { // merge after previous belt, do not push first point
+		current = new Belt();
+		belt = (Belt*)current;
 		prevBelt = ((Belt*)(mu.obj));
-		prevBelt->setColor(BELT_COLOR_DRAWING);
 	}
 	else if (mu.type != MAP_BLANK) return 0; // intersects, do not start drawing
 	else { // normal case, push first point
+		current = new Belt();
+		belt = (Belt*)current;
 		belt->pushPoint(z, x);
 		map.write(z, x, MAP_BELT_DRAWING, belt, 0);
+	}*/
+	if (MAP_ISBELT(mu.type) && mu.i == ((Belt*)(mu.obj))->getLength() - 1 || mu.type == MAP_BLANK) {
+		current = new Belt();
+		belt = (Belt*)current;
+		belt->pushPoint(z, x);
+		if(mu.type == MAP_BLANK) map.write(z, x, MAP_BELT_DRAWING, belt, 0); // normal case, push first point
+		else prevBelt = ((Belt*)(mu.obj)); // merge after previous belt
 	}
+	else return 0; // intersects, do not start drawing
 	return 1;
 }
 
@@ -130,16 +142,17 @@ void Editor::beltAddPoint(int z, int x) {
 		nextBelt->setColor(BELT_COLOR_DEFAULT);
 		nextBelt = NULL;
 		firstIllegalBelt = belt->getLength() - 2;
-		belt->setColor(BELT_COLOR_WARNING);
 	}
 	if (firstIllegalBelt == -1 && mu.type != MAP_BLANK) { // no previous illegal, and current one intersects
-		if (MAP_ISBELT(mu.type) && mu.i == 0) { // intersect with the start of another belt
+		if (MAP_ISBELT(mu.type) && mu.i == 0 &&													// intersect with the start of another belt
+			((Belt*)(mu.obj))->getPoint(((Belt*)(mu.obj))->getLength() - 1) != Point(z, x)) {	// and the other belt is not a loop
 			nextBelt = (Belt*)(mu.obj);
-			nextBelt->setColor(BELT_COLOR_DRAWING);
+		}
+		else if (mu.type == MAP_BELT_DRAWING && mu.i == 0) {
+			nextBelt = belt;
 		}
 		else { // intersect with other objects
 			firstIllegalBelt = belt->getLength() - 1;
-			belt->setColor(BELT_COLOR_WARNING);
 		}
 	}
 	if (mu.type == MAP_BLANK) map.write(z, x, MAP_BELT_DRAWING, belt, belt->getLength() - 1);
@@ -150,27 +163,24 @@ void Editor::beltUndoPoint() {
 	Map::MapUnit mu = map.getMap(belt->getPoint(belt->getLength() - 1));
 	if (firstIllegalBelt == belt->getLength() - 1) { // last belt is the first illegal one
 		firstIllegalBelt = -1;
-		belt->setColor(BELT_COLOR_DRAWING);
-		if (MAP_ISBELT(mu.type) && mu.i == 0) { // previous point intersects with the start of another belt
-			nextBelt = (Belt*)(mu.obj);
-			nextBelt->setColor(BELT_COLOR_DRAWING);
+	}
+	else if (firstIllegalBelt == belt->getLength() - 2) {
+		Map::MapUnit prevmu = map.getMap(belt->getPoint(belt->getLength() - 2));
+		if ((MAP_ISBELT(prevmu.type) || prevmu.type == MAP_BELT_DRAWING) && prevmu.i == 0 &&									// previous point intersects with the start of another belt
+			((Belt*)(prevmu.obj))->getPoint(((Belt*)(prevmu.obj))->getLength() - 1) != belt->getPoint(belt->getLength() - 2)) {	// and the other belt is not a loop
+			nextBelt = (Belt*)(prevmu.obj);
+			firstIllegalBelt = -1;
 		}
 	}
-	else if (mu.type == MAP_BELT_DRAWING)
-		map.write(belt->getPoint(belt->getLength() - 1).first, belt->getPoint(belt->getLength() - 1).second,
-								 MAP_BLANK, NULL);
+	else if (mu.obj == nextBelt) nextBelt = NULL;
+	if (mu.type == MAP_BELT_DRAWING && mu.i == belt->getLength() - 1)
+		map.write(belt->getPoint(belt->getLength() - 1).first, belt->getPoint(belt->getLength() - 1).second, MAP_BLANK, NULL);
 	belt->undoPoint();
 }
 
 bool Editor::beltEndDrawing(bool cancel) {
 	Belt* belt = (Belt*)current;
 	if (cancel) { // cancel drawing
-		if (nextBelt) {
-			nextBelt->setColor(BELT_COLOR_DEFAULT);
-			nextBelt = NULL;
-		}
-		delete belt;
-		current = NULL;
 		if (prevBelt) {
 			prevBelt->setColor(BELT_COLOR_DEFAULT);
 			prevBelt = NULL;
@@ -179,23 +189,33 @@ bool Editor::beltEndDrawing(bool cancel) {
 			nextBelt->setColor(BELT_COLOR_DEFAULT);
 			nextBelt = NULL;
 		}
+		belt->delMap(1);
+		delete belt;
+		current = NULL;
 		firstIllegalBelt = -1;
 		return 1;
 	}
 	if (firstIllegalBelt != -1) return 0; // illegal points exist
 	else { // normally finish drawing
-		belt->updateMap(); // update map to actual belt
 		belt->setColor(BELT_COLOR_DEFAULT);
+		belt->delMap(1);
 		if (nextBelt) { // merge with next belt
-			nextBelt->setColor(BELT_COLOR_DEFAULT);
-			belt->merge(nextBelt);
+			if (nextBelt != belt) {
+				nextBelt->setColor(BELT_COLOR_DEFAULT);
+				nextBelt->delMap();
+				belt->merge(nextBelt);
+			}
+			if (prevBelt == nextBelt) prevBelt = NULL;
 			nextBelt = NULL;
 		}
 		if (prevBelt) { // merge with previous belt
 			prevBelt->setColor(BELT_COLOR_DEFAULT);
-			prevBelt->merge(nextBelt);
+			prevBelt->delMap();
+			prevBelt->merge(belt);
+			prevBelt->updateMap();
 			prevBelt = NULL;
 		}
+		else belt->updateMap(); // update map to actual belt
 		current = NULL;
 		return 1;
 	}
@@ -205,12 +225,18 @@ bool beltDelete(int z, int x) {
 	return 0;
 }
 
+void Editor::beltUpdateColor() {
+	((Belt*)current)->setColor(firstIllegalBelt == -1 ? BELT_COLOR_DRAWING: BELT_COLOR_WARNING);
+	if (prevBelt) prevBelt->setColor(BELT_COLOR_DRAWING);
+	if (nextBelt) nextBelt->setColor(BELT_COLOR_DRAWING);
+}
+
 bool Editor::armStartDrawing(int z, int x) {
+	Map::MapUnit mu = map.getMap(z, x);
+	if (mu.type != MAP_BLANK) return 0;		// 如果当前网格非空，绘制失败
 	current = new Arm(z, x, 0, 0);
 	Arm* arm = (Arm *)current;
-	Map::MapUnit mu = map.getMap(z, x);
 	arm->setColor(ARM_COLOR_DRAWING);
-	if (mu.type != MAP_BLANK) return 0;		// 如果当前网格非空，绘制失败
 	return 1;
 }
 

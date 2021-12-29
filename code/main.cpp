@@ -17,6 +17,7 @@ using namespace std;
 
 int clickX = 0, clickZ = 0;
 int moveX = 0, moveZ = 0;
+int prevX = 0, prevZ = 0;
 bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
 int wWidth, wHeight;	// 屏幕宽高
@@ -58,8 +59,6 @@ void renderScene(void)
 	//glMaterialf(GL_FRONT, GL_SHININESS, 0.3);
 	//glColor3f(1, 0, 0);
 
-	glPushMatrix();
-
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
 		if (MAP_ISBELT(mu.type)) {
@@ -73,7 +72,6 @@ void renderScene(void)
 			((Box*)(mu.obj))->draw();
 		}
 	}
-	glPopMatrix();
 
 	editor.draw();
 
@@ -134,11 +132,15 @@ void Mouse(int button, int state, int x, int y)
 			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 			printf("Mouse Click: x = %d, z = %d, state = %d\n", clickX, clickZ, editor.getState());
 			if (bEdit) {
-				if (editor.getState() == EDITOR_STATE_IDLE) editor.startDrawing(clickZ, clickX);
+				if (editor.getState() == EDITOR_STATE_IDLE) {
+					editor.startDrawing(clickZ, clickX);
+					prevX = clickX, prevZ = clickZ;
+				}
 				else if (editor.getMode() == EDITOR_MODE_ARM) editor.nextPoint(clickZ, clickX);
 				else editor.endDrawing();
 			}
 			printf("state = %d\n", editor.getState());
+			Map::MapUnit mu = map.getMap(clickZ, clickX);
 		}
 		else leftDown = false;
 	}
@@ -149,7 +151,6 @@ void Mouse(int button, int state, int x, int y)
 
 void onMouseMove(int x, int y) {
 	float unit = wHeight / 10;
-	int prevX = moveX, prevZ = moveZ;
 	moveX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
 	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 
@@ -163,8 +164,11 @@ void onMouseMove(int x, int y) {
 			ShowCursor(TRUE);
 	}
 
-	if ((prevZ != moveZ || prevX != moveX) && 
-		editor.getMode() == EDITOR_MODE_BELT && editor.getState() != EDITOR_STATE_IDLE) editor.nextPoint(moveZ, moveX);
+	if ((abs(prevZ - moveZ) == 1 && prevX == moveX || abs(prevX - moveX) == 1 && prevZ == moveZ) &&
+		editor.getMode() == EDITOR_MODE_BELT && editor.getState() != EDITOR_STATE_IDLE) {
+		editor.nextPoint(moveZ, moveX);
+		prevX = moveX, prevZ = moveZ;
+	}
 
 	glutPostRedisplay();
 }
@@ -235,17 +239,7 @@ void init() {
 	obj->pushPoint(0 + 512, 4 + 512);
 	obj->pushPoint(0 + 512, 3 + 512);
 	obj->pushPoint(0 + 512, 2 + 512);
-	obj->pushPoint(0 + 512, 1 + 512);
-	obj->pushPoint(0 + 512, 0 + 512);
 	obj->updateMap();
-
-	obj->delPoint(0);
-	Belt* obj1 = obj->delPoint(3);
-	obj->delPoint(2);
-	//obj->print();
-	//obj1->print();
-	obj->merge(obj1);
-	//obj->print();
 	obj->addComponent(new Robot(1));
 
 	Belt* obj2 = new Belt();

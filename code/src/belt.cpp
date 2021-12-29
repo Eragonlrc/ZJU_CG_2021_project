@@ -24,11 +24,6 @@ const float Belt::colorWarning[] = { 1, 0, 0 };
 
 Belt::Belt() : color(BELT_COLOR_DEFAULT) {}
 Belt::Belt(PointInterator begin, PointInterator end) : points(begin, end), color(BELT_COLOR_DEFAULT) {}
-Belt::~Belt() {
-    for (int i = 0; i < points.size(); i++) { // delete belt from map
-        map.write(points[0].first, points[0].second, MAP_BLANK, NULL, i);
-    }
-}
 
 int Belt::getLength() {
     return points.size();
@@ -168,21 +163,31 @@ void Belt::updateMap(int begin, int end) {
     }
 }
 
+void Belt::delMap(bool drawing) {
+    for (int i = 0; i < points.size(); i++) { // delete belt from map
+        if(drawing && map.getMap(points[i].first, points[i].second).type != MAP_BELT_DRAWING) continue; // temp belt, but not temp map unit, skip
+        map.write(points[i].first, points[i].second, MAP_BLANK, NULL);
+    }
+}
+
 void Belt::draw() {
-    bool loop = points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second;
-    drawComponents();
+    if (points.empty()) return;
     switch (color) {
         case BELT_COLOR_DEFAULT: glColor3fv(colorDefault); break;
         case BELT_COLOR_DRAWING: glColor3fv(colorDrawing); break;
         case BELT_COLOR_WARNING: glColor3fv(colorWarning); break;
     }
     if (points.size() == 1) { // single belt
+
         glPushMatrix();
         glTranslatef(points[0].second, 0, points[0].first);
         glCallList(BELT_LIST_SINGLE);
         glPopMatrix();
+        glColor3fv(colorDefault);
         return;
     }
+    bool loop = points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second;
+    drawComponents();
     for (int i = 0; i < points.size(); i++) {
         int from, to;
         if (loop && i == points.size() - 1) break; // loop, skip the last point
@@ -727,13 +732,15 @@ Belt* Belt::delPoint(int index) {
 
 void Belt::merge(Belt* belt) {
     int oriSize = points.size();
-    for (int i = 0; i < belt->components.size(); i++) {
-        belt->components[i].move += points.size();
+    if (!belt->components.empty()) {
+        for (int i = 0; i < belt->components.size(); i++) {
+            belt->components[i].move += points.size() - 1;
+        }
+        components.insert(components.end(), belt->components.begin(), belt->components.end());
     }
-    components.insert(components.end(), belt->components.begin(), belt->components.end());
-    points.insert(points.end(), belt->points.begin(), belt->points.end());
+    points.insert(points.end(), belt->points.begin() + 1, belt->points.end());
     delete belt; // delete belt
-    updateMap(oriSize); // update merged part in map
+    //updateMap(oriSize); // update merged part in map
 }
 
 void Belt::updateComponents() {

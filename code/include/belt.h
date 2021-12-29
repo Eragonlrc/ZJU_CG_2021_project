@@ -62,7 +62,6 @@ private: // private drawing functions
 public: // public interfaces
     Belt();
     Belt(PointInterator begin, PointInterator end);
-    ~Belt();
 
     static void init();
     static void update();
@@ -70,6 +69,7 @@ public: // public interfaces
     void pushPoint(int z, int x);
     void undoPoint();
     void updateMap(int begin = 0, int end = -1); // update points of index [begin, end) in map
+    void delMap(bool drawing = 0);
 
     Belt* delPoint(int index);      // delete a point, return a new Belt object if one forms
     void merge(Belt *belt);         // merge belt after current object, delete belt
