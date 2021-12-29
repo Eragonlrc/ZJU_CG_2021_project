@@ -246,5 +246,4 @@ void Arm::setTo(int t) {
 	case 3: {tx = x; ty = y - 1; break; }
 	default: break;
 	}
-	printf("from: %d, to: %d\n", from, to);
 }

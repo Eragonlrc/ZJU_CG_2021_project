@@ -35,6 +35,7 @@ void Map::listDel(int z, int x) {
 	else map[map[z][x].prev.first][map[z][x].prev.second].next = map[z][x].next;
 	if (lastObj == p) lastObj = map[z][x].prev;
 	else map[map[z][x].next.first][map[z][x].next.second].prev = map[z][x].prev;
+	map[z][x].prev = map[z][x].next = POINTNULL;
 }
 
 bool Map::write(int z, int x, int type, const void* obj, int index) {

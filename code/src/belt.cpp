@@ -665,6 +665,9 @@ Belt* Belt::delPoint(int index) {
             std::vector<OnBeltComponent>::iterator it = components.begin();
             while (it != components.end() && it->move < 1) ++it;
             components.erase(components.begin(), it);
+            // change offsets of remaining components
+            for (int i = 0; i < components.size(); i++)
+                components[i].move -= 1;
             // delete ending point
             points.pop_back();
             points.erase(points.begin());
@@ -698,6 +701,9 @@ Belt* Belt::delPoint(int index) {
         std::vector<OnBeltComponent>::iterator it = components.begin();
         while (it != components.end() && it->move < 1) ++it;
         components.erase(components.begin(), it);
+        // change offsets of remaining components
+        for (int i = 0; i < components.size(); i++)
+            components[i].move -= 1;
         // delete first point
         points.erase(points.begin());
     }

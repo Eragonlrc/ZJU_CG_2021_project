@@ -136,7 +136,7 @@ void Editor::beltAddPoint(int z, int x) {
 	}
 	if (firstIllegalBelt == -1 && mu.type != MAP_BLANK) { // no previous illegal, and current one intersects
 		if (MAP_ISBELT(mu.type) && mu.i == 0 &&													// intersect with the start of another belt
-			((Belt*)(mu.obj))->getPoint(((Belt*)(mu.obj))->getLength() - 1) != Point(z, x)) {	// and the other belt is not a loop
+			(((Belt*)(mu.obj))->getLength() == 1 || ((Belt*)(mu.obj))->getPoint(((Belt*)(mu.obj))->getLength() - 1) != Point(z, x))) {	// and the other belt is not a loop
 			nextBelt = (Belt*)(mu.obj);
 		}
 		else if (mu.type == MAP_BELT_DRAWING && mu.i == 0) {
@@ -158,7 +158,7 @@ void Editor::beltUndoPoint() {
 	else if (firstIllegalBelt == belt->getLength() - 2) {
 		Map::MapUnit prevmu = map.getMap(belt->getPoint(belt->getLength() - 2));
 		if ((MAP_ISBELT(prevmu.type) || prevmu.type == MAP_BELT_DRAWING) && prevmu.i == 0 &&									// previous point intersects with the start of another belt
-			((Belt*)(prevmu.obj))->getPoint(((Belt*)(prevmu.obj))->getLength() - 1) != belt->getPoint(belt->getLength() - 2)) {	// and the other belt is not a loop
+			(((Belt*)(prevmu.obj))->getLength() == 1 || ((Belt*)(prevmu.obj))->getPoint(((Belt*)(prevmu.obj))->getLength() - 1) != belt->getPoint(belt->getLength() - 2))) {	// and the other belt is not a loop
 			nextBelt = (Belt*)(prevmu.obj);
 			firstIllegalBelt = -1;
 		}
