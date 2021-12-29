@@ -31,6 +31,7 @@ int Editor::getState() {
 
 void Editor::drawMesh(int z, int x) {
 	float i;
+	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
 	for (i = -0.5; i < BOX_SIZE; i += 1) {	// 平行于x轴的网格
 		glVertex3f(0, 0, i);
@@ -47,6 +48,7 @@ void Editor::drawMesh(int z, int x) {
 	glVertex3f(x + 0.5, 0, z + 0.5); glVertex3f(x + 0.5, 0, z - 0.5);	// 右
 	glColor3f(1.0, 1.0, 1.0);
 	glEnd();
+	glEnable(GL_LIGHTING);
 }
 
 bool Editor::startDrawing(int z, int x) {
@@ -54,17 +56,18 @@ bool Editor::startDrawing(int z, int x) {
 	switch (mode) {
 		case EDITOR_MODE_BELT: {
 			ret = beltStartDrawing(z, x);
+			if(ret) beltUpdateColor();
 			break;
 		}
 		case EDITOR_MODE_ARM: {
 			ret = armStartDrawing(z, x);
 			break;
 		}
+		case EDITOR_MODE_DELETE: {
+			return delPoint(z, x);
+		}
 	}
-	if (ret) {
-		beltUpdateColor();
-		state = EDITOR_STATE_DRAWING;
-	}
+	if (ret) state = EDITOR_STATE_DRAWING;
 	return ret;
 }
 
@@ -111,18 +114,6 @@ bool Editor::endDrawing(bool cancel) {
 bool Editor::beltStartDrawing(int z, int x) {
 	Belt* belt;
 	Map::MapUnit mu = map.getMap(z, x);
-	/*if (MAP_ISBELT(mu.type) && mu.i == ((Belt*)(mu.obj))->getLength() - 1) { // merge after previous belt, do not push first point
-		current = new Belt();
-		belt = (Belt*)current;
-		prevBelt = ((Belt*)(mu.obj));
-	}
-	else if (mu.type != MAP_BLANK) return 0; // intersects, do not start drawing
-	else { // normal case, push first point
-		current = new Belt();
-		belt = (Belt*)current;
-		belt->pushPoint(z, x);
-		map.write(z, x, MAP_BELT_DRAWING, belt, 0);
-	}*/
 	if (MAP_ISBELT(mu.type) && mu.i == ((Belt*)(mu.obj))->getLength() - 1 || mu.type == MAP_BLANK) {
 		current = new Belt();
 		belt = (Belt*)current;
@@ -221,10 +212,6 @@ bool Editor::beltEndDrawing(bool cancel) {
 	}
 }
 
-bool beltDelete(int z, int x) {
-	return 0;
-}
-
 void Editor::beltUpdateColor() {
 	((Belt*)current)->setColor(firstIllegalBelt == -1 ? BELT_COLOR_DRAWING: BELT_COLOR_WARNING);
 	if (prevBelt) prevBelt->setColor(BELT_COLOR_DRAWING);
@@ -278,7 +265,19 @@ bool Editor::armEndDrawing(bool cancel) {
 	return 1;
 }
 
-bool Editor::armDelete(int z, int x) {
-
+bool Editor::delPoint(int z, int x) {
+	Map::MapUnit mu = map.getMap(z, x);
+	if (MAP_ISBELT(mu.type)) {
+		Belt* belt = (Belt*)(mu.obj);
+		belt->delPoint(mu.i);
+		if (belt->getLength() == 0) delete belt;
+		return 1;
+	}
+	else if (mu.type == MAP_ARM) {
+		Arm* arm = (Arm*)(mu.obj);
+		map.write(z, x, MAP_BLANK, NULL);
+		delete arm;
+		return 1;
+	}
 	return 0;
 }

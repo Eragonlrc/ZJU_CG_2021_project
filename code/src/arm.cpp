@@ -70,12 +70,12 @@ void Arm::update() {
 		else state = 4;
 	}
 	if (state == 4) {
-		Map::MapUnit mu = map.getMap(tx, ty);
-		if (mu.type == MAP_BOX && ((Box*)(mu.obj))->isReady() == false)	return;
 		if (abs(arm1[0] - to * 90) > 0.5 || (to == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] -= clockWise * 0.5;
 		else state = 1;
 	}
 	if (state == 5) {
+		Map::MapUnit mu = map.getMap(tx, ty);
+		if (mu.type == MAP_BOX && ((Box*)(mu.obj))->getReady() == false)	return;
 		if (clawAngle < 60.0) clawAngle += 1.0;
 		else {
 			updateItem();
@@ -92,7 +92,7 @@ void Arm::update() {
 		if (abs(arm1[1] - 3.0) > 0.05)	arm1[1] += 0.2;
 		else if (abs(arm2[1] - (-3.0)) > 0.05) arm2[1] += 0.2;
 		else if (abs(arm3[1] - (-28.0)) > 0.05) arm3[1] += 0.2;
-		if (!(abs(arm1[0] - from * 90) > 1.0 || (from == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))&&(!(abs(arm3[1] - (-15.0)) > 0.05))) state = 0;
+		else state = 0;
 	}
 	if (arm1[0] > 360.0)	arm1[0] -= 360.0;
 	if (arm1[0] < 0)	arm1[0] += 360.0;
@@ -224,7 +224,7 @@ void Arm::updateItem() {
 	Map::MapUnit mu = map.getMap(tx, ty);
 	if (MAP_ISBELT(mu.type))
 		((Belt*)(mu.obj))->addComponent(robot, mu.i);
-	//if (mu.type == MAP_BOX) ((Box*)(mu.obj))->attach(robot);
+	if (mu.type == MAP_BOX) ((Box*)(mu.obj))->attach(robot);
 }
 
 void Arm::setColor(int c) {

@@ -654,10 +654,11 @@ void Belt::drawSingle() {
 
 Belt* Belt::delPoint(int index) {
     Belt* newBelt = NULL;
-    for (int i = 0; i < points.size(); i++) { // delete belt from map
-        map.write(points[0].first, points[0].second, MAP_BLANK, NULL, i);
+    delMap();
+    if (points.size() == 1) {
+        points.pop_back();
+        return NULL;
     }
-    if (points.size() == 1) return NULL;
     else if (points[0].first == points[points.size() - 1].first && points[0].second == points[points.size() - 1].second) { // loop
         if (index == 0 || index == points.size() - 1) { // delete ending points
             // delete components on the ending point

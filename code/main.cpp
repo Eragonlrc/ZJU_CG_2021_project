@@ -41,7 +41,7 @@ void renderScene(void)
 	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
 	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
-	GLfloat light_pos[] = { BOX_SIZE / 2, 10, BOX_SIZE / 2, 1 };
+	GLfloat light_pos[] = { BOX_SIZE / 2, 50, BOX_SIZE / 2, 1 };
 
 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
@@ -139,7 +139,6 @@ void Mouse(int button, int state, int x, int y)
 				else if (editor.getMode() == EDITOR_MODE_ARM) editor.nextPoint(clickZ, clickX);
 				else editor.endDrawing();
 			}
-			printf("state = %d\n", editor.getState());
 			Map::MapUnit mu = map.getMap(clickZ, clickX);
 		}
 		else leftDown = false;
@@ -254,31 +253,6 @@ void init() {
 	obj2->pushPoint(5 + 512, 5 + 512);
 	obj2->updateMap();
 	obj2->addComponent(new Robot(1));
-	obj2->setColor(BELT_COLOR_WARNING);
-
-	Belt* obj3 = new Belt();
-	obj3->pushPoint(0 + 512, 6 + 512);
-	obj3->pushPoint(0 + 512, 7 + 512);
-	obj3->pushPoint(0 + 512, 8 + 512);
-	obj3->pushPoint(0 + 512, 9 + 512);
-	obj3->pushPoint(1 + 512, 9 + 512);
-	obj3->pushPoint(1 + 512, 8 + 512);
-	obj3->pushPoint(2 + 512, 8 + 512);
-	obj3->pushPoint(3 + 512, 8 + 512);
-	obj3->pushPoint(3 + 512, 9 + 512);
-	obj3->pushPoint(4 + 512, 9 + 512);
-	obj3->pushPoint(4 + 512, 8 + 512);
-	obj3->pushPoint(4 + 512, 7 + 512);
-	obj3->pushPoint(4 + 512, 6 + 512);
-	obj3->pushPoint(3 + 512, 6 + 512);
-	obj3->pushPoint(3 + 512, 7 + 512);
-	obj3->pushPoint(2 + 512, 7 + 512);
-	obj3->pushPoint(2 + 512, 6 + 512);
-	obj3->pushPoint(1 + 512, 6 + 512);
-	obj3->pushPoint(0 + 512, 6 + 512);
-	obj3->updateMap();
-	obj3->addComponent(new Robot(1));
-	obj3->setColor(BELT_COLOR_DRAWING);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);
@@ -295,8 +269,29 @@ void init() {
 
 	//camera.setCamera(BOX_SIZE / 2, 1, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
 
-	//Arm* arm = new Arm(0 + 512, 5 + 512, 3, 1);
-	//map.write(0, 5, MAP_ARM, arm);
+	Box* box = new Box(512, 0.2, 517);
+	box->setType(1);
+	box->setRType(1);
+	map.write(517, 512, MAP_BOX, box);
+
+	box = new Box(512, 0.2, 521);
+	box->setType(1);
+	box->setRType(3);
+	map.write(521, 512, MAP_BOX, box);
+
+	box = new Box(514, 0.2, 519);
+	box->setType(1);
+	box->setRType(5);
+	map.write(519, 514, MAP_BOX, box);
+
+	box = new Box(510, 0.2, 519);
+	box->setType(1);
+	box->setRType(7);
+	map.write(519, 510, MAP_BOX, box);
+
+	box = new Box(512, 0.2, 519);
+	box->setType(2);
+	map.write(519, 512, MAP_BOX, box);
 }
 
 int main(int argc, char* argv[])

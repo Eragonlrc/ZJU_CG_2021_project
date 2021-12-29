@@ -24,8 +24,7 @@ private:
 	int need[6],cneedt; //终点需要的部件类型
 	int rec[6], crect; //已经接收的部件类型
 public:
-	Box();
-	void init();
+	Box(float _x, float _y, float _z);
 	void draw();
 	void setRType(int r_typ);  //设置robot的type
 	int getRType();   //获取起点零部件类型

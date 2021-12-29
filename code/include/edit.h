@@ -27,14 +27,14 @@ private:
 	void beltAddPoint(int z, int x);
 	void beltUndoPoint();
 	bool beltEndDrawing(bool cancel);
-	bool beltDelete(int z, int x);
 	void beltUpdateColor();
 
 	bool armStartDrawing(int z, int x);
 	bool armSetFrom(int z, int x);
 	bool armSetTo(int z, int x);
 	bool armEndDrawing(bool cancel);
-	bool armDelete(int z, int x);
+
+	bool delPoint(int z, int x);
 public:
 	Editor();
 	void draw();

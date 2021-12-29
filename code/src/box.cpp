@@ -1,14 +1,18 @@
-#include"box.h"
+#include "box.h"
+#include "map.h"
+#include "arm.h"
 #include<stdio.h>
 #include<stdlib.h>
 #include<time.h>
 
+extern Map map;
+
 TexLoader Box::t(2);
 
-void Box::init()
+Box::Box(float _x, float _y, float _z)
 {
 	x = 0.2; y = 0.15; z = 0.2; 
-	tran_x = 1;  tran_y = 0.5; tran_z = -1; 
+	tran_x = _x;  tran_y = _y; tran_z = _z; 
 	tran_y2 = 0; rotate = 0; frotate = 360;
 	r_typ = 1; rec_flag = false;
 	t.genTex();
@@ -18,8 +22,6 @@ void Box::init()
 	r = new Robot(1);
 	setType(2);
 }
-
-Box::Box() = default;
 
 bool Box::getReady()
 {
@@ -73,12 +75,12 @@ void Box::setType(int b_typ)
 	else
 	{
 		srand((unsigned)time(NULL));
-		need[0] = rand()%2+1;
-		need[1] = rand()%2+3;
-		need[2] = rand()%2+5;
-		need[3] = need[2];
-		need[4] = rand()%2+7;
-		need[5] = need[4];
+		need[0] = 1; //rand()%2+1;
+		need[1] = 3; //rand()%2+3;
+		need[2] = 5; //rand()%2+5;
+		need[3] = 5; // need[2];
+		need[4] = 7; // rand() % 2 + 7;
+		need[5] = 7; // need[4];
 		for (int i = 0; i < 6; i++)
 			rec[i] = 0;
 		crect = 0;
@@ -160,27 +162,33 @@ void Box::draw()
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glScalef(x, y, z);
+	
 	glBegin(GL_QUADS);
-	glTexCoord2f(1, 1); glVertex3f(-1, 1, 1);
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(1, 1); glVertex3f(-1, 1, 1);	// 
 	glTexCoord2f(1, 0); glVertex3f(-1, -1, 1);
 	glTexCoord2f(0, 0); glVertex3f(1, -1, 1);
 	glTexCoord2f(0, 1); glVertex3f(1, 1, 1);
 
+	glNormal3f(0, 0, -1);
 	glTexCoord2f(1, 1); glVertex3f(-1, 1, -1);
 	glTexCoord2f(1, 0); glVertex3f(-1, -1, -1);
 	glTexCoord2f(0, 0); glVertex3f(1, -1, -1);
 	glTexCoord2f(0, 1); glVertex3f(1, 1, -1);
 
+	glNormal3f(1, 0, 0);
 	glTexCoord2f(1, 1); glVertex3f(1, -1, 1);
 	glTexCoord2f(1, 0); glVertex3f(1, -1, -1);
 	glTexCoord2f(0, 0); glVertex3f(1, 1, -1);
 	glTexCoord2f(0, 1); glVertex3f(1, 1, 1);
 
+	glNormal3f(-1, 0, 0);
 	glTexCoord2f(1, 1); glVertex3f(-1, -1, 1);
 	glTexCoord2f(1, 0); glVertex3f(-1, -1, -1);
 	glTexCoord2f(0, 0); glVertex3f(-1, 1, -1);
 	glTexCoord2f(0, 1); glVertex3f(-1, 1, 1);
 
+	glNormal3f(0, -1, 0);
 	glTexCoord2f(1, 1); glVertex3f(-1, -1, 1);
 	glTexCoord2f(1, 0); glVertex3f(-1, -1, -1);
 	glTexCoord2f(0, 0); glVertex3f(1, -1, -1);
@@ -199,6 +207,7 @@ void Box::draw()
 	glScalef(x, y, z);
 	glBegin(GL_QUADS);
 
+	glNormal3f(0, 1, 0);
 	glTexCoord2f(1, 1);  glVertex3f(-0.8, 1, 0.8);
 	glTexCoord2f(1, 0);  glVertex3f(-0.8, 1, -0.8);
 	glTexCoord2f(0, 0);  glVertex3f(0.8, 1, -0.8);
@@ -218,6 +227,21 @@ void Box::draw()
 			r->draw();
 			glPopMatrix();
 			if (tran_y2 < 0) tran_y2 += 0.002;
+			else {
+				static const int mapOffset[][2] = { {-1, 0}, {0, -1}, {1, 0}, {0, 1} };
+				for (int i = 0; i < 4; i++) {
+					Map::MapUnit neighbor = map.getMap(tran_z + mapOffset[i][0], tran_x + mapOffset[i][1]);
+					if (neighbor.type == MAP_ARM) {
+						Arm* arm = (Arm*)(neighbor.obj);
+						if (arm->getState() == 0 && arm->getDirection() == i) {
+							arm->attach(r);
+							arm->activate();
+							has_r = 0;
+							break;
+						}
+					}
+				}
+			}
 		}
 		else
 		{
@@ -231,7 +255,10 @@ void Box::draw()
 
 	if (typ == 2)
 	{
+		glPushMatrix();
+		glTranslatef(0.0, 1.0, 0.0);
 		drawWholeRobot();
+		glPopMatrix();
 		if (has_r == 1)
 		{
 			glPushMatrix();
@@ -254,13 +281,13 @@ void Box::draw()
 		if (rec_flag) drawright();
 		else drawwrong();
 
-	if (cneedt == crect)
+	/*if (cneedt == crect)
 	{
 		glPushMatrix();
 		glTranslated(0, -0.2, 0);
 		drawWholeRobot();
 		glPopMatrix();
-	}
+	}*/
 }
 
 void Box::drawWholeRobot()  
@@ -270,14 +297,27 @@ void Box::drawWholeRobot()
 	glPushMatrix();
 	glTranslatef(tran_x , tran_y+0.8, tran_z);
 	glRotated(rotate, 0, 1, 0);
-	rneed->draw();
+	if (need[0] == rec[0]) {	// 该部件已得到
+		glColor3f(0.0, 1.0, 0.0);
+		rneed->draw();
+		glColor3f(1.0, 1.0, 1.0);
+	}
+	else 
+		rneed->draw();
+	
 	glPopMatrix();
 
 	rneed->setType(need[1]);
 	glPushMatrix();
 	glTranslatef(tran_x , tran_y+0.62, tran_z);
 	glRotated(rotate, 0, 1, 0);
-	rneed->draw();
+	if (need[1] == rec[1]) {	// 该部件已得到
+		glColor3f(0.0, 1.0, 0.0);
+		rneed->draw();
+		glColor3f(1.0, 1.0, 1.0);
+	}
+	else
+		rneed->draw();
 	glPopMatrix();
 
 	rneed->setType(need[2]);
@@ -285,7 +325,13 @@ void Box::drawWholeRobot()
 	glTranslatef(tran_x, tran_y+0.7, tran_z);
 	glRotated(rotate, 0, 1, 0);
 	glTranslatef(0.15, 0, 0);
-	rneed->draw();
+	if (need[2] == rec[2]) {	// 该部件已得到
+		glColor3f(0.0, 1.0, 0.0);
+		rneed->draw();
+		glColor3f(1.0, 1.0, 1.0);
+	}
+	else
+		rneed->draw();
 	glPopMatrix();
 
 	rneed->setType(need[3]);
@@ -293,7 +339,13 @@ void Box::drawWholeRobot()
     glTranslatef(tran_x, tran_y+0.7, tran_z);
 	glRotated(rotate, 0, 1, 0);
 	glTranslatef(-0.15, 0, 0);
-	rneed->draw();
+	if (need[3] == rec[3]) {	// 该部件已得到
+		glColor3f(0.0, 1.0, 0.0);
+		rneed->draw();
+		glColor3f(1.0, 1.0, 1.0);
+	}
+	else
+		rneed->draw();
 	glPopMatrix();
 
 	if (need[4] != 8)
@@ -303,7 +355,13 @@ void Box::drawWholeRobot()
 		glTranslatef(tran_x, tran_y + 0.45, tran_z);
 		glRotated(rotate, 0, 1, 0);
 		glTranslatef(0.08, 0, 0);
-		rneed->draw();
+		if (need[4] == rec[4]) {	// 该部件已得到
+			glColor3f(0.0, 1.0, 0.0);
+			rneed->draw();
+			glColor3f(1.0, 1.0, 1.0);
+		}
+		else
+			rneed->draw();
 		glPopMatrix();
 
 		rneed->setType(need[4]);
@@ -311,7 +369,13 @@ void Box::drawWholeRobot()
 		glTranslatef(tran_x , tran_y + 0.45, tran_z);
 		glRotated(rotate, 0, 1, 0);
 		glTranslatef(-0.08, 0, 0);
-		rneed->draw();
+		if (need[5] == rec[5]) {	// 该部件已得到
+			glColor3f(0.0, 1.0, 0.0);
+			rneed->draw();
+			glColor3f(1.0, 1.0, 1.0);
+		}
+		else
+			rneed->draw();
 		glPopMatrix();
 	}
 	else
@@ -320,7 +384,13 @@ void Box::drawWholeRobot()
 		glPushMatrix();
 		glTranslatef(tran_x, tran_y + 0.45, tran_z);
 		glRotated(rotate, 0, 1, 0);
-		rneed->draw();
+		if (need[4] == rec[4]) {	// 该部件已得到
+			glColor3f(0.0, 1.0, 0.0);
+			rneed->draw();
+			glColor3f(1.0, 1.0, 1.0);
+		}
+		else
+			rneed->draw();
 		glPopMatrix();
 	}
 	
