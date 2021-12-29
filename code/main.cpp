@@ -130,7 +130,7 @@ void Mouse(int button, int state, int x, int y)
 			leftDown = true;
 			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);	// 根据鼠标位置计算网格的算法有待优化
 			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
-			printf("Mouse Click: x = %d, z = %d, state = %d\n", clickX, clickZ, editor.getState());
+			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 			if (bEdit) {
 				if (editor.getState() == EDITOR_STATE_IDLE) {
 					editor.startDrawing(clickZ, clickX);
@@ -139,12 +139,12 @@ void Mouse(int button, int state, int x, int y)
 				else if (editor.getMode() == EDITOR_MODE_ARM) editor.nextPoint(clickZ, clickX);
 				else editor.endDrawing();
 			}
-			Map::MapUnit mu = map.getMap(clickZ, clickX);
+			/*Map::MapUnit mu = map.getMap(clickZ, clickX);
 			printf("first: (%d, %d), last: (%d, %d)\n", map.getFirst().first, map.getFirst().second, map.getLast().first, map.getLast().second);
 			for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 				Map::MapUnit mu = map.getMap(i);
 				printf("(%d, %d) type = %d\n", i.first, i.second, mu.type);
-			}
+			}*/
 		}
 		else leftDown = false;
 	}
@@ -231,7 +231,7 @@ void init() {
 
 	Belt::init();
 
-	/*Belt* obj = new Belt();
+	Belt* obj = new Belt();
 	obj->pushPoint(0 + 512, 0 + 512);
 	obj->pushPoint(1 + 512, 0 + 512);
 	obj->pushPoint(1 + 512, 1 + 512);
@@ -257,7 +257,7 @@ void init() {
 	obj2->pushPoint(5 + 512, 6 + 512);
 	obj2->pushPoint(5 + 512, 5 + 512);
 	obj2->updateMap();
-	obj2->addComponent(new Robot(1));*/
+	obj2->addComponent(new Robot(1));
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);
@@ -274,7 +274,7 @@ void init() {
 
 	//camera.setCamera(BOX_SIZE / 2, 1, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
 
-	/*Box* box = new Box(512, 0.2, 517);
+	Box* box = new Box(512, 0.2, 517);
 	box->setType(1);
 	box->setRType(1);
 	map.write(517, 512, MAP_BOX, box);
@@ -296,7 +296,7 @@ void init() {
 
 	box = new Box(512, 0.2, 519);
 	box->setType(2);
-	map.write(519, 512, MAP_BOX, box);*/
+	map.write(519, 512, MAP_BOX, box);
 }
 
 int main(int argc, char* argv[])
