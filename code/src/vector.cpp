@@ -1,7 +1,6 @@
 #include "Vector.h"
 // 计算向量的长度 
-inline float Vector3::length()
-{
+inline float Vector3::length(){
     return (float)(x * x + y * y + z * z);
 }
 // 单位化一向量 

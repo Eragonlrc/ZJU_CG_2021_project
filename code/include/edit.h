@@ -2,6 +2,8 @@
 #include "map.h"
 #include "belt.h"
 #include "skybox.h"
+#include "arm.h"
+#include "box.h"
 
 #define EDITOR_MODE_BELT 0
 #define EDITOR_MODE_ARM 1
@@ -29,5 +31,11 @@ public:
 	void beltAddPoint(int z, int x);
 	void beltUndoPoint();
 	bool beltEndDrawing(bool cancel);
+	bool beltDelete(int z, int x);
 
+	bool armStartDrawing(int z, int x);
+	void armSetFrom(int z, int x);
+	void armSetTo(int z, int x);
+	bool armEndDrawing(bool cancel);
+	bool armDelete(int z, int x);
 };
