@@ -2,6 +2,7 @@
 #include "component.h"
 #include "belt.h"
 #include "map.h"
+#include "box.h"
 #include <gl/glut.h>
 #include <vector>
 #include <math.h>

@@ -66,10 +66,12 @@ void Arm::update() {
 	if (state == 3) {
 		if (abs(arm1[1] - (-20.0)) > 0.05)	arm1[1] -= 0.2;
 		else if (abs(arm2[1] - (-35.0)) > 0.05) arm2[1] -= 0.2;
-		else if (abs(arm3[1] - (-15.0)) > 0.05) arm3[1] += 0.2;
+		else if (abs(arm3[1] - (-28.0)) > 0.05) arm3[1] += 0.2;
 		else state = 4;
 	}
 	if (state == 4) {
+		Map::MapUnit mu = map.getMap(tx, ty);
+		if (mu.type == MAP_BOX && ((Box*)(mu.obj))->isReady() == false)	return;
 		if (abs(arm1[0] - to * 90) > 0.5 || (to == 0 && (arm1[0] < 359.0 && arm1[0] > 1.0)))	arm1[0] -= clockWise * 0.5;
 		else state = 1;
 	}
@@ -178,7 +180,9 @@ void Arm::draw() {
 						drawClaw();
 						if (robot != NULL && showAttachment == true) {
 							glTranslatef(0.0, -0.05, 0.4);
+							glScalef(1.5, 1.5, 1.5);
 							(*robot).draw();
+							glScalef(1.0 / 1.5, 1.0 / 1.5, 1.0 / 1.5);
 							glTranslatef(0.0, 0.05, -0.4);
 						}
 					glPopMatrix();
@@ -193,6 +197,7 @@ void Arm::draw() {
 void Arm::activate() {
 	state = 1;
 }
+
 
 void Arm::attach(Robot* rbt){
 	robot = rbt;
@@ -219,6 +224,7 @@ void Arm::updateItem() {
 	Map::MapUnit mu = map.getMap(tx, ty);
 	if (MAP_ISBELT(mu.type))
 		((Belt*)(mu.obj))->addComponent(robot, mu.i);
+	//if (mu.type == MAP_BOX) ((Box*)(mu.obj))->attach(robot);
 }
 
 void Arm::setColor(int c) {
