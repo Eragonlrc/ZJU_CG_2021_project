@@ -683,7 +683,7 @@ Belt* Belt::delPoint(int index) {
             std::vector<OnBeltComponent> tmpvec(components.begin(), it1);
             components.erase(components.begin(), it1);
             for (int i = 0; i < tmpvec.size(); i++) {
-                tmpvec[i].move += components.size();
+                tmpvec[i].move += points.size() - index - 2;
             }
             for (int i = 0; i < components.size(); i++) {
                 components[i].move -= index + 1;
