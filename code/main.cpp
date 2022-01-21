@@ -50,8 +50,8 @@ void updateView(float w, float h, bool save = 1) {
 			position = camera.getPosition();
 			view = camera.getView();
 			upVector = camera.getUpVector();
+			camera.setCamera(position.x, 10, position.z, position.x, 1, position.z, 0, 0, -1);
 		}
-		camera.setCamera(position.x, 10, position.z, position.x, 1, position.z, 0, 0, -1);
 		glOrtho(-5 * ratio * (1 - menuWidthRatio), 5 * ratio * (1 - menuWidthRatio), -5, 5, 0.1, 400);
 	}
 	glMatrixMode(GL_MODELVIEW);
@@ -88,7 +88,7 @@ void renderScene(void)
 	glEnable(GL_LIGHT0);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	//sky.createSkyBox(BOX_SIZE / 2, 0, BOX_SIZE / 2, 1.0, 0.5, 1.0);
+	sky.createSkyBox(BOX_SIZE / 2, 0, BOX_SIZE / 2, 1.0, 0.5, 1.0);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glEnable(GL_COLOR_MATERIAL);
@@ -136,7 +136,7 @@ void reshape(int w, int h)
 	if (h == 0)	h = 1;
 	wWidth = w, wHeight = h;
 	menuWidth = w * menuWidthRatio;
-	menu.setWH((float)wWidth / wHeight);
+	menu.setWH((float)wWidth / wHeight * menuWidthRatio);
 	updateView(wWidth, wHeight);
 }
 
@@ -250,7 +250,7 @@ void init() {
 	wWidth = glutGet(GLUT_SCREEN_WIDTH);
 	wHeight = glutGet(GLUT_SCREEN_HEIGHT);
 	menuWidth = wWidth * menuWidthRatio;
-	menu.setWH((float)wWidth / wHeight);
+	menu.setWH((float)wWidth / wHeight * menuWidthRatio);
 	//printf("%d %d\n", wWidth, wHeight);
 
 	Belt::init();

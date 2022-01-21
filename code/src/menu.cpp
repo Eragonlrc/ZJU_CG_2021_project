@@ -50,11 +50,11 @@ Menu::Menu() : texture(1) {};
 void Menu::init() {
 	texture.genTex();
 	texture.loadTex(0, "textures/menu/menu.bmp");
-	buttons.push_back(Button(0, 0.8, 1.2 * whratio, 0.15));
+	buttons.push_back(Button(0, 0.8, 1.2 * whratio, 0.2));
 	buttons[0].init("textures/menu/buttonBelt.bmp");
-	buttons.push_back(Button(0, 0.6, 1.2 * whratio, 0.15));
+	buttons.push_back(Button(0, 0.55, 1.2 * whratio, 0.2));
 	buttons[1].init("textures/menu/buttonArm.bmp");
-	buttons.push_back(Button(0, 0.4, 1.2 * whratio, 0.15));
+	buttons.push_back(Button(0, 0.3, 1.2 * whratio, 0.2));
 	buttons[2].init("textures/menu/buttonDelete.bmp");
 	buttons[editor.getMode()].changeStatus();
 }
@@ -64,7 +64,6 @@ void Menu::setWH(float _whratio) {
 }
 
 void Menu::setView(float wWidth, float wHeight) {
-	float ratio = (float)wWidth / wHeight;
 	glViewport(0, 0, wWidth * menuWidthRatio, wHeight);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
