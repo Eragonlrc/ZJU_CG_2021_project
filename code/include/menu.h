@@ -1,5 +1,6 @@
 #pragma once
 #include "texture.h"
+#include "edit.h"
 #include <vector>
 
 class Button {
@@ -8,7 +9,8 @@ private:
 	float x, y, w, h;
 	TexLoader texture;
 public:
-	Button(const char *texPath, float _x, float _y, float _w, float _h);
+	Button(float _x, float _y, float _w, float _h);
+	void init(const char* texPath);
 	void draw();
 	bool click(float mouseX, float mouseY);
 	void changeStatus();
@@ -16,11 +18,15 @@ public:
 
 class Menu {
 private:
-	float x, y, w, h;
+	TexLoader texture;
 	std::vector<Button> buttons;
+	float whratio;
 public:
-	Menu(float whratio);
+	Menu();
+	void init();
+	void setWH(float _whratio);
+	void setView(float wWidth, float wHeight);
 	void draw();
-	int click(float mouseX, float mouseY);
+	void click(float mouseX, float mouseY);
 	int getStatus();
 };

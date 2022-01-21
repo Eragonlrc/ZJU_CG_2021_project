@@ -45,6 +45,9 @@
     <ClInclude Include="include\edit.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\menu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arm.cpp">
@@ -71,13 +74,16 @@
     <ClCompile Include="src\vector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\box.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\edit.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

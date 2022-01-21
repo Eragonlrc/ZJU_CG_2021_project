@@ -10,6 +10,7 @@
 #include "arm.h"
 #include "edit.h"
 #include "box.h"
+#include "menu.h"
 
 #define MAX_ARM 10
 
@@ -20,17 +21,53 @@ int moveX = 0, moveZ = 0;
 int prevX = 0, prevZ = 0;
 bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
-int wWidth, wHeight;	// 屏幕宽高
+int wWidth, wHeight, menuWidth;	// 屏幕宽高，菜单宽
+const float menuWidthRatio = 0.2;
 
 Map map;
 Camera camera;
 SkyBox sky;
 Editor editor;
+Menu menu;
+
+void updateView(float w, float h, bool save = 1) {
+	static Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
+	static Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
+	static Vector3 upVector = Vector3(0, 1, 0);
+	float ratio = w / h;
+	if (!bEdit) {	// 非编辑模式
+		glViewport(0, 0, w, h);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
+		gluPerspective(45.0, ratio, 0.1, 4000.0);
+	}
+	else {	// 编辑模式
+		glViewport(w * menuWidthRatio, 0, w * (1 - menuWidthRatio), h);
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		if (save) {
+			position = camera.getPosition();
+			view = camera.getView();
+			upVector = camera.getUpVector();
+		}
+		camera.setCamera(position.x, 10, position.z, position.x, 1, position.z, 0, 0, -1);
+		glOrtho(-5 * ratio * (1 - menuWidthRatio), 5 * ratio * (1 - menuWidthRatio), -5, 5, 0.1, 400);
+	}
+	glMatrixMode(GL_MODELVIEW);
+	//glLoadIdentity();
+}
 
 void renderScene(void)
 {
 	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	if (bEdit) { // draw menu
+		menu.setView(wWidth, wHeight);
+		menu.draw();
+		updateView(wWidth, wHeight, 0);
+	}
 	glLoadIdentity();
 
 	camera.setLook();
@@ -51,7 +88,7 @@ void renderScene(void)
 	glEnable(GL_LIGHT0);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	sky.createSkyBox(BOX_SIZE / 2, 0, BOX_SIZE / 2, 1.0, 0.5, 1.0);
+	//sky.createSkyBox(BOX_SIZE / 2, 0, BOX_SIZE / 2, 1.0, 0.5, 1.0);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	glEnable(GL_COLOR_MATERIAL);
@@ -90,35 +127,16 @@ void renderScene(void)
 		editor.drawMesh(moveZ, moveX);
 	}
 	glDisable(GL_COLOR_MATERIAL);
+	glDisable(GL_LIGHTING);
 	glutSwapBuffers();
-}
-
-void updateView(float w, float h) {
-	static Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
-	static Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
-	static Vector3 upVector = Vector3(0, 1, 0);
-	float ratio = w / h;
-	glViewport(0, 0, w, h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	if (!bEdit) {	// 非编辑模式
-		camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
-		gluPerspective(45.0, ratio, 0.1, 4000.0);
-	}
-	else {	// 编辑模式
-		position = camera.getPosition();
-		view = camera.getView();
-		upVector = camera.getUpVector();
-		camera.setCamera(position.x, 10, position.z, position.x, 1, position.z, 0, 0, -1);
-		glOrtho(-5 * ratio, 5 * ratio, -5, 5, 0.1, 400);
-	}
-	glMatrixMode(GL_MODELVIEW);
-	//glLoadIdentity();
 }
 
 void reshape(int w, int h)
 {
 	if (h == 0)	h = 1;
+	wWidth = w, wHeight = h;
+	menuWidth = w * menuWidthRatio;
+	menu.setWH((float)wWidth / wHeight);
 	updateView(wWidth, wHeight);
 }
 
@@ -128,7 +146,11 @@ void Mouse(int button, int state, int x, int y)
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
 			leftDown = true;
-			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);	// 根据鼠标位置计算网格的算法有待优化
+			if (bEdit && x <= menuWidth) { // click menu
+				menu.click((float)x / wHeight * 2 - (float)menuWidth / wHeight, 1 - (float)y / wHeight * 2);
+				return;
+			}
+			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
 			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 			if (bEdit) {
@@ -227,9 +249,13 @@ void key(unsigned char k, int x, int y) {
 void init() {
 	wWidth = glutGet(GLUT_SCREEN_WIDTH);
 	wHeight = glutGet(GLUT_SCREEN_HEIGHT);
+	menuWidth = wWidth * menuWidthRatio;
+	menu.setWH((float)wWidth / wHeight);
 	//printf("%d %d\n", wWidth, wHeight);
 
 	Belt::init();
+
+	menu.init();
 
 	Belt* obj = new Belt();
 	obj->pushPoint(0 + 512, 0 + 512);
