@@ -293,5 +293,5 @@ bool Editor::delPoint(int z, int x) {
 
 int Editor::getLightColor() { return lightColor; }
 void Editor::setLightColor(int color) { lightColor = color; }
-int Editor::getLightLuminance() { return lightLuminance; }
-void Editor::setLightLuminance(int luminance) { lightLuminance = luminance; }
+float Editor::getLightLuminance() { return lightLuminance; }
+void Editor::setLightLuminance(float luminance) { lightLuminance = luminance; }

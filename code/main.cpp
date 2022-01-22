@@ -220,18 +220,6 @@ void key(unsigned char k, int x, int y) {
 		bEdit = !bEdit;
 		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
 		break;
-	case '1':
-		if (!bEdit) break;
-		editor.changeMode(EDITOR_MODE_BELT);
-		break;
-	case '2':
-		if (!bEdit)	break;
-		editor.changeMode(EDITOR_MODE_ARM);
-		break;
-	case '3':
-		if (!bEdit)	break;
-		editor.changeMode(EDITOR_MODE_DELETE);
-		break;
 	}
 
 	glutPostRedisplay();

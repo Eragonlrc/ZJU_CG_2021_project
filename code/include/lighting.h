@@ -3,11 +3,14 @@
 
 #define MAX_LIGHTSOURCE 8
 
-#define LIGHT_COLOR_NUM 4
+#define LIGHT_COLOR_NUM 7
 #define LIGHT_COLOR_WHITE 0
 #define LIGHT_COLOR_RED 1
 #define LIGHT_COLOR_GREEN 2
 #define LIGHT_COLOR_BLUE 3
+#define LIGHT_COLOR_YELLOW 4
+#define LIGHT_COLOR_MAGENTA 5
+#define LIGHT_COLOR_CYAN 6
 
 class LightSource {
 private:

@@ -56,6 +56,6 @@ public:
 
 	int getLightColor();
 	void setLightColor(int color);
-	int getLightLuminance();
-	void setLightLuminance(int luminance);
+	float getLightLuminance();
+	void setLightLuminance(float luminance);
 };

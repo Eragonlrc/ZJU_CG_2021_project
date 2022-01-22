@@ -31,6 +31,27 @@ static const float predefined_colors[][5][4] = {
 		{0, 0, 0, 1},			// ambient color
 		{0, 0, 1, 1},			// diffuse color
 		{0, 0, 1, 1}			// specular color
+	},
+	{ // yellow
+		{0.9, 0.9, 0, 1},		// sphere color
+		{1, 1, 0, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{1, 1, 0, 1},			// diffuse color
+		{1, 1, 0, 1}			// specular color
+	},
+	{ // magenta
+		{0.9, 0, 0.9, 1},		// sphere color
+		{1, 0, 1, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{1, 0, 1, 1},			// diffuse color
+		{1, 0, 1, 1}			// specular color
+	},
+	{ // cyan
+		{0, 0.9, 0.9, 1},		// sphere color
+		{0, 1, 1, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{0, 1, 1, 1},			// diffuse color
+		{0, 1, 1, 1}			// specular color
 	}
 };
 

@@ -69,7 +69,18 @@ void Menu::init() {
 	buttons[6].init("textures/menu/buttonGreen.bmp");
 	buttons.push_back(Button(0.18, -0.2, 0.1, 0.1));
 	buttons[7].init("textures/menu/buttonBlue.bmp");
+	buttons.push_back(Button(-0.12, -0.325, 0.1, 0.1));
+	buttons[8].init("textures/menu/buttonYellow.bmp");
+	buttons.push_back(Button(0, -0.325, 0.1, 0.1));
+	buttons[9].init("textures/menu/buttonMagenta.bmp");
+	buttons.push_back(Button(0.12, -0.325, 0.1, 0.1));
+	buttons[10].init("textures/menu/buttonCyan.bmp");
 	buttons[editor.getLightColor() + EDITOR_MODE_NUM].changeStatus();
+	// luminance buttons
+	buttons.push_back(Button(-0.18, -0.45, 0.1, 0.1));
+	buttons[11].init("textures/menu/buttonMinus.bmp");
+	buttons.push_back(Button(0.18, -0.45, 0.1, 0.1));
+	buttons[12].init("textures/menu/buttonPlus.bmp");
 }
 
 void Menu::setWH(float _whratio) {
@@ -98,6 +109,30 @@ void Menu::draw() {
 	// buttons
 	for (int i = 0; i < buttons.size(); i++)
 		buttons[i].draw();
+	// luminance bar
+	float luminance = editor.getLightLuminance();
+	glBegin(GL_QUADS);
+	glColor3f(0, 0, 0);
+	glVertex2f(-0.1, -0.4); glVertex2f(-0.1, -0.5);
+	glColor3f(1, 1, 1);
+	glVertex2f(0.1, -0.5); glVertex2f(0.1, -0.4);
+	glEnd();
+
+	glColor3f(1, 0, 0);
+	glBegin(GL_TRIANGLES);
+	glVertex2f(0.2 * luminance - 0.1, -0.4);
+	glVertex2f(0.2 * luminance - 0.09, -0.39);
+	glVertex2f(0.2 * luminance - 0.11, -0.39);
+
+	glVertex2f(0.2 * luminance - 0.1, -0.5);
+	glVertex2f(0.2 * luminance - 0.09, -0.51);
+	glVertex2f(0.2 * luminance - 0.11, -0.51);
+	glEnd();
+	glBegin(GL_QUADS);
+	glVertex2f(0.2 * luminance - 0.101, -0.4); glVertex2f(0.2 * luminance - 0.101, -0.5);
+	glVertex2f(0.2 * luminance - 0.099, -0.5); glVertex2f(0.2 * luminance - 0.099, -0.4);
+	glEnd();
+	glColor3f(1, 1, 1);
 }
 
 void Menu::click(float mouseX, float mouseY) {
@@ -110,13 +145,19 @@ void Menu::click(float mouseX, float mouseY) {
 					editor.changeMode(i);
 				}
 			}
-			else if (i <= EDITOR_MODE_NUM + LIGHT_COLOR_BLUE) { // light color button
+			else if (i < EDITOR_MODE_NUM + LIGHT_COLOR_NUM) { // light color button
 				int color = i - EDITOR_MODE_NUM;
 				if (color != editor.getLightColor()) {	// if hit button is not current light color, change color
 					buttons[editor.getLightColor() + EDITOR_MODE_NUM].changeStatus();
 					buttons[i].changeStatus();
 					editor.setLightColor(color);
 				}
+			}
+			else { // luminance button
+				float luminance = editor.getLightLuminance();
+				if (i == 11 && luminance > 0) luminance -= 0.1;		// minus
+				else if (i == 12 && luminance < 1) luminance += 0.1;	// plus
+				editor.setLightLuminance(luminance);
 			}
 			break;
 		}
