@@ -11,6 +11,7 @@
 #include "edit.h"
 #include "box.h"
 #include "menu.h"
+#include "lighting.h"
 
 #define MAX_ARM 10
 
@@ -74,18 +75,7 @@ void renderScene(void)
 	//printf("%f %f %f\n", camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
 	glEnable(GL_LIGHTING);
-
-	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
-	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
-	GLfloat light_pos[] = { BOX_SIZE / 2, 50, BOX_SIZE / 2, 1 };
-
-	glLightfv(GL_LIGHT0, GL_POSITION, light_pos);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient_color);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse_color);
-	//glLightfv(GL_LIGHT0, GL_SPECULAR, specular_color);
-
-	glEnable(GL_LIGHT0);
+	LightSource::enableAll();
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	sky.createSkyBox(BOX_SIZE / 2, 0, BOX_SIZE / 2, 1.0, 0.5, 1.0);
@@ -95,6 +85,8 @@ void renderScene(void)
 	//glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
 	//glMaterialf(GL_FRONT, GL_SHININESS, 0.3);
 	//glColor3f(1, 0, 0);
+
+	LightSource::drawAll();
 
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
@@ -256,6 +248,11 @@ void init() {
 	Belt::init();
 
 	menu.init();
+
+	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
+	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
+	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
+	LightSource* light0 = new LightSource(BOX_SIZE / 2, BOX_SIZE / 2);
 
 	Belt* obj = new Belt();
 	obj->pushPoint(0 + 512, 0 + 512);

@@ -147,6 +147,7 @@
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\component.h" />
     <ClInclude Include="include\edit.h" />
+    <ClInclude Include="include\lighting.h" />
     <ClInclude Include="include\map.h" />
     <ClInclude Include="include\menu.h" />
     <ClInclude Include="include\skybox.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\component.cpp" />
     <ClCompile Include="src\edit.cpp" />
+    <ClCompile Include="src\lighting.cpp" />
     <ClCompile Include="src\map.cpp" />
     <ClCompile Include="src\menu.cpp" />
     <ClCompile Include="src\skybox.cpp" />

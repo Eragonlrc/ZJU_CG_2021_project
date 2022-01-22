@@ -9,6 +9,7 @@
 #define EDITOR_MODE_BELT 0
 #define EDITOR_MODE_ARM 1
 #define EDITOR_MODE_DELETE 2
+#define EDITOR_MODE_LIGHTSOURCE 3
 
 #define EDITOR_STATE_IDLE 0
 #define EDITOR_STATE_DRAWING 1	// belt drawing, or arm waiting for from
