@@ -150,7 +150,7 @@ void Mouse(int button, int state, int x, int y)
 				menu.click((float)x / wHeight * 2 - (float)menuWidth / wHeight, 1 - (float)y / wHeight * 2);
 				return;
 			}
-			clickX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
+			clickX = (int)(camera.getPosition().x + (x - (wWidth + menuWidth) / 2) / unit + 0.5);	// account for the width of menu
 			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 			if (bEdit) {
@@ -177,7 +177,7 @@ void Mouse(int button, int state, int x, int y)
 
 void onMouseMove(int x, int y) {
 	float unit = wHeight / 10;
-	moveX = (int)(camera.getPosition().x + (x - wWidth / 2) / unit + 0.5);
+	moveX = (int)(camera.getPosition().x + (x - (wWidth + menuWidth) / 2) / unit + 0.5);	// account for the width of menu
 	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
 
 	if (!bEdit) {	// 非编辑模式下，视线随鼠标变化
