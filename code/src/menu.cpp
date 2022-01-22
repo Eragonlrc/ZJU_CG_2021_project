@@ -50,6 +50,7 @@ Menu::Menu() : texture(1) {};
 void Menu::init() {
 	texture.genTex();
 	texture.loadTex(0, "textures/menu/menu.bmp");
+	// mode buttons
 	buttons.push_back(Button(0, 0.8, 1.2 * whratio, 0.2));
 	buttons[0].init("textures/menu/buttonBelt.bmp");
 	buttons.push_back(Button(0, 0.55, 1.2 * whratio, 0.2));
@@ -59,6 +60,16 @@ void Menu::init() {
 	buttons.push_back(Button(0, 0.05, 1.2 * whratio, 0.2));
 	buttons[3].init("textures/menu/buttonLightSource.bmp");
 	buttons[editor.getMode()].changeStatus();
+	// light color buttons
+	buttons.push_back(Button(-0.18, -0.2, 0.1, 0.1));
+	buttons[4].init("textures/menu/buttonWhite.bmp");
+	buttons.push_back(Button(-0.06, -0.2, 0.1, 0.1));
+	buttons[5].init("textures/menu/buttonRed.bmp");
+	buttons.push_back(Button(0.06, -0.2, 0.1, 0.1));
+	buttons[6].init("textures/menu/buttonGreen.bmp");
+	buttons.push_back(Button(0.18, -0.2, 0.1, 0.1));
+	buttons[7].init("textures/menu/buttonBlue.bmp");
+	buttons[editor.getLightColor() + EDITOR_MODE_NUM].changeStatus();
 }
 
 void Menu::setWH(float _whratio) {
@@ -92,10 +103,20 @@ void Menu::draw() {
 void Menu::click(float mouseX, float mouseY) {
 	for (int i = 0; i < buttons.size(); i++) {
 		if (buttons[i].click(mouseX, mouseY)) {	// click hit
-			if (i != editor.getMode()) {					// if hit button is not current status, change status
-				buttons[editor.getMode()].changeStatus();
-				buttons[i].changeStatus();
-				editor.changeMode(i);
+			if (i <= EDITOR_MODE_LIGHTSOURCE) { // mode button
+				if (i != editor.getMode()) { // if hit button is not current editor mode, change mode
+					buttons[editor.getMode()].changeStatus();
+					buttons[i].changeStatus();
+					editor.changeMode(i);
+				}
+			}
+			else if (i <= EDITOR_MODE_NUM + LIGHT_COLOR_BLUE) { // light color button
+				int color = i - EDITOR_MODE_NUM;
+				if (color != editor.getLightColor()) {	// if hit button is not current light color, change color
+					buttons[editor.getLightColor() + EDITOR_MODE_NUM].changeStatus();
+					buttons[i].changeStatus();
+					editor.setLightColor(color);
+				}
 			}
 			break;
 		}

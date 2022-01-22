@@ -15,7 +15,8 @@ void Editor::draw() {
 }
 
 Editor::Editor() : mode(EDITOR_MODE_BELT), state(EDITOR_STATE_IDLE), current(NULL),
-				   prevBelt(NULL), nextBelt(NULL), firstIllegalBelt(-1) {}
+				   prevBelt(NULL), nextBelt(NULL), firstIllegalBelt(-1),
+				   lightColor(LIGHT_COLOR_WHITE), lightLuminance(1) {}
 
 int Editor::getMode() {
 	return mode;
@@ -68,7 +69,7 @@ bool Editor::startDrawing(int z, int x) {
 		}
 		case EDITOR_MODE_LIGHTSOURCE: {
 			if (LightSource::nextId() != -1) {
-				new LightSource(z, x);
+				new LightSource(z, x, lightColor, lightLuminance);
 				return 1;
 			}
 			return 0;
@@ -289,3 +290,8 @@ bool Editor::delPoint(int z, int x) {
 	}
 	return 0;
 }
+
+int Editor::getLightColor() { return lightColor; }
+void Editor::setLightColor(int color) { lightColor = color; }
+int Editor::getLightLuminance() { return lightLuminance; }
+void Editor::setLightLuminance(int luminance) { lightLuminance = luminance; }

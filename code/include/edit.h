@@ -7,6 +7,7 @@
 #include "lighting.h"
 #include <vector>
 
+#define EDITOR_MODE_NUM 4
 #define EDITOR_MODE_BELT 0
 #define EDITOR_MODE_ARM 1
 #define EDITOR_MODE_DELETE 2
@@ -24,6 +25,9 @@ private:
 private: // belt
 	Belt* prevBelt, * nextBelt;
 	int firstIllegalBelt;
+private:
+	int lightColor;
+	float lightLuminance;
 private:
 	bool beltStartDrawing(int z, int x);
 	void beltAddPoint(int z, int x);
@@ -49,4 +53,9 @@ public:
 	bool startDrawing(int z, int x);
 	void nextPoint(int z, int x);
 	bool endDrawing(bool cancel = 0);
+
+	int getLightColor();
+	void setLightColor(int color);
+	int getLightLuminance();
+	void setLightLuminance(int luminance);
 };

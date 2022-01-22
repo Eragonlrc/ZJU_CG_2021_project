@@ -3,6 +3,36 @@
 static const int lightHeight = 8;
 static const float sphereR = 0.1;
 static const float emission_default[4] = {0, 0, 0, 1};
+static const float predefined_colors[][5][4] = {
+	{ // white
+		{0.9, 0.9, 0.9, 1},		// sphere color
+		{1, 1, 1, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{1, 1, 1, 1},			// diffuse color
+		{1, 1, 1, 1}			// specular color
+	},
+	{ // red
+		{0.9, 0, 0, 1},			// sphere color
+		{1, 0, 0, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{1, 0, 0, 1},			// diffuse color
+		{1, 0, 0, 1}			// specular color
+	},
+	{ // green
+		{0, 0.9, 0, 1},			// sphere color
+		{0, 1, 0, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{0, 1, 0, 1},			// diffuse color
+		{0, 1, 0, 1}			// specular color
+	},
+	{ // blue
+		{0, 0, 0.9, 1},			// sphere color
+		{0, 0, 1, 1},			// emission color
+		{0, 0, 0, 1},			// ambient color
+		{0, 0, 1, 1},			// diffuse color
+		{0, 0, 1, 1}			// specular color
+	}
+};
 
 LightSource* LightSource::sources[MAX_LIGHTSOURCE] = { 0 };
 
@@ -46,14 +76,13 @@ LightSource::LightSource(int z, int x,
 	sources[id] = this;
 }
 
-LightSource::LightSource(int z, int x, float* _sphere_color, float* _emission_color,
-						 float* _ambient_color, float* _diffuse_color, float* _specular_color):
+LightSource::LightSource(int z, int x, int color, float luminance):
 	LightSource(z, x,
-				_sphere_color[0], _sphere_color[1], _sphere_color[2], _sphere_color[3],
-				_emission_color[0], _emission_color[1], _emission_color[2], _emission_color[3],
-				_ambient_color[0], _ambient_color[1], _ambient_color[2], _ambient_color[3],
-				_diffuse_color[0], _diffuse_color[1], _diffuse_color[2], _diffuse_color[3],
-				_specular_color[0], _specular_color[1], _specular_color[2], _specular_color[3]){}
+				predefined_colors[color][0][0] * luminance, predefined_colors[color][0][1] * luminance, predefined_colors[color][0][2] * luminance, predefined_colors[color][0][3],
+				predefined_colors[color][1][0] * luminance, predefined_colors[color][1][1] * luminance, predefined_colors[color][1][2] * luminance, predefined_colors[color][1][3],
+				predefined_colors[color][2][0] * luminance, predefined_colors[color][2][1] * luminance, predefined_colors[color][2][2] * luminance, predefined_colors[color][2][3], 
+				predefined_colors[color][3][0] * luminance, predefined_colors[color][3][1] * luminance, predefined_colors[color][3][2] * luminance, predefined_colors[color][3][3], 
+				predefined_colors[color][4][0] * luminance, predefined_colors[color][4][1] * luminance, predefined_colors[color][4][2] * luminance, predefined_colors[color][4][3]){}
 
 LightSource::~LightSource() {
 	sources[id] = 0;
