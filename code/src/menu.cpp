@@ -1,7 +1,7 @@
 #include "menu.h"
 
 static const float defaultColor[] = { 1, 1, 1 };
-static const float lineColor[] = { 0, 1, 0 };
+static const float lineColor[] = { 0.2, 0.5, 0.2 };
 
 extern float menuWidthRatio = 0.2;
 extern Editor editor;
@@ -28,6 +28,7 @@ void Button::draw() {
 	// if selected, draw line frame
 	if (selected) {
 		glColor3fv(lineColor);
+		glLineWidth(3);
 		glBegin(GL_LINE_LOOP);
 		glVertex2f(x - w / 2, y - h / 2);
 		glVertex2f(x + w / 2, y - h / 2);
@@ -35,6 +36,7 @@ void Button::draw() {
 		glVertex2f(x - w / 2, y + h / 2);
 		glEnd();
 		glColor3fv(defaultColor);
+		glLineWidth(1);
 	}
 }
 
@@ -123,7 +125,6 @@ void Menu::draw() {
 	glVertex2f(0.2 * luminance - 0.1, -0.4);
 	glVertex2f(0.2 * luminance - 0.09, -0.39);
 	glVertex2f(0.2 * luminance - 0.11, -0.39);
-
 	glVertex2f(0.2 * luminance - 0.1, -0.5);
 	glVertex2f(0.2 * luminance - 0.09, -0.51);
 	glVertex2f(0.2 * luminance - 0.11, -0.51);
