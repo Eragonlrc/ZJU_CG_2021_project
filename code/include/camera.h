@@ -32,7 +32,7 @@ public:
     // 根据鼠标设置摄像机观察方向
     void setViewByMouse();
 
-    // 左右摄像机移动
+    // 左右移动摄像机
     void yawCamera(float speed);
 
     // 前后移动摄像机

@@ -53,3 +53,42 @@ bool Map::write(int z, int x, int type, const void* obj, int index) {
 
 Point Map::getFirst() { return firstObj; }
 Point Map::getLast() { return lastObj; }
+
+bool Map::checkEdge(float z, float x) {
+	int nextZ = (int)(z + 0.5);
+	int nextX = (int)(x + 0.5);
+	float dis;
+	int nextType = getMap(nextZ, nextX).type;
+	if (nextType == MAP_BLANK)	return true;	// nothing, always pass
+	switch (nextType) {
+	case MAP_BELT_CORNER0:	// left top corner
+		dis = sqrt(pow(z - (nextZ - 0.5), 2) + pow(x - (nextX - 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		break;
+	case MAP_BELT_CORNER1:	// right top corner
+		dis = sqrt(pow(z - (nextZ - 0.5), 2) + pow(x - (nextX + 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		break;
+	case MAP_BELT_CORNER2:	// right bottom corner
+		dis = sqrt(pow(z - (nextZ + 0.5), 2) + pow(x - (nextX + 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		break;
+	case MAP_BELT_CORNER3:	// left bottom corner
+		dis = sqrt(pow(z - (nextZ + 0.5), 2) + pow(x - (nextX - 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		break;
+	case MAP_BELT_STRAIGHTX:
+		if (abs(z - nextZ) > 0.4) return true;
+		break;
+	case MAP_BELT_STRAIGHTZ:
+		if (abs(x - nextX) > 0.4) return true;
+		break;
+	case MAP_ARM:
+		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return true;
+	case MAP_BOX:
+		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return true;
+	default:	// other object, always fail
+		break;
+	}
+	return false;
+}

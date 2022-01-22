@@ -14,6 +14,9 @@
 
 #define MAX_ARM 10
 
+#define GETMESH_X(a) ((int)(camera.getPosition().x + ((a) - (wWidth + menuWidth) / 2) / meshUnit + 0.5))
+#define GETMESH_Z(b) ((int)(camera.getPosition().z + ((b) - wHeight / 2) / meshUnit + 0.5))
+
 using namespace std;
 
 int clickX = 0, clickZ = 0;
@@ -23,6 +26,7 @@ bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
 int wWidth, wHeight, menuWidth;	// 屏幕宽高，菜单宽
 const float menuWidthRatio = 0.2;
+float meshUnit;	// 编辑模式下网格边长
 
 Map map;
 Camera camera;
@@ -142,7 +146,6 @@ void reshape(int w, int h)
 
 void Mouse(int button, int state, int x, int y)
 {
-	float unit = wHeight / 10;
 	if (button == GLUT_LEFT_BUTTON) {
 		if (state == GLUT_DOWN) {
 			leftDown = true;
@@ -150,8 +153,8 @@ void Mouse(int button, int state, int x, int y)
 				menu.click((float)x / wHeight * 2 - (float)menuWidth / wHeight, 1 - (float)y / wHeight * 2);
 				return;
 			}
-			clickX = (int)(camera.getPosition().x + (x - (wWidth + menuWidth) / 2) / unit + 0.5);	// account for the width of menu
-			clickZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
+			clickX = GETMESH_X(x);	// account for the width of menu
+			clickZ = GETMESH_Z(y);
 			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 			if (bEdit) {
 				if (editor.getState() == EDITOR_STATE_IDLE) {
@@ -176,9 +179,8 @@ void Mouse(int button, int state, int x, int y)
 }
 
 void onMouseMove(int x, int y) {
-	float unit = wHeight / 10;
-	moveX = (int)(camera.getPosition().x + (x - (wWidth + menuWidth) / 2) / unit + 0.5);	// account for the width of menu
-	moveZ = (int)(camera.getPosition().z + (y - wHeight / 2) / unit + 0.5);
+	moveX = GETMESH_X(x);	// account for the width of menu
+	moveZ = GETMESH_Z(y);
 
 	if (!bEdit) {	// 非编辑模式下，视线随鼠标变化
 		while (ShowCursor(FALSE) >= 0)	// 清除计数器，避免延迟隐藏鼠标
@@ -200,6 +202,7 @@ void onMouseMove(int x, int y) {
 }
 
 void key(unsigned char k, int x, int y) {
+	Vector3 nextP;	// the next position of camera
 	switch (k) {
 	case 27:
 		exit(0);
@@ -207,18 +210,30 @@ void key(unsigned char k, int x, int y) {
 	case 'w':
 		if (bEdit)	break;
 		camera.moveCamera(camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
+			camera.moveCamera(-camera.getSpeed());
 		break;
 	case 's':
 		if (bEdit)	break;
 		camera.moveCamera(-camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
+			camera.moveCamera(camera.getSpeed());
 		break;
 	case 'a':
 		if (bEdit)	break;
 		camera.yawCamera(-camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
+			camera.yawCamera(camera.getSpeed());
 		break;
 	case 'd':
 		if (bEdit)	break;
 		camera.yawCamera(camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
+			camera.yawCamera(-camera.getSpeed());
 		break;
 	case ' ':
 		if (bEdit)	break;
@@ -251,6 +266,7 @@ void init() {
 	wHeight = glutGet(GLUT_SCREEN_HEIGHT);
 	menuWidth = wWidth * menuWidthRatio;
 	menu.setWH((float)wWidth / wHeight * menuWidthRatio);
+	meshUnit = wHeight / 10;
 	//printf("%d %d\n", wWidth, wHeight);
 
 	Belt::init();
@@ -258,7 +274,6 @@ void init() {
 	menu.init();
 
 	Belt* obj = new Belt();
-	obj->pushPoint(0 + 512, 0 + 512);
 	obj->pushPoint(1 + 512, 0 + 512);
 	obj->pushPoint(1 + 512, 1 + 512);
 	obj->pushPoint(2 + 512, 1 + 512);
