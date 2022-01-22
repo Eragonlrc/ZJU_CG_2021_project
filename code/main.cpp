@@ -252,7 +252,7 @@ void init() {
 	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
 	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
 	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
-	LightSource* light0 = new LightSource(BOX_SIZE / 2, BOX_SIZE / 2);
+	new LightSource(BOX_SIZE / 2, BOX_SIZE / 2);
 
 	Belt* obj = new Belt();
 	obj->pushPoint(0 + 512, 0 + 512);

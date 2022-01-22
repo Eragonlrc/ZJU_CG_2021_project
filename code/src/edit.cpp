@@ -66,6 +66,13 @@ bool Editor::startDrawing(int z, int x) {
 		case EDITOR_MODE_DELETE: {
 			return delPoint(z, x);
 		}
+		case EDITOR_MODE_LIGHTSOURCE: {
+			if (LightSource::nextId() != -1) {
+				new LightSource(z, x);
+				return 1;
+			}
+			return 0;
+		}
 	}
 	if (ret) state = EDITOR_STATE_DRAWING;
 	return ret;
@@ -267,6 +274,7 @@ bool Editor::armEndDrawing(bool cancel) {
 
 bool Editor::delPoint(int z, int x) {
 	Map::MapUnit mu = map.getMap(z, x);
+	LightSource::delSource(z, x);
 	if (MAP_ISBELT(mu.type)) {
 		Belt* belt = (Belt*)(mu.obj);
 		belt->delPoint(mu.i);

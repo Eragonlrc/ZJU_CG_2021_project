@@ -56,6 +56,8 @@ void Menu::init() {
 	buttons[1].init("textures/menu/buttonArm.bmp");
 	buttons.push_back(Button(0, 0.3, 1.2 * whratio, 0.2));
 	buttons[2].init("textures/menu/buttonDelete.bmp");
+	buttons.push_back(Button(0, 0.05, 1.2 * whratio, 0.2));
+	buttons[3].init("textures/menu/buttonLightSource.bmp");
 	buttons[editor.getMode()].changeStatus();
 }
 

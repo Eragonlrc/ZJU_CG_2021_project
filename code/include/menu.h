@@ -28,5 +28,4 @@ public:
 	void setView(float wWidth, float wHeight);
 	void draw();
 	void click(float mouseX, float mouseY);
-	int getStatus();
 };

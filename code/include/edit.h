@@ -4,6 +4,7 @@
 #include "skybox.h"
 #include "arm.h"
 #include "box.h"
+#include "lighting.h"
 #include <vector>
 
 #define EDITOR_MODE_BELT 0
