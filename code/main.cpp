@@ -34,18 +34,18 @@ Camera camera;
 SkyBox sky;
 Editor editor;
 Menu menu;
+static Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
+static Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
+static Vector3 upVector = Vector3(0, 1, 0);
 
 void updateView(float w, float h, bool save = 1) {
-	static Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
-	static Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
-	static Vector3 upVector = Vector3(0, 1, 0);
+	
 	float ratio = w / h;
 	if (!bEdit) {	// 非编辑模式
 		glViewport(0, 0, w, h);
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
-		gluPerspective(45.0, ratio, 0.1, 4000.0);
+		gluPerspective(camera.getFovy(), ratio, 0.1, 4000.0);
 	}
 	else {	// 编辑模式
 		glViewport(w * menuWidthRatio, 0, w * (1 - menuWidthRatio), h);
@@ -227,12 +227,23 @@ void key(unsigned char k, int x, int y) {
 		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
 			camera.yawCamera(-camera.getSpeed());
 		break;
+	case 'h':
+		if (bEdit)	break;
+		camera.updateFovy(1.0);
+		updateView(wWidth, wHeight, 1);
+		break;
+	case 'j':
+		if (bEdit)	break;
+		camera.updateFovy(-1.0);
+		updateView(wWidth, wHeight, 1);
+		break;
 	case ' ':
 		if (bEdit)	break;
 		camera.liftCamera(camera.getSpeed());
 		break;
 	case 'e':
 		bEdit = !bEdit;
+		if (!bEdit)	camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
 		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
 		break;
 	}

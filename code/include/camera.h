@@ -15,6 +15,7 @@ public:
     Vector3 getView() { return m_Center; }
     Vector3 getUpVector() { return m_UpVector; }
     float   getSpeed() { return m_Speed; }
+    float   getFovy() { return m_fovy; }
 
     // 设置速度
     void setSpeed(float speed){
@@ -50,10 +51,12 @@ public:
     // 放置摄像机
     void setLook();
 
+    void updateFovy(float diff);
 private:
     // 摄像机属性
     Vector3        m_Position;
     Vector3        m_Center;
     Vector3        m_UpVector;
     float          m_Speed;         //速度
+    float          m_fovy = 45.0;
 };

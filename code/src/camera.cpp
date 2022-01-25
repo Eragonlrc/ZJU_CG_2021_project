@@ -199,3 +199,7 @@ void Camera::setLook()
         m_Center.x, m_Center.y, m_Center.z,
         m_UpVector.x, m_UpVector.y, m_UpVector.z);
 }
+
+void Camera::updateFovy(float diff) {
+    if (m_fovy > 20 && diff < 0 || m_fovy < 70 && diff >0) m_fovy += diff;
+}
