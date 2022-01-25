@@ -36,6 +36,9 @@ ObjLoader::ObjLoader(string filename)
 		}
 	}
 	file.close();
+
+	scale = 0.1;
+	tran_x = 512; tran_y = 0.7; tran_z = 512;
 }
 
 void ObjLoader::Draw()
@@ -93,11 +96,21 @@ void ObjLoader::Draw()
 
 			glNormal3f(VN[0], VN[1], VN[2]);//绘制法向量
 
-			glVertex3f(a.x+512, a.y+0.5, a.z+512);//绘制面
-			glVertex3f(b.x+512, b.y+0.5, b.z+512);
-			glVertex3f(c.x+512, c.y+0.5, c.z+512);
+			glVertex3f(a.x*scale+tran_x, a.y*scale+tran_y, a.z*scale+tran_z);//绘制面
+			glVertex3f(b.x*scale+tran_x, b.y*scale+tran_y, b.z*scale+tran_z);
+			glVertex3f(c.x*scale+tran_x, c.y*scale+tran_y, c.z*scale+tran_z);
 			if (f[i].size() == 4) glVertex3f(d.x+512,d.y+0.5,d.z+512);
-		
 	}
 	glEnd();
+	
+}
+
+void ObjLoader::Setscale(double s)
+{
+	scale = s;
+}
+
+void ObjLoader::Settran(double tx,double ty,double tz)
+{
+	tran_x = tx; tran_y = ty; tran_z = tz;
 }

@@ -16,6 +16,10 @@ public:
 	};
 	ObjLoader(string filename);//读取函数
 	void Draw();//绘制函数
+	double scale;
+	double tran_x, tran_y, tran_z;
+	void Setscale(double s);
+	void Settran(double tx,double ty,double tz);
 private:
 	vector<vector<GLfloat>> v;//存放顶点(x,y,z)坐标
 	vector<vector<GLint>> f;//存放面的三个顶点索引
