@@ -227,12 +227,12 @@ void key(unsigned char k, int x, int y) {
 		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
 			camera.yawCamera(-camera.getSpeed());
 		break;
-	case 'h':
+	case '-':
 		if (bEdit)	break;
 		camera.updateFovy(1.0);
 		updateView(wWidth, wHeight, 1);
 		break;
-	case 'j':
+	case '+':
 		if (bEdit)	break;
 		camera.updateFovy(-1.0);
 		updateView(wWidth, wHeight, 1);
@@ -309,7 +309,7 @@ void init() {
 		exit(0);
 	}
 
-	//camera.setCamera(BOX_SIZE / 2, 1, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
+	camera.setCamera(BOX_SIZE / 2, 0.8, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
 
 	Box* box = new Box(512, 0.2, 517);
 	box->setType(1);
