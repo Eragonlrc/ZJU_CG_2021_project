@@ -54,41 +54,46 @@ bool Map::write(int z, int x, int type, const void* obj, int index) {
 Point Map::getFirst() { return firstObj; }
 Point Map::getLast() { return lastObj; }
 
-bool Map::checkEdge(float z, float x) {
+bool Map::checkEdge(float x, float y, float z) {
 	int nextZ = (int)(z + 0.5);
 	int nextX = (int)(x + 0.5);
 	float dis;
 	int nextType = getMap(nextZ, nextX).type;
-	if (nextType == MAP_BLANK)	return true;	// nothing, always pass
+	if (nextType == MAP_BLANK)	return (y >= 0.8);	// nothing, check floor
 	switch (nextType) {
 	case MAP_BELT_CORNER0:	// left top corner
 		dis = sqrt(pow(z - (nextZ - 0.5), 2) + pow(x - (nextX - 0.5), 2));
-		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		if (dis < 0.1 || dis > 0.9)	return (y >= 0.8);	// arc belt
 		break;
 	case MAP_BELT_CORNER1:	// right top corner
 		dis = sqrt(pow(z - (nextZ - 0.5), 2) + pow(x - (nextX + 0.5), 2));
-		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		if (dis < 0.1 || dis > 0.9)	return (y >= 0.8);	// arc belt
 		break;
 	case MAP_BELT_CORNER2:	// right bottom corner
 		dis = sqrt(pow(z - (nextZ + 0.5), 2) + pow(x - (nextX + 0.5), 2));
-		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		if (dis < 0.1 || dis > 0.9)	return (y >= 0.8);	// arc belt
 		break;
 	case MAP_BELT_CORNER3:	// left bottom corner
 		dis = sqrt(pow(z - (nextZ + 0.5), 2) + pow(x - (nextX - 0.5), 2));
-		if (dis < 0.1 || dis > 0.9)	return true;	// arc belt
+		if (dis < 0.1 || dis > 0.9)	return (y >= 0.8);	// arc belt
 		break;
 	case MAP_BELT_STRAIGHTX:
-		if (abs(z - nextZ) > 0.4) return true;
+		if (abs(z - nextZ) > 0.4) return (y >= 0.8);
 		break;
 	case MAP_BELT_STRAIGHTZ:
-		if (abs(x - nextX) > 0.4) return true;
+		if (abs(x - nextX) > 0.4) return (y >= 0.8);
 		break;
 	case MAP_ARM:
-		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return true;
+		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return (y >= 0.8);
+		return false;
+		break;
 	case MAP_BOX:
-		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return true;
+		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return (y >= 0.8);
+		return false;
+		break;
 	default:	// other object, always fail
+		return false;
 		break;
 	}
-	return false;
+	return (y >= 1);	// check belt height
 }

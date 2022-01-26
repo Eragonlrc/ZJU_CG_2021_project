@@ -41,6 +41,6 @@ public:
 	bool write(int z, int x, int type, const void* obj, int index = 0);	// write map[z][x], delete if type == MAP_BLANK, otherwise insert
 	Point getFirst();
 	Point getLast();
-	bool checkEdge(float z, float x);	// collision detection; true -> pass; false -> fail
+	bool checkEdge(float x, float y, float z);	// collision detection; true -> pass; false -> fail
 };
 

@@ -25,6 +25,7 @@ int moveX = 0, moveZ = 0;
 int prevX = 0, prevZ = 0;
 bool leftDown = false;
 bool bEdit = false;	// 编辑模式，从y = 10俯视
+bool bW, bA, bS, bD, bPlus, bMinus, bSpace;
 int wWidth, wHeight, menuWidth;	// 屏幕宽高，菜单宽
 const float menuWidthRatio = 0.2;
 float meshUnit;	// 编辑模式下网格边长
@@ -34,9 +35,9 @@ Camera camera;
 SkyBox sky;
 Editor editor;
 Menu menu;
-static Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
-static Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
-static Vector3 upVector = Vector3(0, 1, 0);
+Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
+Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
+Vector3 upVector = Vector3(0, 1, 0);
 
 void updateView(float w, float h, bool save = 1) {
 	
@@ -63,6 +64,46 @@ void updateView(float w, float h, bool save = 1) {
 	//glLoadIdentity();
 }
 
+void processKeyboard() {
+	Vector3 nextP;	// the next position of camera
+	if (bW) {
+		camera.moveCamera(camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.x, nextP.y, nextP.z))	// sth. at the next position
+			camera.moveCamera(-camera.getSpeed());
+	}
+	if (bS) {
+		camera.moveCamera(-camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.x, nextP.y, nextP.z))	// sth. at the next position
+			camera.moveCamera(camera.getSpeed());
+	}
+	if (bA) {
+		camera.yawCamera(-camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.x, nextP.y, nextP.z))	// sth. at the next position
+			camera.yawCamera(camera.getSpeed());
+	}
+	if (bD) {
+		camera.yawCamera(camera.getSpeed());
+		nextP = camera.getPosition();
+		if (!map.checkEdge(nextP.x, nextP.y, nextP.z))	// sth. at the next position
+			camera.yawCamera(-camera.getSpeed());
+	}
+	if (bPlus) {
+		camera.updateFovy(-1.0);
+		updateView(wWidth, wHeight, 1);
+	}
+	if (bMinus) {
+		camera.updateFovy(1.0);
+		updateView(wWidth, wHeight, 1);
+	}
+	if (bSpace) {
+		if (!camera.getJumping())
+			camera.liftCamera(camera.getSpeed());
+	}
+}
+
 void renderScene(void)
 {
 	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -75,8 +116,14 @@ void renderScene(void)
 	}
 	glLoadIdentity();
 
+	if(!bEdit)
+		processKeyboard();
+
+	Vector3 curP = camera.getPosition();
+	bool check = map.checkEdge(curP.x, curP.y, curP.z);
+	int type = map.getMap((int)(curP.z + 0.5), (int)(curP.x + 0.5)).type;
+	camera.updateHeight(check, MAP_ISBELT(type));
 	camera.setLook();
-	//printf("%f %f %f\n", camera.getPosition().x, camera.getPosition().y, camera.getPosition().z);
 
 	glEnable(GL_LIGHTING);
 	LightSource::enableAll();
@@ -193,54 +240,19 @@ void onMouseMove(int x, int y) {
 	glutPostRedisplay();
 }
 
-void key(unsigned char k, int x, int y) {
+void keyDown(unsigned char k, int x, int y) {
 	Vector3 nextP;	// the next position of camera
 	switch (k) {
 	case 27:
 		exit(0);
 		break;
-	case 'w':
-		if (bEdit)	break;
-		camera.moveCamera(camera.getSpeed());
-		nextP = camera.getPosition();
-		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
-			camera.moveCamera(-camera.getSpeed());
-		break;
-	case 's':
-		if (bEdit)	break;
-		camera.moveCamera(-camera.getSpeed());
-		nextP = camera.getPosition();
-		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
-			camera.moveCamera(camera.getSpeed());
-		break;
-	case 'a':
-		if (bEdit)	break;
-		camera.yawCamera(-camera.getSpeed());
-		nextP = camera.getPosition();
-		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
-			camera.yawCamera(camera.getSpeed());
-		break;
-	case 'd':
-		if (bEdit)	break;
-		camera.yawCamera(camera.getSpeed());
-		nextP = camera.getPosition();
-		if (!map.checkEdge(nextP.z, nextP.x))	// sth. at the next position
-			camera.yawCamera(-camera.getSpeed());
-		break;
-	case '-':
-		if (bEdit)	break;
-		camera.updateFovy(1.0);
-		updateView(wWidth, wHeight, 1);
-		break;
-	case '+':
-		if (bEdit)	break;
-		camera.updateFovy(-1.0);
-		updateView(wWidth, wHeight, 1);
-		break;
-	case ' ':
-		if (bEdit)	break;
-		camera.liftCamera(camera.getSpeed());
-		break;
+	case 'w':	bW = true; break;
+	case 's':	bS = true; break;
+	case 'a':	bA = true; break;
+	case 'd':	bD = true; break;
+	case '-':	bMinus = true; break;
+	case '+':	bPlus = true; break;
+	case ' ':	bSpace = true; break;
 	case 'e':
 		bEdit = !bEdit;
 		if (!bEdit)	camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
@@ -249,7 +261,18 @@ void key(unsigned char k, int x, int y) {
 	}
 
 	glutPostRedisplay();
-	//printf("key::%d", key);
+}
+
+void keyUp(unsigned char k, int x, int y) {
+	switch (k) {
+	case 'w':	bW = false; break;
+	case 's':	bS = false; break;
+	case 'a':	bA = false; break;
+	case 'd':	bD = false; break;
+	case '-':	bMinus = false; break;
+	case '+':	bPlus = false; break;
+	case ' ':	bSpace = false; break;
+	}
 }
 
 void init() {
@@ -258,7 +281,6 @@ void init() {
 	menuWidth = wWidth * menuWidthRatio;
 	menu.setWH((float)wWidth / wHeight * menuWidthRatio);
 	meshUnit = wHeight / 10;
-	//printf("%d %d\n", wWidth, wHeight);
 
 	Belt::init();
 
@@ -346,12 +368,14 @@ int main(int argc, char* argv[])
 	glutFullScreen();
 
 	init();
+	glutIgnoreKeyRepeat(1);	// 禁用键盘重复，实现同时处理多个键盘输入
 	glutReshapeFunc(reshape);
 	glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);
 	glutMouseFunc(Mouse);
 	glutPassiveMotionFunc(onMouseMove);
-	glutKeyboardFunc(key);
+	glutKeyboardFunc(keyDown);	// 键盘按下时回调
+	glutKeyboardUpFunc(keyUp);	// 键盘松开时回调
 
 	glutMainLoop();
 	return 0;

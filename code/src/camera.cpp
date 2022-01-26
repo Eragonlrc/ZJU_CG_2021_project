@@ -1,5 +1,5 @@
 #include "camera.h"
-
+#include <stdio.h>
 Camera::Camera()
 {
     // 初始化向量值
@@ -11,7 +11,6 @@ Camera::Camera()
     m_Position = zero;
     m_Center = view;
     m_UpVector = up;
-    m_Speed = 0.1f;
 
 }
 
@@ -172,11 +171,10 @@ void Camera::moveCamera(float speed)
 }
 
 // 上下移动摄像机
-void Camera::liftCamera(float speed)
+void Camera::liftCamera(float v0)
 {
-    int flag = (m_Position.y > m_Center.y) ? -1 : 1;// 判断向上还是向下
-    m_Position.y += speed * flag;
-    m_Center.y += speed * flag;
+    m_Jumping = true;
+    velocity += v0;
 }
 
 // x轴移动摄像机
@@ -201,5 +199,22 @@ void Camera::setLook()
 }
 
 void Camera::updateFovy(float diff) {
-    if (m_fovy > 20 && diff < 0 || m_fovy < 70 && diff >0) m_fovy += diff;
+    if (m_Fovy > 20 && diff < 0 || m_Fovy < 70 && diff >0) m_Fovy += diff;
+}
+
+void Camera::updateHeight(bool check, bool onBelt) {
+    float floor = onBelt ? (0.5 + 0.8) : 0.8;
+    if (!check) m_Jumping = false;  // bump to the edge
+    if (m_Position.y > floor) m_Jumping = true; // still falling
+    if (!m_Jumping) {
+        velocity = 0;
+        return;
+    }
+    velocity += acceleration;
+    m_Position.y += velocity;
+    m_Center.y += velocity;
+    if (m_Position.y <= floor) {
+        m_Jumping = false;
+        m_Position.y = floor;
+    }
 }
