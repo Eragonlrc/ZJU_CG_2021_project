@@ -42,5 +42,6 @@ public:
 	Point getFirst();
 	Point getLast();
 	bool checkEdge(float x, float y, float z);	// collision detection; true -> pass; false -> fail
+	float getFloor(float x, float z);
 };
 

@@ -85,15 +85,59 @@ bool Map::checkEdge(float x, float y, float z) {
 		break;
 	case MAP_ARM:
 		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return (y >= 0.8);
-		return false;
+		return (y >= 2 + 0.8 - 0.001);
 		break;
 	case MAP_BOX:
 		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return (y >= 0.8);
-		return false;
+		return (y >= 0.5 + 0.8 - 0.001);
 		break;
 	default:	// other object, always fail
 		return false;
 		break;
 	}
-	return (y >= 1);	// check belt height
+	return (y >= 0.5 + 0.8 - 0.001);	// check belt height
+}
+
+float Map::getFloor(float x, float z) {
+	int nextZ = (int)(z + 0.5);
+	int nextX = (int)(x + 0.5);
+	float dis;
+	int nextType = getMap(nextZ, nextX).type;
+	if (nextType == MAP_BLANK)	return 0.8;	// nothing, check floor
+	switch (nextType) {
+	case MAP_BELT_CORNER0:	// left top corner
+		dis = sqrt(pow(z - (nextZ - 0.5), 2) + pow(x - (nextX - 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return 0.8;	// arc belt
+		break;
+	case MAP_BELT_CORNER1:	// right top corner
+		dis = sqrt(pow(z - (nextZ - 0.5), 2) + pow(x - (nextX + 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return 0.8;	// arc belt
+		break;
+	case MAP_BELT_CORNER2:	// right bottom corner
+		dis = sqrt(pow(z - (nextZ + 0.5), 2) + pow(x - (nextX + 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return 0.8;	// arc belt
+		break;
+	case MAP_BELT_CORNER3:	// left bottom corner
+		dis = sqrt(pow(z - (nextZ + 0.5), 2) + pow(x - (nextX - 0.5), 2));
+		if (dis < 0.1 || dis > 0.9)	return 0.8;	// arc belt
+		break;
+	case MAP_BELT_STRAIGHTX:
+		if (abs(z - nextZ) > 0.4) return 0.8;
+		break;
+	case MAP_BELT_STRAIGHTZ:
+		if (abs(x - nextX) > 0.4) return 0.8;
+		break;
+	case MAP_ARM:
+		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return 0.8;
+		return 2 + 0.8;
+		break;
+	case MAP_BOX:
+		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return 0.8;
+		return 0.5 + 0.8;
+		break;
+	default:	// other object, always fail
+		return 0.8;
+		break;
+	}
+	return 0.5 + 0.8;	// check belt height
 }

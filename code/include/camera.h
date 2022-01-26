@@ -58,7 +58,7 @@ public:
 
     void updateFovy(float diff);
 
-    void updateHeight(bool check, bool onBelt);
+    void updateHeight(bool check, float floor);
 private:
     // …„œÒª˙ Ù–‘
     Vector3 m_Position;

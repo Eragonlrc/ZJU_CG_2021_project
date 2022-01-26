@@ -202,8 +202,7 @@ void Camera::updateFovy(float diff) {
     if (m_Fovy > 20 && diff < 0 || m_Fovy < 70 && diff >0) m_Fovy += diff;
 }
 
-void Camera::updateHeight(bool check, bool onBelt) {
-    float floor = onBelt ? (0.5 + 0.8) : 0.8;
+void Camera::updateHeight(bool check, float floor) {
     if (!check) m_Jumping = false;  // bump to the edge
     if (m_Position.y > floor) m_Jumping = true; // still falling
     if (!m_Jumping) {

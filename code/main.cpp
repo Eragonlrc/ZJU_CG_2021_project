@@ -120,7 +120,7 @@ void renderScene(void)
 		Vector3 curP = camera.getPosition();
 		bool check = map.checkEdge(curP.x, curP.y, curP.z);
 		int type = map.getMap((int)(curP.z + 0.5), (int)(curP.x + 0.5)).type;
-		camera.updateHeight(check, MAP_ISBELT(type));
+		camera.updateHeight(check, map.getFloor(curP.x, curP.z));
 		processKeyboard();
 	}
 	camera.setLook();
