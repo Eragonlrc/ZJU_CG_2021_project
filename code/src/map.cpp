@@ -3,10 +3,24 @@
 Map::MapUnit::MapUnit() : type(MAP_BLANK), i(0), obj(0),
 prev(POINTNULL), next(POINTNULL) {}
 
-Map::Map() : firstObj(POINTNULL), lastObj(POINTNULL) {}
+Map::Map() : firstObj(POINTNULL), lastObj(POINTNULL), groundTex(1) {}
+
+void Map::init() {
+	groundTex.genTex();
+	groundTex.loadTex(0, "textures/ground.bmp");
+
+	for (int i = MAP_BORDER_ZMIN; i <= MAP_BORDER_ZMAX; i++)
+		map[i][MAP_BORDER_XMIN].type = map[i][MAP_BORDER_XMAX].type = MAP_BORDER;
+	for (int i = MAP_BORDER_XMIN; i <= MAP_BORDER_XMAX; i++)
+		map[MAP_BORDER_ZMIN][i].type = map[MAP_BORDER_ZMAX][i].type = MAP_BORDER;
+
+	groundListId = glGenLists(1);
+	glNewList(groundListId, GL_COMPILE);
+	drawGroundList();
+	glEndList();
+}
 
 Map::MapUnit Map::getMap(int z, int x) {
-	/*z += MAP_MAXZ, x += MAP_MAXX;*/
 	if (z < 0 || z > MAP_MAXZ) return MapUnit();
 	if (x < 0 || x > MAP_MAXX) return MapUnit();
 	return map[z][x];
@@ -39,7 +53,6 @@ void Map::listDel(int z, int x) {
 }
 
 bool Map::write(int z, int x, int type, const void* obj, int index) {
-	/*z += MAP_MAXZ, x += MAP_MAXX;*/
 	if (z < 0 || z > MAP_MAXZ) return 0;
 	if (x < 0 || x > MAP_MAXX) return 0;
 	int prevType = map[z][x].type;
@@ -91,6 +104,9 @@ bool Map::checkEdge(float x, float y, float z) {
 		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return (y >= 0.8);
 		return (y >= 0.5 + 0.8 - 0.001);
 		break;
+	case MAP_BORDER:
+		return false;
+		break;
 	default:	// other object, always fail
 		return false;
 		break;
@@ -135,9 +151,33 @@ float Map::getFloor(float x, float z) {
 		if (abs(z - nextZ) > 0.3 || abs(x - nextX) > 0.3)	return 0.8;
 		return 0.5 + 0.8;
 		break;
+	case MAP_BORDER:
+		return 1024;
+		break;
 	default:	// other object, always fail
 		return 0.8;
 		break;
 	}
 	return 0.5 + 0.8;	// check belt height
+}
+
+void Map::drawGroundList() {
+	glEnable(GL_TEXTURE_2D);
+	groundTex.bindTex(0);
+	glBegin(GL_QUADS);
+	glNormal3f(0, 1, 0);
+	for (int i = MAP_BORDER_ZMIN; i < MAP_BORDER_ZMAX; i++) {
+		for (int j = MAP_BORDER_XMIN; j < MAP_BORDER_XMAX; j++) {
+			glTexCoord2f(0, 0); glVertex3f(j, 0, i);
+			glTexCoord2f(0, 1); glVertex3f(j, 0, i + 1);
+			glTexCoord2f(1, 1); glVertex3f(j + 1, 0, i + 1);
+			glTexCoord2f(1, 0); glVertex3f(j + 1, 0, i);
+		}
+	}
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void Map::drawGround() {
+	glCallList(groundListId);
 }

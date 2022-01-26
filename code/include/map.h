@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "texture.h"
 
 #define MAP_MAXZ 1024
 #define MAP_MAXX 1024
@@ -15,7 +16,13 @@
 #define MAP_ARM 8
 #define MAP_BOX 9
 #define MAP_BELT_DRAWING 10
+#define MAP_BORDER 11
 #define MAP_ISBELT(type) ((type) >= MAP_BELT_CORNER0 && (type) <= MAP_BELT_SINGLE)
+
+#define MAP_BORDER_ZMIN 462
+#define MAP_BORDER_ZMAX 562
+#define MAP_BORDER_XMIN 462
+#define MAP_BORDER_XMAX 562
 
 typedef std::pair<int, int> Point;
 const Point POINTNULL(MAP_MAXZ, MAP_MAXX);
@@ -34,8 +41,14 @@ private:
 	Point firstObj, lastObj;
 	void listIns(int z, int x);		// insert to object list tail
 	void listDel(int z, int x);		// delete from object list
+private: // ground
+	TexLoader groundTex;
+	GLuint groundListId;
+	void drawGroundList();
 public:
 	Map();
+	void init();
+
 	MapUnit getMap(Point p);
 	MapUnit getMap(int z, int x);
 	bool write(int z, int x, int type, const void* obj, int index = 0);	// write map[z][x], delete if type == MAP_BLANK, otherwise insert
@@ -43,5 +56,5 @@ public:
 	Point getLast();
 	bool checkEdge(float x, float y, float z);	// collision detection; true -> pass; false -> fail
 	float getFloor(float x, float z);
+	void drawGround();
 };
-

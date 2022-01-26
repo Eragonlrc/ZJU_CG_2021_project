@@ -139,6 +139,8 @@ void renderScene(void)
 
 	LightSource::drawAll();
 
+	map.drawGround();
+
 	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
 		Map::MapUnit mu = map.getMap(i);
 		if (MAP_ISBELT(mu.type)) {
@@ -255,7 +257,13 @@ void keyDown(unsigned char k, int x, int y) {
 	case ' ':	bSpace = true; break;
 	case 'e':
 		bEdit = !bEdit;
-		if (!bEdit)	camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
+		if (!bEdit) {
+			float newY = map.getFloor(position.x, position.z);
+			view.y += newY - position.y;
+			position.y = newY;
+			camera.setCamera(position.x, position.y, position.z, view.x, view.y, view.z, upVector.x, upVector.y, upVector.z);
+			SetCursorPos(GetSystemMetrics(SM_CXSCREEN) >> 1, GetSystemMetrics(SM_CYSCREEN) >> 1);
+		}
 		updateView(wWidth, wHeight);	// 进入或退出编辑模式，需要更新摄像机位置
 		break;
 	}
@@ -282,41 +290,13 @@ void init() {
 	menu.setWH((float)wWidth / wHeight * menuWidthRatio);
 	meshUnit = wHeight / 10;
 
+	map.init();
+
 	Belt::init();
 
 	menu.init();
 
-	GLfloat ambient_color[] = { 0.2, 0.2, 0.2, 1.0 };
-	GLfloat diffuse_color[] = { 0.7, 0.7, 0.7, 1.0 };
-	GLfloat specular_color[] = { 0.5, 0.5, 0.5, 1.0 };
 	new LightSource(BOX_SIZE / 2, BOX_SIZE / 2);
-
-	Belt* obj = new Belt();
-	obj->pushPoint(1 + 512, 0 + 512);
-	obj->pushPoint(1 + 512, 1 + 512);
-	obj->pushPoint(2 + 512, 1 + 512);
-	obj->pushPoint(2 + 512, 2 + 512);
-	obj->pushPoint(1 + 512, 2 + 512);
-	obj->pushPoint(1 + 512, 3 + 512);
-	obj->pushPoint(1 + 512, 4 + 512);
-	obj->pushPoint(0 + 512, 4 + 512);
-	obj->pushPoint(0 + 512, 3 + 512);
-	obj->pushPoint(0 + 512, 2 + 512);
-	obj->updateMap();
-	obj->addComponent(new Robot(1));
-
-	Belt* obj2 = new Belt();
-	obj2->pushPoint(5 + 512, 5 + 512);
-	obj2->pushPoint(6 + 512, 5 + 512);
-	obj2->pushPoint(7 + 512, 5 + 512);
-	obj2->pushPoint(7 + 512, 6 + 512);
-	obj2->pushPoint(7 + 512, 7 + 512);
-	obj2->pushPoint(6 + 512, 7 + 512);
-	obj2->pushPoint(5 + 512, 7 + 512);
-	obj2->pushPoint(5 + 512, 6 + 512);
-	obj2->pushPoint(5 + 512, 5 + 512);
-	obj2->updateMap();
-	obj2->addComponent(new Robot(1));
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
 	glClearDepth(1.0f);

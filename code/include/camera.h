@@ -64,9 +64,9 @@ private:
     Vector3 m_Position;
     Vector3 m_Center;
     Vector3 m_UpVector;
-    float   m_Speed = 0.05;
+    float   m_Speed = 0.03;
     float   m_Fovy = 45.0;
     bool    m_Jumping = false;
     float   velocity = 0;
-    float   acceleration = -0.002;
+    float   acceleration = -0.0007;
 };
