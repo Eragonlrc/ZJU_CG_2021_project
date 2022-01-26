@@ -116,13 +116,13 @@ void renderScene(void)
 	}
 	glLoadIdentity();
 
-	if(!bEdit)
+	if (!bEdit) {
+		Vector3 curP = camera.getPosition();
+		bool check = map.checkEdge(curP.x, curP.y, curP.z);
+		int type = map.getMap((int)(curP.z + 0.5), (int)(curP.x + 0.5)).type;
+		camera.updateHeight(check, MAP_ISBELT(type));
 		processKeyboard();
-
-	Vector3 curP = camera.getPosition();
-	bool check = map.checkEdge(curP.x, curP.y, curP.z);
-	int type = map.getMap((int)(curP.z + 0.5), (int)(curP.x + 0.5)).type;
-	camera.updateHeight(check, MAP_ISBELT(type));
+	}
 	camera.setLook();
 
 	glEnable(GL_LIGHTING);
@@ -327,7 +327,7 @@ void init() {
 	glEnable(GL_TEXTURE_2D);
 
 	if (!sky.init()){
-		MessageBox(NULL, (LPCWSTR)"Fail to initialize skybox!", (LPCWSTR)"Error", MB_OK);
+		printf("Fail to initialize skybox!\n");
 		exit(0);
 	}
 
