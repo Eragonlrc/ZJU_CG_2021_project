@@ -51,6 +51,9 @@
     <ClInclude Include="include\lighting.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="include\obj.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arm.cpp">
@@ -90,6 +93,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\lighting.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\obj.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

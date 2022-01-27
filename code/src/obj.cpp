@@ -5,6 +5,11 @@
 #include<iostream>
 #include<string>
 #include<sstream>
+#include<cstdlib>
+ObjLoader::ObjLoader()
+{
+}
+
 ObjLoader::ObjLoader(string filename)
 {
 	ifstream file(filename);
@@ -15,35 +20,66 @@ ObjLoader::ObjLoader(string filename)
 		{
 			vector<GLfloat> Point;
 			GLfloat x, y, z;
-			istringstream s(line.substr(2));
+
+			int branch;
+			if (line[1] == 't') continue;
+			if (line[1] == 'n') branch = 3;
+			else branch = 2;
+
+			istringstream s(line.substr(branch));
 			s >> x; s >> y; s >> z;
 			Point.push_back(x);
 			Point.push_back(y);
 			Point.push_back(z);
-			v.push_back(Point);
+
+			if (branch == 2) v.push_back(Point);
+			else vn.push_back(Point);
 
 		}
 		else if (line.substr(0, 1) == "f")
 		{
 			vector<GLint> vIndexSets;
-			GLint u, v, w;
+			string u, v, w, s;
+			int l, r;
+
 			istringstream vtns(line.substr(2));
 			vtns >> u; vtns >> v; vtns >> w;
-			vIndexSets.push_back(u - 1);
-			vIndexSets.push_back(v - 1);
-			vIndexSets.push_back(w - 1);
-			f.push_back(vIndexSets);
+
+			l = u.find('/');
+			s = u.substr(0, l);
+			vIndexSets.push_back(stoi(s)-1);
+			l = v.find('/');
+			s = v.substr(0, l);
+			vIndexSets.push_back(stoi(s)-1);
+			l = w.find('/');
+			s = w.substr(0, l);
+			vIndexSets.push_back(stoi(s)-1);
+			f.push_back(vIndexSets);//不知道要不要-1
+
+			vIndexSets.clear();
+			r = u.rfind('/');
+			s = u.substr(r+1);
+			vIndexSets.push_back(stoi(s)-1);
+			r = v.rfind('/');
+			s = v.substr(r+1);
+			vIndexSets.push_back(stoi(s)-1);
+			r = w.rfind('/');
+			s = w.substr(r+1);
+			vIndexSets.push_back(stoi(s)-1);
+			fn.push_back(vIndexSets);
 		}
 	}
 	file.close();
 
-	scale = 0.1;
-	tran_x = 512; tran_y = 0.7; tran_z = 512;
+	scale = 1;
+	tran_x = 0; tran_y = 0; tran_z = 0;
+
 }
 
 void ObjLoader::Draw()
 {
 	glBegin(GL_TRIANGLES);//开始绘制
+
 	for (int i = 0; i < f.size(); i++) {
 		GLfloat VN[3];//法线
 		//三个顶点
@@ -94,15 +130,24 @@ void ObjLoader::Draw()
 			VN[1] = vec3[1] / D;
 			VN[2] = vec3[2] / D;
 
-			glNormal3f(VN[0], VN[1], VN[2]);//绘制法向量
-
+			VN[0] = vn[fn[i][0]][0];
+			VN[1] = vn[fn[i][0]][1];
+			VN[2] = vn[fn[i][0]][2];
+			glNormal3f(VN[0], VN[1], VN[2]);
 			glVertex3f(a.x*scale+tran_x, a.y*scale+tran_y, a.z*scale+tran_z);//绘制面
+			VN[0] = vn[fn[i][1]][0];
+			VN[1] = vn[fn[i][1]][1];
+			VN[2] = vn[fn[i][1]][2];
+			glNormal3f(VN[0], VN[1], VN[2]);
 			glVertex3f(b.x*scale+tran_x, b.y*scale+tran_y, b.z*scale+tran_z);
+			VN[0] = vn[fn[i][2]][0];
+			VN[1] = vn[fn[i][2]][1];
+			VN[2] = vn[fn[i][2]][2];
+			glNormal3f(VN[0], VN[1], VN[2]);
 			glVertex3f(c.x*scale+tran_x, c.y*scale+tran_y, c.z*scale+tran_z);
-			if (f[i].size() == 4) glVertex3f(d.x+512,d.y+0.5,d.z+512);
+			
 	}
 	glEnd();
-	
 }
 
 void ObjLoader::Setscale(double s)

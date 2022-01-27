@@ -1,5 +1,7 @@
 #include"component.h"
 #include<stdio.h>
+#include"obj.h"
+extern ObjLoader* pic[9];
 
 Robot::Robot(int _type)
 {
@@ -21,8 +23,8 @@ void Robot::setType(int t)
 void Robot::draw()
 {
 	glPushMatrix();
-	glTranslatef(0, 0.05, 0);
-	glScalef(0.04, 0.04, 0.04);	// change the size to fit the belt
+	glTranslatef(0, 0.07, 0);
+	//glScalef(0.04, 0.04, 0.04);	// change the size to fit the belt
 	
 	if (type == 1) drawHead1();
 	if (type == 2) drawHead2();
@@ -45,7 +47,7 @@ void Robot::setTranslate(double x,double y,double z)
 
 void Robot::drawHead1()
 {
-	GLUquadric* pObj;
+	/*GLUquadric* pObj;
 	pObj = gluNewQuadric();
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
@@ -66,13 +68,18 @@ void Robot::drawHead1()
 	glRotatef(145, 0, 0, 1);
 	glRotatef(90, 0, 1, 0);
 	gluCylinder(pObj, head_r * 0.2, 0, head_r * 0.9, 16, 16);
-	glPopMatrix();
+	glPopMatrix();*/
 	
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	glRotatef(90, 0, 1, 0);
+	pic[1]->Draw();
+	glPopMatrix();
 };
 
 void Robot::drawHead2()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glScaled(head_r*1.8, head_r*1.5, head_r);
 	glutSolidCube(1);
@@ -97,21 +104,33 @@ void Robot::drawHead2()
 	glTranslatef(0, 0.88*head_r, 0);
 	glScaled(head_r, head_r * 0.25, head_r * 0.5);
 	glutSolidCube(1);
+	glPopMatrix();*/
+	
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	glRotated(90, 0, 1, 0);
+	pic[2]->Draw();
 	glPopMatrix();
 };
 
 void Robot::drawBody1()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glScalef(body_l, body_w, body_h);
 	glutSolidCube(1);
+	glPopMatrix();*/
+
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	glRotatef(90, 0, 1, 0);
+	pic[3]->Draw();
 	glPopMatrix();
 }
 
 void Robot::drawBody2()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 
 	glPushMatrix();
@@ -125,12 +144,17 @@ void Robot::drawBody2()
 	glutSolidSphere(0.4, 30, 30);
 	glPopMatrix();
 
+	glPopMatrix();*/
+	
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	pic[4]->Draw();
 	glPopMatrix();
 }
 
 void Robot::drawArm1()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x,tran_y,tran_z);
 	GLdouble eqn[4] = { 0.0, 1.0, 0.0, 0.0 };
 	glClipPlane(GL_CLIP_PLANE0, eqn);
@@ -148,12 +172,17 @@ void Robot::drawArm1()
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y-3.5*arm_mul, tran_z);
 	glutSolidSphere(1*arm_mul, 20, 20);
+	glPopMatrix();*/
+	
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	pic[5]->Draw();
 	glPopMatrix();
 };
 
 void Robot::drawArm2()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	GLdouble eqn[4] = { 0.0, 1.0, 0.0, 0.0 };
 	glClipPlane(GL_CLIP_PLANE0, eqn);
@@ -223,13 +252,17 @@ void Robot::drawArm2()
 	glDisable(GL_CLIP_PLANE0);
 	glPopMatrix();
 
+	glPopMatrix();*/
+	
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	pic[6]->Draw();
 	glPopMatrix();
-
 };
 
 void Robot::drawLeg1()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glScaled(1.2*leg_mul, 3.5*leg_mul, 1.5*leg_mul);
 	glutSolidCube(1);
@@ -239,12 +272,17 @@ void Robot::drawLeg1()
 	glTranslatef(tran_x, tran_y-1.3*leg_mul, tran_z);
 	glScaled(1.5*leg_mul, 1*leg_mul, 2.5*leg_mul);
 	glutSolidCube(1);
+	glPopMatrix();*/
+	
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	pic[7]->Draw();
 	glPopMatrix();
 };
 
 void Robot::drawLeg2()
 {
-	glPushMatrix();
+	/*glPushMatrix();
 	glTranslatef(tran_x,tran_y,tran_z);
 	GLUquadric* pObj;
 
@@ -323,5 +361,10 @@ void Robot::drawLeg2()
 	}
 	glEnd();
 	glPopMatrix();
+	glPopMatrix();*/
+
+	glPushMatrix();
+	glTranslatef(tran_x, tran_y, tran_z);
+	pic[8]->Draw();
 	glPopMatrix();
 };
