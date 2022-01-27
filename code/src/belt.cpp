@@ -38,13 +38,6 @@ void Belt::setColor(int _color) {
     color = _color;
 }
 
-void Belt::print() {
-    printf("%d\n", points.size());
-    for (int i = 0; i < points.size(); i++) {
-        printf("(%d, %d)\n", points[i].first, points[i].second);
-    }
-}
-
 void Belt::init() {
     // load texture
     texture.genTex();

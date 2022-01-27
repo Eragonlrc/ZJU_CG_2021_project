@@ -78,7 +78,6 @@ public: // public interfaces
     Point getPoint(int index);
     void setColor(int _color);
     void draw();
-    void print();
 public: // component interfaces
     void updateComponents();
     void addComponent(Robot* component, int index = 0);
