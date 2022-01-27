@@ -29,6 +29,7 @@ public:
 	void setRType(int r_typ);  //设置robot的type
 	int getRType();   //获取起点零部件类型
 	void setType(int b_typ); //设置为起点或终点
+	void setNeed(int i, int r_typ);
 	void drawWholeRobot();
 	Robot* getAttached();   //起点被人拿走
 	void attach(Robot *robot);

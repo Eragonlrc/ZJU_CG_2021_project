@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -38,6 +39,8 @@ Menu menu;
 Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
 Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
 Vector3 upVector = Vector3(0, 1, 0);
+
+inline int random(int l, int r) { return rand() % (r - l + 1) + l; }
 
 void updateView(float w, float h, bool save = 1) {
 	
@@ -196,7 +199,6 @@ void Mouse(int button, int state, int x, int y)
 			}
 			clickX = GETMESH_X(x);	// account for the width of menu
 			clickZ = GETMESH_Z(y);
-			printf("Mouse Click: x = %d, z = %d\n", clickX, clickZ);
 			if (bEdit) {
 				if (editor.getState() == EDITOR_STATE_IDLE) {
 					editor.startDrawing(clickZ, clickX);
@@ -313,29 +315,69 @@ void init() {
 
 	camera.setCamera(BOX_SIZE / 2, 0.8, BOX_SIZE / 2, BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1, 0, 1, 0);
 
-	Box* box = new Box(512, 0.2, 517);
-	box->setType(1);
-	box->setRType(1);
-	map.write(517, 512, MAP_BOX, box);
+	srand(time(NULL));
+	static const int componentRange[4][2] = { {1, 2}, {3, 4}, {5, 6}, {7, 8} };
+	int startNum[4];
+	int startComponent[4][2];
+	int startPos[4][2][2], endPos[2][2];
+	Box* box;
 
-	box = new Box(512, 0.2, 521);
-	box->setType(1);
-	box->setRType(3);
-	map.write(521, 512, MAP_BOX, box);
+	// starting boxes
+	for (int i = 0; i < 4; i++) { // for each category
+		startNum[i] = random(1, 2); // randomly generate 1 or 2 boxes
+		for (int j = 0; j < startNum[i]; j++) {
+			startComponent[i][j] = random(componentRange[i][0], componentRange[i][1]); // randomly determine component type
+			while (1) {	// randomly select position in 20 * 20 range
+				startPos[i][j][0] = random(502, 522);
+				startPos[i][j][1] = random(502, 522);
+				if (map.getMap(startPos[i][j][0], startPos[i][j][1]).type == MAP_BLANK) break;
+			}
+			// create box
+			box = new Box(startPos[i][j][1], 0.2, startPos[i][j][0]);
+			box->setType(1);
+			box->setRType(startComponent[i][j]);
+			map.write(startPos[i][j][0], startPos[i][j][1], MAP_BOX, box);
+		}
+	}
 
-	box = new Box(514, 0.2, 519);
-	box->setType(1);
-	box->setRType(5);
-	map.write(519, 514, MAP_BOX, box);
-
-	box = new Box(510, 0.2, 519);
-	box->setType(1);
-	box->setRType(7);
-	map.write(519, 510, MAP_BOX, box);
-
-	box = new Box(512, 0.2, 519);
+	// first ending box
+	while (1) {	// randomly select position in 20 * 20 range
+		endPos[0][0] = random(502, 522);
+		endPos[0][1] = random(502, 522);
+		if (map.getMap(endPos[0][0], endPos[0][1]).type == MAP_BLANK) break;
+	}
+	box = new Box(endPos[0][1], 0.2, endPos[0][0]);
+	box->setNeed(0, startComponent[0][0]);						// head, use starting box 0
+	box->setNeed(1, startComponent[1][0]);						// body, use starting box 0
+	box->setNeed(2, startComponent[2][0]);						// arm1, use starting box 0
+	if (startNum[2] > 1) box->setNeed(3, startComponent[2][1]);	// arm2, if start num > 1 use box 1,else use starting box 0
+	else box->setNeed(3, startComponent[2][0]);
+	box->setNeed(4, startComponent[3][0]);						// leg1, use starting box 0
+	if (startNum[3] > 1) box->setNeed(5, startComponent[3][1]);	// leg2, if start num > 1 use box 1,else use starting box 0
+	else box->setNeed(5, startComponent[3][0]);
 	box->setType(2);
-	map.write(519, 512, MAP_BOX, box);
+	map.write(endPos[0][0], endPos[0][1], MAP_BOX, box);
+
+	// if head or body starting box type > 1, generate second ending box
+	if (startNum[0] > 1 && startComponent[0][0] != startComponent[0][1] ||
+		startNum[1] > 1 && startComponent[1][0] != startComponent[1][1]) {
+		while (1) {	// randomly select position in 20 * 20 range
+			endPos[1][0] = random(502, 522);
+			endPos[1][1] = random(502, 522);
+			if (map.getMap(endPos[1][0], endPos[1][1]).type == MAP_BLANK) break;
+		}
+		box = new Box(endPos[1][1], 0.2, endPos[1][0]);
+		if (startNum[0] > 1) box->setNeed(0, startComponent[0][1]);		// head, if start num > 1 use box 1,else use starting box 0
+		else box->setNeed(0, startComponent[0][0]);
+		if (startNum[1] > 1) box->setNeed(1, startComponent[1][1]);		// body, if start num > 1 use box 1,else use starting box 0
+		else box->setNeed(1, startComponent[1][0]);
+		box->setNeed(2, startComponent[2][random(0, startNum[2] - 1)]);	// arm1, use random component
+		box->setNeed(3, startComponent[2][random(0, startNum[2] - 1)]);	// arm2, use random component
+		box->setNeed(4, startComponent[3][random(0, startNum[3] - 1)]);	// leg1, use random component
+		box->setNeed(5, startComponent[3][random(0, startNum[3] - 1)]);	// leg2, use random component
+		box->setType(2);
+		map.write(endPos[1][0], endPos[1][1], MAP_BOX, box);
+	}
 }
 
 int main(int argc, char* argv[])

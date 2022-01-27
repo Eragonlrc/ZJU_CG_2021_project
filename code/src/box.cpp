@@ -74,13 +74,6 @@ void Box::setType(int b_typ)
 	}
 	else
 	{
-		srand((unsigned)time(NULL));
-		need[0] = 1; //rand()%2+1;
-		need[1] = 3; //rand()%2+3;
-		need[2] = 5; //rand()%2+5;
-		need[3] = 5; // need[2];
-		need[4] = 7; // rand() % 2 + 7;
-		need[5] = 7; // need[4];
 		for (int i = 0; i < 6; i++)
 			rec[i] = 0;
 		crect = 0;
@@ -88,6 +81,10 @@ void Box::setType(int b_typ)
 		else cneedt = 6;
 		deleteRobot();
 	}
+}
+
+void Box::setNeed(int i, int r_typ) {
+	need[i] = r_typ;
 }
 
 void Box::receiveRobot()
