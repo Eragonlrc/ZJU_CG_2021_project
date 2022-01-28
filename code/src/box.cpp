@@ -78,8 +78,7 @@ void Box::setType(int b_typ)
 		for (int i = 0; i < 6; i++)
 			rec[i] = 0;
 		crect = 0;
-		if (need[5] == 8) cneedt = 5;
-		else cneedt = 6;
+		cneedt = 6;
 		deleteRobot();
 	}
 }
