@@ -23,6 +23,7 @@ private:
 
 	int need[6],cneedt; //终点需要的部件类型
 	int rec[6], crect; //已经接收的部件类型
+	double success, sbound;
 public:
 	Box(float _x, float _y, float _z);
 	void draw();

@@ -392,7 +392,7 @@ void init() {
 	pic[1]->Setscale(0.025);
 	pic[2]->Setscale(0.025);
 	pic[3]->Setscale(0.3);
-	pic[4]->Setscale(0.035);
+	pic[4]->Setscale(0.038);
 	pic[5]->Setscale(0.04);
 	pic[6]->Setscale(0.08);
 	pic[7]->Setscale(0.045);
