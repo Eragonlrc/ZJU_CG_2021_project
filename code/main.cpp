@@ -145,20 +145,7 @@ void renderScene(void)
 	LightSource::drawAll();
 
 	map.drawGround();
-
-	for (Point i = map.getFirst(); i != POINTNULL; i = map.getMap(i).next) {
-		Map::MapUnit mu = map.getMap(i);
-		if (MAP_ISBELT(mu.type)) {
-			((Belt*)(mu.obj))->draw();
-			((Belt*)(mu.obj))->updateComponents();
-		}
-		else if (mu.type == MAP_ARM) {
-			((Arm*)(mu.obj))->draw();
-		}
-		else if (mu.type == MAP_BOX) {
-			((Box*)(mu.obj))->draw();
-		}
-	}
+	map.drawMap();
 
 	editor.draw();
 

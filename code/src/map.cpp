@@ -1,4 +1,7 @@
 #include "map.h"
+#include "belt.h"
+#include "arm.h"
+#include "box.h"
 
 Map::MapUnit::MapUnit() : type(MAP_BLANK), i(0), obj(0),
 prev(POINTNULL), next(POINTNULL) {}
@@ -66,6 +69,22 @@ bool Map::write(int z, int x, int type, const void* obj, int index) {
 
 Point Map::getFirst() { return firstObj; }
 Point Map::getLast() { return lastObj; }
+
+void Map::drawMap() {
+	for (Point i = firstObj; i != POINTNULL; i = getMap(i).next) {
+		Map::MapUnit mu = getMap(i);
+		if (MAP_ISBELT(mu.type)) {
+			((Belt*)(mu.obj))->draw();
+			((Belt*)(mu.obj))->updateComponents();
+		}
+		else if (mu.type == MAP_ARM) {
+			((Arm*)(mu.obj))->draw();
+		}
+		else if (mu.type == MAP_BOX) {
+			((Box*)(mu.obj))->draw();
+		}
+	}
+}
 
 bool Map::checkEdge(float x, float y, float z) {
 	int nextZ = (int)(z + 0.5);
