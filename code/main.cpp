@@ -40,7 +40,6 @@ Menu menu;
 Vector3 position = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2);		// 用于在切换模式时保存非编辑模式下摄像机状态，以便恢复
 Vector3 view = Vector3(BOX_SIZE / 2, 1, BOX_SIZE / 2 - 1);
 Vector3 upVector = Vector3(0, 1, 0);
-ObjLoader *pic[9];
 
 inline int random(int l, int r) { return rand() % (r - l + 1) + l; }
 
@@ -368,22 +367,7 @@ void init() {
 		map.write(endPos[1][0], endPos[1][1], MAP_BOX, box);
 	}
 
-	pic[1] = new ObjLoader("obj/head1.obj");
-	pic[2] = new ObjLoader("obj/head2.obj");
-	pic[3] = new ObjLoader("obj/body1.obj");
-	pic[4] = new ObjLoader("obj/body2.obj");
-	pic[5] = new ObjLoader("obj/arm1.obj");
-	pic[6] = new ObjLoader("obj/arm2.obj");
-	pic[7] = new ObjLoader("obj/leg2.obj");
-	pic[8] = new ObjLoader("obj/leg2.obj");
-	pic[1]->Setscale(0.025);
-	pic[2]->Setscale(0.025);
-	pic[3]->Setscale(0.3);
-	pic[4]->Setscale(0.038);
-	pic[5]->Setscale(0.04);
-	pic[6]->Setscale(0.08);
-	pic[7]->Setscale(0.045);
-	pic[8]->Setscale(0.06);
+	Objinit();
 }
 
 int main(int argc, char* argv[])

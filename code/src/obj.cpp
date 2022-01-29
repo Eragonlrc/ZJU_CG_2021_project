@@ -6,6 +6,10 @@
 #include<string>
 #include<sstream>
 #include<cstdlib>
+
+ObjLoader* pic[9];
+GLuint objindex;
+
 ObjLoader::ObjLoader()
 {
 }
@@ -158,4 +162,32 @@ void ObjLoader::Setscale(double s)
 void ObjLoader::Settran(double tx,double ty,double tz)
 {
 	tran_x = tx; tran_y = ty; tran_z = tz;
+}
+
+void Objinit()
+{
+	pic[1] = new ObjLoader("obj/head1.obj");
+	pic[2] = new ObjLoader("obj/head2.obj");
+	pic[3] = new ObjLoader("obj/body1.obj");
+	pic[4] = new ObjLoader("obj/body2.obj");
+	pic[5] = new ObjLoader("obj/arm1.obj");
+	pic[6] = new ObjLoader("obj/arm2.obj");
+	pic[7] = new ObjLoader("obj/leg2.obj");
+	pic[8] = new ObjLoader("obj/leg2.obj");
+	pic[1]->Setscale(0.025);
+	pic[2]->Setscale(0.025);
+	pic[3]->Setscale(0.3);
+	pic[4]->Setscale(0.038);
+	pic[5]->Setscale(0.04);
+	pic[6]->Setscale(0.08);
+	pic[7]->Setscale(0.045);
+	pic[8]->Setscale(0.06);
+
+	objindex = glGenLists(8);
+	for (int i = 0; i < 8; i++)
+	{
+		glNewList(objindex+i,GL_COMPILE);
+		pic[i + 1]->Draw();
+		glEndList();
+	}
 }

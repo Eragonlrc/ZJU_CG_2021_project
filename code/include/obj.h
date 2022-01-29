@@ -28,6 +28,8 @@ private:
 	vector<vector<GLint>> fn;
 };
 
+void Objinit();
+
 //定义与使用
 //ObjLoader obj("body1.obj");
 //obj.Draw();

@@ -1,7 +1,7 @@
 #include"component.h"
 #include<stdio.h>
 #include"obj.h"
-extern ObjLoader* pic[9];
+extern GLuint objindex;
 
 Robot::Robot(int _type)
 {
@@ -73,7 +73,7 @@ void Robot::drawHead1()
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glRotatef(90, 0, 1, 0);
-	pic[1]->Draw();
+	glCallList(objindex);
 	glPopMatrix();
 };
 
@@ -109,7 +109,7 @@ void Robot::drawHead2()
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glRotated(90, 0, 1, 0);
-	pic[2]->Draw();
+	glCallList(objindex + 1);
 	glPopMatrix();
 };
 
@@ -124,7 +124,7 @@ void Robot::drawBody1()
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
 	glRotatef(90, 0, 1, 0);
-	pic[3]->Draw();
+	glCallList(objindex + 2);
 	glPopMatrix();
 }
 
@@ -148,7 +148,7 @@ void Robot::drawBody2()
 	
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
-	pic[4]->Draw();
+	glCallList(objindex + 3);
 	glPopMatrix();
 }
 
@@ -176,7 +176,7 @@ void Robot::drawArm1()
 	
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
-	pic[5]->Draw();
+	glCallList(objindex + 4);
 	glPopMatrix();
 };
 
@@ -255,8 +255,8 @@ void Robot::drawArm2()
 	glPopMatrix();*/
 	
 	glPushMatrix();
-	glTranslatef(tran_x, tran_y, tran_z);
-	pic[6]->Draw();
+	glTranslatef(tran_x, tran_y+0.07, tran_z);
+	glCallList(objindex + 5);
 	glPopMatrix();
 };
 
@@ -276,7 +276,7 @@ void Robot::drawLeg1()
 	
 	glPushMatrix();
 	glTranslatef(tran_x, tran_y, tran_z);
-	pic[7]->Draw();
+	glCallList(objindex + 6);
 	glPopMatrix();
 };
 
@@ -364,7 +364,7 @@ void Robot::drawLeg2()
 	glPopMatrix();*/
 
 	glPushMatrix();
-	glTranslatef(tran_x, tran_y, tran_z);
-	pic[8]->Draw();
+	glTranslatef(tran_x, tran_y+0.04, tran_z);
+	glCallList(objindex + 7);
 	glPopMatrix();
 };

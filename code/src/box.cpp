@@ -355,7 +355,7 @@ void Box::drawWholeRobot()
 	
 		rneed->setType(need[4]);
 		glPushMatrix();
-		glTranslatef(tran_x, tran_y + 0.55, tran_z);
+		glTranslatef(tran_x, tran_y + 0.5, tran_z);
 		glRotated(rotate, 0, 1, 0);
 		glTranslatef(0.06, 0, 0);
 		if (need[4] == rec[4]) {	// 该部件已得到
@@ -369,7 +369,7 @@ void Box::drawWholeRobot()
 
 		rneed->setType(need[4]);
 		glPushMatrix();
-		glTranslatef(tran_x , tran_y + 0.55, tran_z);
+		glTranslatef(tran_x , tran_y + 0.5, tran_z);
 		glRotated(rotate, 0, 1, 0);
 		glTranslatef(-0.06, 0, 0);
 		if (need[5] == rec[5]) {	// 该部件已得到
