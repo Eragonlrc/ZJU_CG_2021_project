@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <windows.h>
 #include <time.h>
 #include <stdlib.h>
@@ -19,6 +21,7 @@
 
 #define GETMESH_X(a) ((int)(camera.getPosition().x + ((a) - (wWidth + menuWidth) / 2) / meshUnit + 0.5))
 #define GETMESH_Z(b) ((int)(camera.getPosition().z + ((b) - wHeight / 2) / meshUnit + 0.5))
+#define BMP_Header_Length 54
 
 using namespace std;
 
@@ -176,6 +179,64 @@ void reshape(int w, int h)
 	updateView(wWidth, wHeight);
 }
 
+void screenShot() {
+	FILE* pDummyFile;
+	FILE* pWritingFile;
+	GLubyte* pPixelData;
+	GLubyte BMP_Header[BMP_Header_Length];
+	GLint i, j;
+	GLint PixelDataLength;
+	i = wWidth * 3;
+	while (i % 4 != 0)	i++;
+	PixelDataLength = i * wHeight;
+
+	pPixelData = (GLubyte*)malloc(PixelDataLength);
+	if (pPixelData == 0)	exit(0);
+
+	char fileName[80];
+	strcpy(fileName, "../ScreenShot/sc");
+
+	time_t rawtime;
+	time(&rawtime);
+	struct tm* timeinfo;
+	timeinfo = localtime(&rawtime);
+	strcat(fileName, asctime(timeinfo));
+	int len = strlen(fileName);
+	len--;
+	fileName[len] = '.';
+	fileName[++len] = 'b';
+	fileName[++len] = 'm';
+	fileName[++len] = 'p';
+	fileName[++len] = '\0';
+	char path[80];
+	int ptr = 0, gen = 0;
+	for (int ptr = 0; fileName[ptr] != '\0'; ptr++) {
+		if (fileName[ptr] != ' ' && fileName[ptr] != ':') {
+			path[gen] = fileName[ptr];
+			gen++;
+		}
+	}
+	path[gen] = '\0';
+	if (fopen_s(&pDummyFile, "eg.bmp", "rb") != 0)		exit(0);
+	if (fopen_s(&pWritingFile, path, "wb") != 0)	exit(0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+	glReadPixels(0, 0, wWidth, wHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pPixelData);
+	fread(BMP_Header, sizeof(BMP_Header), 1, pDummyFile);
+	fwrite(BMP_Header, sizeof(BMP_Header), 1, pWritingFile);
+	fseek(pWritingFile, 0x0012, SEEK_SET);
+	i = wWidth;
+	j = wHeight;
+	fwrite(&i, sizeof(i), 1, pWritingFile);
+	fwrite(&j, sizeof(j), 1, pWritingFile);
+
+	fseek(pWritingFile, 0, SEEK_END);
+	fwrite(pPixelData, PixelDataLength, 1, pWritingFile);
+
+	fclose(pDummyFile);
+	fclose(pWritingFile);
+	free(pPixelData);
+}
+
 void Mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON) {
@@ -245,6 +306,7 @@ void keyDown(unsigned char k, int x, int y) {
 	case '-':	bMinus = true; break;
 	case '+':	bPlus = true; break;
 	case ' ':	bSpace = true; break;
+	case 'p':	screenShot(); break;
 	case 'e':
 		bEdit = !bEdit;
 		if (!bEdit) {

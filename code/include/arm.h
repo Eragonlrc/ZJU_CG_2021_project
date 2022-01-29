@@ -11,6 +11,19 @@
 #define ARM_COLOR_DRAWING 1
 #define ARM_COLOR_WARNING 2
 
+#define ARM_FOUNDATION_SPHERE armListId
+#define ARM_JOINT1_SPHERE (armListId + 1)
+#define ARM_JOINT2_SPHERE (armListId + 2)
+#define ARM_CLAW_ROOT_SPHERE (armListId + 3)
+#define ARM_CLAW_JOINT1_SPHERE (armListId + 4)
+#define ARM_CLAW_END_SPHERE (armListId + 5)
+#define ARM_1_CYLINDER (armListId + 6)
+#define ARM_2_CYLINDER (armListId + 7)
+#define ARM_3_CYLINDER (armListId + 8)
+#define ARM_CLAW_1_CYLINDER (armListId + 9)
+#define ARM_CLAW_2_CYLINDER (armListId + 10)
+#define PI 3.14159
+
 class Arm {
 private:
 	float arm1[2];
@@ -28,6 +41,7 @@ private:
 	int color;
 	bool showAttachment;
 	int clockWise;
+	GLuint armListId;
 	Robot* robot;
 public:
 	Arm(int dx, int dy, int f, int t);
@@ -41,6 +55,7 @@ public:
 	void draw();
 	void attach(Robot* rbt);
 	void activate();
+	void drawArm();
 	Robot* getAttached();
 	Point getPosition();
 	int getDirection();
@@ -49,4 +64,6 @@ public:
 	void setColor(int c);
 	void setFrom(int f);
 	void setTo(int t);
+	void mySphere(float R);
+	void myCylinder(float baseR, float topR, float height);
 };
