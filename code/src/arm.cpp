@@ -189,7 +189,7 @@ void Arm::draw() {
 	case ARM_COLOR_DRAWING: glColor3f(0.0, 1.0, 0.0); break;
 	case ARM_COLOR_WARNING: glColor3f(1.0, 0.0, 0.0); break;
 	}
-	glTranslatef(y, 0, x);
+	glTranslatef(y, -0.116, x);
 	glTranslatef(0.0, 0.2, 0.0);
 	glScalef(0.6, 0.6, 0.6);
 	drawFoundation();

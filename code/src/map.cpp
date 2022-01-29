@@ -81,7 +81,10 @@ void Map::drawMap() {
 			((Arm*)(mu.obj))->draw();
 		}
 		else if (mu.type == MAP_BOX) {
+			glPushMatrix();
+			glTranslatef(0, -0.06, 0);
 			((Box*)(mu.obj))->draw();
+			glPopMatrix();
 		}
 	}
 }
