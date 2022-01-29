@@ -194,7 +194,7 @@ void screenShot() {
 	if (pPixelData == 0)	exit(0);
 
 	char fileName[80];
-	strcpy(fileName, "../ScreenShot/sc");
+	strcpy(fileName, "./ScreenShot/sc");
 
 	time_t rawtime;
 	time(&rawtime);

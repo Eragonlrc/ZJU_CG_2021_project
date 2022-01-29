@@ -279,10 +279,14 @@ void Arm::setTo(int t) {
 
 void Arm::mySphere(float R) {
 	for (int i = 0; i < 40; i++) {
-		glBegin(GL_TRIANGLES);
-		glVertex3f(0.0, R, 0.0);
 		float y = 0.95 * R;
 		float r = sqrt(R * R - y * y);
+		float nx = r * cos(i * 18.0 * PI / 360.0);
+		float ny = y;
+		float nz = r * sin(i * 18.0 * PI / 360.0);
+		glNormal3f(nx, ny, nz);
+		glBegin(GL_TRIANGLES);
+		glVertex3f(0.0, R, 0.0);
 		glVertex3f(r * cos(i * 18.0 * PI / 360.0), y, r * sin(i * 18.0 * PI / 360.0));
 		glVertex3f(r * cos((i + 1) * 18.0 * PI / 360.0), y, r * sin((i + 1) * 18.0 * PI / 360.0));
 		glEnd();
@@ -293,6 +297,7 @@ void Arm::mySphere(float R) {
 		float yl = 0.05 * (j - 1) * R;
 		float rl = sqrt(R * R - yl * yl);
 		for (int i = 0; i < 40; i++) {
+			glNormal3f(rh * cos(i * 18.0 * PI / 360.0), yh, rh * sin(i * 18.0 * PI / 360.0));
 			glBegin(GL_POLYGON);
 			glVertex3f(rh * cos(i * 18.0 * PI / 360.0), yh, rh * sin(i * 18.0 * PI / 360.0));
 			glVertex3f(rh * cos((i + 1) * 18.0 * PI / 360.0), yh, rh * sin((i + 1) * 18.0 * PI / 360.0));
@@ -302,10 +307,11 @@ void Arm::mySphere(float R) {
 		}
 	}
 	for (int i = 0; i < 40; i++) {
-		glBegin(GL_TRIANGLES);
-		glVertex3f(0.0, -R, 0.0);
 		float y = 0.95 * (-R);
 		float r = sqrt(R * R - y * y);
+		glNormal3f(r * cos(i * 18.0 * PI / 360.0), y, r * sin(i * 18.0 * PI / 360.0));
+		glBegin(GL_TRIANGLES);
+		glVertex3f(0.0, -R, 0.0);
 		glVertex3f(r * cos(i * 18.0 * PI / 360.0), y, r * sin(i * 18.0 * PI / 360.0));
 		glVertex3f(r * cos((i + 1) * 18.0 * PI / 360.0), y, r * sin((i + 1) * 18.0 * PI / 360.0));
 		glEnd();
@@ -319,6 +325,7 @@ void Arm::myCylinder(float baseR, float topR, float height) {
 		float rh = baseR - (j + 1) * (baseR - topR) / 20;
 		float yh = (j + 1) * height / 20;
 		for (int i = 0; i < 40; i++) {
+			glNormal3f(rh * cos(i * 18.0 * PI / 360.0), rh * sin(i * 18.0 * PI / 360.0), 0);
 			glBegin(GL_POLYGON);
 			glVertex3f(rh * cos(i * 18.0 * PI / 360.0), rh * sin(i * 18.0 * PI / 360.0), yh);
 			glVertex3f(rh * cos((i + 1) * 18.0 * PI / 360.0), rh * sin((i + 1) * 18.0 * PI / 360.0), yh);
