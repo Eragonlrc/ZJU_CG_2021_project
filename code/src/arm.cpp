@@ -278,43 +278,20 @@ void Arm::setTo(int t) {
 }
 
 void Arm::mySphere(float R) {
-	for (int i = 0; i < 40; i++) {
-		float y = 0.95 * R;
-		float r = sqrt(R * R - y * y);
-		float nx = r * cos(i * 18.0 * PI / 360.0);
-		float ny = y;
-		float nz = r * sin(i * 18.0 * PI / 360.0);
-		glNormal3f(nx, ny, nz);
-		glBegin(GL_TRIANGLES);
-		glVertex3f(0.0, R, 0.0);
-		glVertex3f(r * cos(i * 18.0 * PI / 360.0), y, r * sin(i * 18.0 * PI / 360.0));
-		glVertex3f(r * cos((i + 1) * 18.0 * PI / 360.0), y, r * sin((i + 1) * 18.0 * PI / 360.0));
-		glEnd();
-	}
-	for (int j = 19; j > -20; j--) {
-		float yh = 0.05 * j * R;
+	for (float i = 50; i > -50; i--) {
+		float yh = R * cos(i / 50.0 * PI);
+		float yl = R * cos((i - 1) / 50 * PI);
 		float rh = sqrt(R * R - yh * yh);
-		float yl = 0.05 * (j - 1) * R;
 		float rl = sqrt(R * R - yl * yl);
-		for (int i = 0; i < 40; i++) {
-			glNormal3f(rh * cos(i * 18.0 * PI / 360.0), yh, rh * sin(i * 18.0 * PI / 360.0));
+		for (int j = 0; j < 100; j++) {
+			glNormal3f(rh * cos(j * 7.2 * PI / 360.0), yh, rh * sin(j * 7.2 * PI / 360.0));
 			glBegin(GL_POLYGON);
-			glVertex3f(rh * cos(i * 18.0 * PI / 360.0), yh, rh * sin(i * 18.0 * PI / 360.0));
-			glVertex3f(rh * cos((i + 1) * 18.0 * PI / 360.0), yh, rh * sin((i + 1) * 18.0 * PI / 360.0));
-			glVertex3f(rl * cos((i + 1) * 18.0 * PI / 360.0), yl, rl * sin((i + 1) * 18.0 * PI / 360.0));
-			glVertex3f(rl * cos(i * 18.0 * PI / 360.0), yl, rl * sin(i * 18.0 * PI / 360.0));
+			glVertex3f(rh * cos(j * 7.2 * PI / 360.0), yh, rh * sin(j * 7.2 * PI / 360.0));
+			glVertex3f(rh * cos((j + 1) * 7.2 * PI / 360.0), yh, rh * sin((j + 1) * 7.2 * PI / 360.0));
+			glVertex3f(rl * cos((j + 1) * 7.2 * PI / 360.0), yl, rl * sin((j + 1) * 7.2 * PI / 360.0));
+			glVertex3f(rl * cos(j * 7.2 * PI / 360.0), yl, rl * sin(j * 7.2 * PI / 360.0));
 			glEnd();
 		}
-	}
-	for (int i = 0; i < 40; i++) {
-		float y = 0.95 * (-R);
-		float r = sqrt(R * R - y * y);
-		glNormal3f(r * cos(i * 18.0 * PI / 360.0), y, r * sin(i * 18.0 * PI / 360.0));
-		glBegin(GL_TRIANGLES);
-		glVertex3f(0.0, -R, 0.0);
-		glVertex3f(r * cos(i * 18.0 * PI / 360.0), y, r * sin(i * 18.0 * PI / 360.0));
-		glVertex3f(r * cos((i + 1) * 18.0 * PI / 360.0), y, r * sin((i + 1) * 18.0 * PI / 360.0));
-		glEnd();
 	}
 }
 
