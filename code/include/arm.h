@@ -55,7 +55,6 @@ public:
 	void draw();
 	void attach(Robot* rbt);
 	void activate();
-	void drawArm();
 	Robot* getAttached();
 	Point getPosition();
 	int getDirection();
@@ -64,6 +63,4 @@ public:
 	void setColor(int c);
 	void setFrom(int f);
 	void setTo(int t);
-	void mySphere(float R);
-	void myCylinder(float baseR, float topR, float height);
 };

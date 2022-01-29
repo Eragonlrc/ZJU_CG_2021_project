@@ -31,37 +31,42 @@ Arm::Arm(int dx, int dy, int f, int t) {
 	if (t - f == 1 || (t == 0 && f == 4)) clockWise = -1;
 	armListId = glGenLists(11);
 	glNewList(ARM_FOUNDATION_SPHERE, GL_COMPILE);
-	mySphere(0.3);
+	glutSolidSphere(0.3, 100, 50);
 	glEndList();
 	glNewList(ARM_JOINT1_SPHERE, GL_COMPILE);
-	mySphere(0.27);
+	glutSolidSphere(0.27, 100, 50);
 	glEndList();
 	glNewList(ARM_JOINT2_SPHERE, GL_COMPILE);
-	mySphere(0.25);
+	glutSolidSphere(0.25, 100, 50);
 	glEndList();
 	glNewList(ARM_CLAW_ROOT_SPHERE, GL_COMPILE);
-	mySphere(0.12);
+	glutSolidSphere(0.12, 100, 50);
 	glEndList();
 	glNewList(ARM_CLAW_JOINT1_SPHERE, GL_COMPILE);
-	mySphere(0.02);
+	glutSolidSphere(0.02, 100, 50);
 	glEndList();
 	glNewList(ARM_CLAW_END_SPHERE, GL_COMPILE);
-	mySphere(0.015);
+	glutSolidSphere(0.015, 100, 50);
 	glEndList();
 	glNewList(ARM_1_CYLINDER, GL_COMPILE);
-	myCylinder(0.23, 0.18, 1.2);
+	GLUquadricObj* objCylinder1 = gluNewQuadric();
+	gluCylinder(objCylinder1, 0.23, 0.18, 1.2, 100, 100);
 	glEndList();
 	glNewList(ARM_2_CYLINDER, GL_COMPILE);
-	myCylinder(0.18, 0.15, 1.0);
+	GLUquadricObj* objCylinder2 = gluNewQuadric();
+	gluCylinder(objCylinder2, 0.18, 0.15, 1.0, 100, 100);
 	glEndList();
 	glNewList(ARM_3_CYLINDER, GL_COMPILE);
-	myCylinder(0.18, 0.12, 0.7);
+	GLUquadricObj* objCylinder3 = gluNewQuadric();
+	gluCylinder(objCylinder3, 0.18, 0.12, 0.7, 100, 100);
 	glEndList();
 	glNewList(ARM_CLAW_1_CYLINDER, GL_COMPILE);
-	myCylinder(0.04, 0.02, 0.3);
+	GLUquadricObj* objCylinder4 = gluNewQuadric();
+	gluCylinder(objCylinder4, 0.04, 0.02, 0.3, 100, 100);
 	glEndList();
 	glNewList(ARM_CLAW_2_CYLINDER, GL_COMPILE);
-	myCylinder(0.02, 0.015, 0.2);
+	GLUquadricObj* objCylinder5 = gluNewQuadric();
+	gluCylinder(objCylinder5, 0.02, 0.015, 0.2, 100, 100);
 	glEndList();
 }
 
@@ -274,41 +279,5 @@ void Arm::setTo(int t) {
 	case 2: {tx = x - 1; ty = y; break; }
 	case 3: {tx = x; ty = y - 1; break; }
 	default: break;
-	}
-}
-
-void Arm::mySphere(float R) {
-	for (float i = 50; i > 0; i--) {
-		float yh = R * cos(i / 50.0 * PI);
-		float yl = R * cos((i - 1) / 50 * PI);
-		float rh = sqrt(R * R - yh * yh);
-		float rl = sqrt(R * R - yl * yl);
-		for (int j = 0; j < 100; j++) {
-			glNormal3f(rh * cos(j * 7.2 * PI / 360.0), yh, rh * sin(j * 7.2 * PI / 360.0));
-			glBegin(GL_POLYGON);
-			glVertex3f(rh * cos(j * 7.2 * PI / 360.0), yh, rh * sin(j * 7.2 * PI / 360.0));
-			glVertex3f(rh * cos((j + 1) * 7.2 * PI / 360.0), yh, rh * sin((j + 1) * 7.2 * PI / 360.0));
-			glVertex3f(rl * cos((j + 1) * 7.2 * PI / 360.0), yl, rl * sin((j + 1) * 7.2 * PI / 360.0));
-			glVertex3f(rl * cos(j * 7.2 * PI / 360.0), yl, rl * sin(j * 7.2 * PI / 360.0));
-			glEnd();
-		}
-	}
-}
-
-void Arm::myCylinder(float baseR, float topR, float height) {
-	for (int i = 0; i < 50; i++) {
-		float yh = (i + 1) * height / 50;
-		float yl = i * height / 50;
-		float rh = baseR - (i + 1) * (baseR - topR) / 50;
-		float rl = baseR - i * (baseR - topR) / 50;
-		for (int j = 0; j < 100; j++) {
-			glNormal3f(rh * cos(j * 7.2 * PI / 360.0), rh * sin(j * 7.2 * PI / 360.0), 0);
-			glBegin(GL_POLYGON);
-			glVertex3f(rh * cos(j * 7.2 * PI / 360.0), rh * sin(j * 7.2 * PI / 360.0), yh);
-			glVertex3f(rh * cos((j + 1) * 7.2 * PI / 360.0), rh * sin((j + 1) * 7.2 * PI / 360.0), yh);
-			glVertex3f(rl * cos((j + 1) * 7.2 * PI / 360.0), rl * sin((j + 1) * 7.2 * PI / 360.0), yl);
-			glVertex3f(rl * cos(j * 7.2 * PI / 360.0), rl * sin(j * 7.2 * PI / 360.0), yl);
-			glEnd();
-		}
 	}
 }
