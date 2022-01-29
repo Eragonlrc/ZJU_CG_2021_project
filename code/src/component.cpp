@@ -275,7 +275,7 @@ void Robot::drawLeg1()
 	glPopMatrix();*/
 	
 	glPushMatrix();
-	glTranslatef(tran_x, tran_y, tran_z);
+	glTranslatef(tran_x, tran_y - 0.07, tran_z);
 	glCallList(objindex + 6);
 	glPopMatrix();
 };

@@ -172,7 +172,7 @@ void Objinit()
 	pic[4] = new ObjLoader("obj/body2.obj");
 	pic[5] = new ObjLoader("obj/arm1.obj");
 	pic[6] = new ObjLoader("obj/arm2.obj");
-	pic[7] = new ObjLoader("obj/leg2.obj");
+	pic[7] = new ObjLoader("obj/leg1.obj");
 	pic[8] = new ObjLoader("obj/leg2.obj");
 	pic[1]->Setscale(0.025);
 	pic[2]->Setscale(0.025);
@@ -180,7 +180,7 @@ void Objinit()
 	pic[4]->Setscale(0.038);
 	pic[5]->Setscale(0.04);
 	pic[6]->Setscale(0.08);
-	pic[7]->Setscale(0.045);
+	pic[7]->Setscale(0.03);
 	pic[8]->Setscale(0.06);
 
 	objindex = glGenLists(8);
