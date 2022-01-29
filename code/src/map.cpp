@@ -130,7 +130,7 @@ bool Map::checkEdge(float x, float y, float z) {
 		return false;
 		break;
 	}
-	return (y >= 0.5 + 0.8 - 0.001);	// check belt height
+	return (y >= 0.2 + 0.8 - 0.001);	// check belt height
 }
 
 float Map::getFloor(float x, float z) {
@@ -177,7 +177,7 @@ float Map::getFloor(float x, float z) {
 		return 0.8;
 		break;
 	}
-	return 0.5 + 0.8;	// check belt height
+	return 0.2 + 0.8;	// check belt height
 }
 
 void Map::drawGroundList() {
