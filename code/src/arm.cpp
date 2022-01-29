@@ -278,7 +278,7 @@ void Arm::setTo(int t) {
 }
 
 void Arm::mySphere(float R) {
-	for (float i = 50; i > -50; i--) {
+	for (float i = 50; i > 0; i--) {
 		float yh = R * cos(i / 50.0 * PI);
 		float yl = R * cos((i - 1) / 50 * PI);
 		float rh = sqrt(R * R - yh * yh);
@@ -296,18 +296,18 @@ void Arm::mySphere(float R) {
 }
 
 void Arm::myCylinder(float baseR, float topR, float height) {
-	for (int j = 0; j < 20; j++) {
-		float rl = baseR - j * (baseR - topR) / 20;
-		float yl = j * height / 20;
-		float rh = baseR - (j + 1) * (baseR - topR) / 20;
-		float yh = (j + 1) * height / 20;
-		for (int i = 0; i < 40; i++) {
-			glNormal3f(rh * cos(i * 18.0 * PI / 360.0), rh * sin(i * 18.0 * PI / 360.0), 0);
+	for (int i = 0; i < 50; i++) {
+		float yh = (i + 1) * height / 50;
+		float yl = i * height / 50;
+		float rh = baseR - (i + 1) * (baseR - topR) / 50;
+		float rl = baseR - i * (baseR - topR) / 50;
+		for (int j = 0; j < 100; j++) {
+			glNormal3f(rh * cos(j * 7.2 * PI / 360.0), rh * sin(j * 7.2 * PI / 360.0), 0);
 			glBegin(GL_POLYGON);
-			glVertex3f(rh * cos(i * 18.0 * PI / 360.0), rh * sin(i * 18.0 * PI / 360.0), yh);
-			glVertex3f(rh * cos((i + 1) * 18.0 * PI / 360.0), rh * sin((i + 1) * 18.0 * PI / 360.0), yh);
-			glVertex3f(rl * cos((i + 1) * 18.0 * PI / 360.0), rl * sin((i + 1) * 18.0 * PI / 360.0), yl);
-			glVertex3f(rl * cos(i * 18.0 * PI / 360.0), rl * sin(i * 18.0 * PI / 360.0), yl);
+			glVertex3f(rh * cos(j * 7.2 * PI / 360.0), rh * sin(j * 7.2 * PI / 360.0), yh);
+			glVertex3f(rh * cos((j + 1) * 7.2 * PI / 360.0), rh * sin((j + 1) * 7.2 * PI / 360.0), yh);
+			glVertex3f(rl * cos((j + 1) * 7.2 * PI / 360.0), rl * sin((j + 1) * 7.2 * PI / 360.0), yl);
+			glVertex3f(rl * cos(j * 7.2 * PI / 360.0), rl * sin(j * 7.2 * PI / 360.0), yl);
 			glEnd();
 		}
 	}
